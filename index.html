@@ -286,6 +286,27 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
 #inv .item{width:38px;height:38px}
 .item.sm{width:30px;height:30px}
 
+/* modo Historia */
+.modes{margin:4px 0 6px}
+.big small{display:block;font-family:var(--body);font-size:13px;font-weight:600;opacity:.8}
+.big.alt{background:var(--bg2);color:var(--text);border-color:var(--line)}
+.modal.wide{max-width:900px}
+#lvlList{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.lvl{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.lvl b{font-family:var(--display);font-weight:400;font-size:18px;color:var(--gold-hi)}
+.lvl small{color:var(--muted);font-size:12px}
+.lvl:hover:not(:disabled){border-color:var(--gold)}
+.lvl.done{border-color:#3c5a4a;background:#15261e}
+.lvl.locked,.lvl:disabled{opacity:.45;cursor:not-allowed}
+#deckGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:6px;max-height:42vh;overflow:auto;padding:2px}
+.dk{background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;opacity:.45}
+.dk.on{opacity:1;border-color:var(--gold);background:#2a2412}
+.dk .cg{overflow:hidden;width:44px;height:44px;border-radius:50%;border:2px solid;background:#223038}
+#rewCards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+#rewCards .cg{overflow:hidden;width:64px;height:64px;border-radius:50%;border:3px solid;background:#223038}
+.rewIco{width:60px;height:60px;display:grid;place-items:center;font-size:40px;color:#7fc4ff}
+body.historia .stat.hp{display:none}
+
 </style>
 
 <div id="app">
@@ -358,11 +379,14 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
     </ul>
     <div class="lbl" style="margin-bottom:6px">Tu avatar</div>
     <div class="avpick" id="avPick"></div>
-    <div class="lbl" style="margin-bottom:6px">Dificultad de los rivales</div>
+    <div class="modes">
+      <button class="big" id="bStory">Modo Historia<small>Niveles con jefe · tu mazo de campeones</small></button>
+    </div>
+    <div class="lbl" style="margin:14px 0 6px">Arena libre · dificultad de los rivales</div>
     <div class="seg" role="group" id="diffSeg">
       <button data-d="facil" aria-pressed="false">Fácil</button><button data-d="normal" aria-pressed="true">Normal</button><button data-d="dificil" aria-pressed="false">Difícil</button>
     </div>
-    <div class="row"><button class="big" id="bStart">Empezar partida</button><span class="best" id="bestTxt"></span></div>
+    <div class="row"><button class="big alt" id="bStart">Arena libre</button><span class="best" id="bestTxt"></span></div>
   </div>
 </div>
 
@@ -380,7 +404,26 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
     <div class="place" id="endPlace">1.º</div>
     <h2 id="endTitle">¡Victoria!</h2>
     <p class="sub" id="endSub"></p>
-    <button class="big" id="bAgain">Jugar de nuevo</button>
+    <div class="row" style="justify-content:center"><button class="big" id="bAgain">Jugar de nuevo</button><button class="big alt" id="bMenu" hidden>Niveles</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="storyOv" hidden>
+  <div class="modal wide">
+    <div class="row" style="justify-content:space-between"><h2>Modo Historia</h2><button class="btn" id="bStoryBack">Volver</button></div>
+    <p class="sub" style="margin-top:0">Supera las 5 fases de cada nivel sin perder ningún combate. Si caes, vuelves a la fase 1. El jefe final se une a tu colección.</p>
+    <div id="lvlList"></div>
+    <div class="row" style="justify-content:space-between;margin-top:16px"><h3 style="margin:0">Tu mazo <span id="deckCount" class="best"></span></h3><span class="best" id="deckWarn"></span></div>
+    <p class="sub" style="margin:2px 0 8px;font-size:14px">La tienda solo ofrece los campeones de tu mazo. Toca un campeón para quitarlo o añadirlo.</p>
+    <div id="deckGrid"></div>
+  </div>
+</div>
+
+<div class="overlay" id="rewardOv" hidden>
+  <div class="modal">
+    <h2 id="rewTitle">Fase superada</h2>
+    <div class="sub" style="margin:0">Elige una recompensa.</div>
+    <div id="rewCards"></div>
   </div>
 </div>
 
@@ -403,6 +446,7 @@ const TRAITS={
  arcano:{n:'Arcano',kind:'Clase',col:'#b57be8',tiers:[2,4],vals:[30,80],d:v=>`Arcanos: +${v}% de poder de habilidad.`},
  asesino:{n:'Asesino',kind:'Clase',col:'#d45a6a',tiers:[2,4],vals:[25,50],d:v=>`Asesinos: saltan a la retaguardia al empezar y ganan +${v}% de prob. de crítico.`},
  coloso:{n:'Coloso',kind:'Clase',col:'#a0896a',tiers:[2,4],vals:[300,750],d:v=>`Colosos: +${v} de vida máxima.`},
+ monstruo:{n:'Monstruo',kind:'Origen',col:'#b07a4a',tiers:[1,2,3],vals:[15,30,50],d:v=>`Monstruos: +${v}% de vida máxima y de daño.`},
 };
 const ROLE={
  tank:{hp:[650,760,880,1020,1250],ad:[48,55,62,72,88],as:.6,ar:40,mr:40},
@@ -435,11 +479,15 @@ const CH={};
  ['soberana','Soberana','Sb',5,['astral','arcano'],'mage',4,120,40,{n:'Supernova',k:'aoe',v:[600,900,3000],r:2}],
  ['titan','Titán','Ti',5,['forja','guardian'],'tank',1,120,60,{n:'Bastión',k:'shield',v:[800,1200,4000],d:2}],
  ['espina','Reina Espina','RE',5,['bosque','asesino'],'assassin',1,70,10,{n:'Cosecha',k:'execute',v:[900,1400,5000],heal:.5}],
+ // solo modo Historia (story): se gana al derrotar a la jefa del nivel 1
+ ['matrona','Matrona','Ma',3,['monstruo','coloso'],'tank',1,90,30,{n:'Pisotón materno',k:'aoeSelf',v:[180,270,450],r:1,d:1.5}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
 });
+CH.matrona.story=true;
 const CH_IDS=Object.keys(CH);
+const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
 const ITEMS={
  hoja:{n:'Hoja',g:'H',col:'#e0605b',s:{ad:15},d:'+15 de daño de ataque'},
  arco:{n:'Arco',g:'A',col:'#eaa53f',s:{as:.15},d:'+15% de velocidad de ataque'},
@@ -574,11 +622,12 @@ function ord(n){return n+'.º'}
 // ================= STATE =================
 let S=null;
 function newPlayer(name,human,col){return {av:'zorro',name,human,col,hp:100,gold:0,level:1,xp:0,board:Array(28).fill(null),bench:Array(9).fill(null),items:[],shop:[],locked:false,streak:0,alive:true,place:0,lastOpp:null}}
-function newGame(diff){
-  S={diff,stage:1,round:1,phase:'idle',type:'carousel',uid:0,speed:(S&&S.speed)||1,pool:{},players:[],logs:[],carOpts:null,sel:null,preview:null,opp:null,pairs:null,combat:null};
-  CH_IDS.forEach(id=>S.pool[id]=POOL_SIZE[CH[id].cost-1]);
+// historia: {nivel, mazo} para el modo Historia (solo tú contra combates diseñados; la tienda sale de tu mazo)
+function newGame(diff,historia){
+  S={diff,mode:historia?'historia':'arena',story:historia||null,stage:1,round:1,phase:'idle',type:'carousel',uid:0,speed:(S&&S.speed)||1,pool:{},players:[],logs:[],carOpts:null,sel:null,preview:null,opp:null,pairs:null,combat:null};
+  (historia?historia.mazo:ARENA_IDS).forEach(id=>S.pool[id]=POOL_SIZE[CH[id].cost-1]);
   S.players.push(newPlayer('Tú',true,'#53c476'));
-  AI_NAMES.forEach(([n,c])=>S.players.push(newPlayer(n,false,c)));
+  if(!historia)AI_NAMES.forEach(([n,c])=>S.players.push(newPlayer(n,false,c)));
   S.players[0].av=myAv;const rest=AVK.filter(k=>k!==myAv);S.players.slice(1).forEach((p,i)=>p.av=rest[i%rest.length]);
 }
 const H=()=>S.players[0];
@@ -706,6 +755,7 @@ function makeFighter(u,team,c,r,cnt){
   if(has('arcano'))f.ap+=val('arcano');
   if(has('asesino')){f.crit+=val('asesino')/100;f.jump=true}
   if(has('coloso'))f.maxHp+=val('coloso');
+  if(has('monstruo')){f.maxHp*=1+val('monstruo')/100;f.ad*=1+val('monstruo')/100}
   f.hp=f.maxHp;f.mana=Math.min(f.mana,f.maxMana-1);
   if(P.escudoIni)f.shield+=f.maxHp*P.escudoIni;
   return f;
@@ -1040,8 +1090,9 @@ function aiTurn(p,opp){
 }
 
 // ================= FLOW =================
-function roundType(s,r){if(s===1)return r===1?'carousel':'pve';if(r===4)return 'carousel';if(r===7)return 'pve';return 'pvp'}
-function roundsIn(s){return s===1?4:7}
+function roundType(s,r){if(S&&S.mode==='historia')return s===1&&r===1?'carousel':'pve'; // Historia: 1-1 carrusel, el resto combates diseñados
+  if(s===1)return r===1?'carousel':'pve';if(r===4)return 'carousel';if(r===7)return 'pve';return 'pvp'}
+function roundsIn(s){return S&&S.mode==='historia'?6:s===1?4:7}
 function incomeFor(p){
   if(S.stage===1)return 3;
   const interest=Math.min(5,Math.floor(p.gold/10)),s=Math.abs(p.streak);
@@ -1056,12 +1107,12 @@ function beginRound(){
     if(p.human){if(!p.locked)setShop(p);p.locked=false}
   }
   // los emparejamientos se hacen antes del turno de la IA, para que cada una pueda espiar a su rival
-  if(S.type==='pve')S.preview=creepTeam(1);
+  if(S.type==='pve')S.preview=enemyTeam(1);
   else{S.pairs=makePairs();S.opp=S.pairs[0][1]}
   const oppOf=p=>{if(!S.pairs)return null;for(const [a,b] of S.pairs){const B=b.ghost?b.p:b;if(a===p)return B;if(b===p)return a}return null};
   for(const p of S.players)if(p.alive&&!p.human)aiTurn(p,oppOf(p));
   S.phase='planning';
-  const sub=S.type==='pve'?'Monstruos del crisol':S.opp?('Rival: '+S.opp.name+(S.opp.ghost?' (eco)':'')):'';
+  const sub=S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?('Rival: '+S.opp.name+(S.opp.ghost?' (eco)':'')):'';
   banner(`Ronda ${S.stage}-${S.round}`,S.round===1||(S.stage===1&&S.round===2)?curTheme().n+(sub?' · '+sub:''):sub);
   if(S.stage===1&&S.round===2)setTimeout(()=>toast('Arrastra a tu campeón del banquillo al tablero'),1400);
   updateHUD();
@@ -1080,7 +1131,7 @@ function startCombat(){
   if(!S||S.phase!=='planning')return;
   const hu=H();autofill(hu);hideInfo();
   let enemy;
-  if(S.type==='pve')enemy=creepTeam(1);
+  if(S.type==='pve')enemy=enemyTeam(1);
   else{const o=S.opp;enemy=teamFrom(o.ghost?o.p:o,1)}
   S.combat=new Combat(teamFrom(hu,0),enemy,true);
   S.others=[];
@@ -1094,16 +1145,23 @@ const survivors=(cb,t)=>cb.f.filter(f=>f.alive&&f.team===t);
 function winP(p){p.gold+=1;p.streak=p.streak>0?p.streak+1:1}
 function loseP(p,d){p.hp-=d;p.streak=p.streak<0?p.streak-1:-1;return d}
 function pvpDmg(cb,t){return STAGE_DMG[Math.min(S.stage,7)]+survivors(cb,t).reduce((s,f)=>s+f.star,0)}
-function loot(p,kills){
+function loot(p,kills,k){
   const got=[];let g=0;
-  const chance=S.stage===1?.5:.7;
+  const chance=(S.stage===1?.5:.7)*(k||1); // k: en Historia hay muchas más rondas, así que cae menos botín por muerte
   for(let k=0;k<kills;k++){const r=rnd();if(r<chance)got.push(pick(ITEM_IDS));else if(r<.9)g+=1+Math.floor(rnd()*2)}
-  if(kills>0&&!got.length)got.push(pick(ITEM_IDS));
+  if(kills>0&&!got.length&&!k)got.push(pick(ITEM_IDS));
   if(S.stage>1&&kills>=3)got.push(pick(ITEM_IDS));
   p.items.push(...got);p.gold+=g;return {got,g};
 }
 function resolveCombat(){
   const cb=S.combat,hu=H();let title='',sub='',cls='';
+  if(S.mode==='historia'){
+    if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner(cb.winner===1?'Derrota':'Empate','Tu equipo ha caído','lose');updateHUD();setTimeout(()=>storyLost(),2100);return}
+    const L=loot(hu,cb.f.filter(f=>f.team===1&&!f.alive).length,.45);
+    title='Victoria';cls='win';sub=L.got.length||L.g?('Botín: '+[...L.got.map(i=>ITEMS[i].n),L.g?`+${L.g} de oro`:''].filter(Boolean).join(', ')):'';
+    S.phase='result';renderDmg();S.avRes={win:true,t:performance.now()/1000};sfx('win');banner(title,sub,cls);updateHUD();
+    setTimeout(()=>storyNext(),2100);return;
+  }
   if(S.type==='pve'){
     const kills=cb.f.filter(f=>f.team===1&&!f.alive).length;
     const L=loot(hu,kills);
@@ -1136,6 +1194,7 @@ function resolveCombat(){
 }
 function gameOver(place){
   S.phase='over';sfx('over');updateHUD();
+  $('#bAgain').textContent='Jugar de nuevo';$('#bAgain').onclick=backToMenu;$('#bMenu').hidden=true;
   let best=null;try{best=+localStorage.getItem('crisol_best')||null;if(!best||place<best)localStorage.setItem('crisol_best',place)}catch(e){}
   $('#endPlace').textContent=ord(place);
   $('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
@@ -1144,7 +1203,7 @@ function gameOver(place){
 }
 
 // carousel
-function carTiers(){const s=S.stage;return s===1?[1]:s===2?[1,2]:s===3?[2,3]:s===4?[3,4]:[3,4,5]}
+function carTiers(){const s=S.stage;if(S.mode==='historia')return [1];return s===1?[1]:s===2?[1,2]:s===3?[2,3]:s===4?[3,4]:[3,4,5]}
 // El carrusel se juega sobre el campo: los 5 campeones esperan de pie en semicírculo, cada uno con su objeto.
 // Se elige tocando o haciendo clic en uno (14-controles.js); se dibuja en 10-avatares.js.
 function openCarousel(){
@@ -1581,7 +1640,7 @@ const THEMES=[
  {n:'Umbral sombrío',sky:['#0f0b18','#1a1328'],pa:'#231d32',pb:'#282039',ea:'#2b1827',eb:'#311c2d',line:'#43375e',lineE:'#58324b',side:'#0b0812',mid:'rgba(180,140,255,.5)',amb:'wisp',ac:['#b28cff','#7a5ad0'],prop:'umbra'},
  {n:'Cielo astral',sky:['#060918','#0e1434'],pa:'#1b2148',pb:'#1f2752',ea:'#2b1e46',eb:'#31224f',line:'#3c4d8e',lineE:'#5c3c8e',side:'#050716',mid:'rgba(255,240,170,.55)',amb:'star',ac:['#ffffff','#fff5a0','#cfe0ff'],prop:'astral'},
 ];
-const themeIdx=()=>Math.min(5,S?S.stage:1)-1;
+const themeIdx=()=>S&&S.mode==='historia'?S.story.tema:Math.min(5,S?S.stage:1)-1; // Historia: el escenario es el del nivel
 const curTheme=()=>THEMES[themeIdx()];
 function srand(seed){seed=(seed%2147483646)+1;return ()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
 function mkCanvas(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*DPR));c.height=Math.max(1,Math.round(h*DPR));const g=c.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);return [c,g]}
@@ -1976,11 +2035,11 @@ function updateHUD(){
   $('#bRoll').disabled=!pl||hu.gold<2;
   $('#bLock').setAttribute('aria-pressed',hu.locked);$('#lockTxt').textContent=hu.locked?'Bloqueada':'Bloquear';
   const fb=$('#bFight');fb.disabled=!pl;
-  fb.firstChild.textContent=S.phase==='combat'?'Combatiendo':S.type==='pve'&&pl?'Cazar':'Luchar';
-  $('#fightSub').textContent=pl?(S.type==='pve'?'Monstruos · Espacio':'Espacio'):S.phase==='combat'?'Mira el combate':'';
+  fb.firstChild.textContent=S.phase==='combat'?'Combatiendo':S.type==='pve'&&pl&&S.mode!=='historia'?'Cazar':'Luchar';
+  $('#fightSub').textContent=pl?(S.type==='pve'&&S.mode!=='historia'?'Monstruos · Espacio':'Espacio'):S.phase==='combat'?'Mira el combate':'';
   // count
   const bc=boardCount(hu);$('#countTag').innerHTML=S.phase==='combat'||S.phase==='carousel'?'':`<span style="color:${bc<hu.level?'#ffd98a':'#8b9fab'}">${bc}/${hu.level}</span> en tablero`;
-  $('#oppTag').textContent=S.phase==='carousel'?'Carrusel · elige un campeón':S.phase==='combat'||pl?(S.type==='pve'?'Monstruos del crisol':S.opp?'Rival: '+S.opp.name+(S.opp.ghost?' (eco)':''):''):'';
+  $('#oppTag').textContent=S.phase==='carousel'?'Carrusel · elige un campeón':S.phase==='combat'||pl?(S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?'Rival: '+S.opp.name+(S.opp.ghost?' (eco)':''):''):'';
   // shop
   const cards=$('#cards');cards.innerHTML='';
   const owned={},have=new Set();allUnits(hu).forEach(o=>{have.add(o.u.id);if(o.u.star===1)owned[o.u.id]=(owned[o.u.id]||0)+1});
@@ -2021,6 +2080,11 @@ function updateHUD(){
   }
   // players
   const pl2=$('#plist');pl2.innerHTML='';
+  if(S.mode==='historia'){ // progreso del nivel en lugar de la lista de jugadores
+    const L=NIVELES[S.story.nivel-1],R=storyRound();
+    pl2.innerHTML=`<li class="me"><span></span><span class="pn">Nivel ${L.n} · ${L.nombre}</span><span></span></li>`+[1,2,3,4,5].map(f=>`<li class="${f<S.stage?'dead':f===S.stage?'opp':''}"><span></span><span class="pn">Fase ${f}${f===5?' · jefe':''}</span><span class="phv">${f<S.stage?'✓':f===S.stage?S.round+'/6':''}</span></li>`).join('')
+      +(R&&S.phase!=='over'?`<li><span></span><span class="pn" style="white-space:normal">${R.jefe?'Jefe':'Rival'}: ${R.n}</span><span></span></li>`:'');
+  }else
   S.players.slice().sort((a,b)=>(b.alive-a.alive)||(b.alive?b.hp-a.hp:a.place-b.place)).forEach(p=>{
     const li=document.createElement('li');const isOpp=S.opp&&(S.opp===p||(S.opp.ghost&&S.opp.p===p))&&(pl||S.phase==='combat');
     li.className=(p.human?'me ':'')+(isOpp?'opp ':'')+(p.alive?'':'dead');
@@ -2191,10 +2255,170 @@ function renderAvPick(){const box=$('#avPick');box.innerHTML='';AVK.forEach(k=>{
 $('#bMus').onclick=()=>{audioInit();setSound('m',!SND.musicOn)};$('#bSfx').onclick=()=>{audioInit();setSound('s',!SND.sfxOn)};
 window.addEventListener('pointerdown',()=>{if(SND.ac&&SND.ac.state==='suspended')SND.ac.resume().catch(()=>{})});
 document.querySelectorAll('#diffSeg button').forEach(b=>b.onclick=()=>{diff=b.dataset.d;document.querySelectorAll('#diffSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
-function begin(){audioInit();newGame(diff);dmgCb=null;renderDmg();$('#startOv').hidden=true;$('#endOv').hidden=true;layout();beginRound()}
+function begin(){audioInit();document.body.classList.remove('historia');newGame(diff);dmgCb=null;renderDmg();$('#startOv').hidden=true;$('#endOv').hidden=true;layout();beginRound()}
 $('#bStart').onclick=begin;
-$('#bAgain').onclick=()=>{$('#endOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();showBest()};
+function backToMenu(){$('#endOv').hidden=true;$('#storyOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();showBest()}
+$('#bAgain').onclick=backToMenu;
+// modo Historia (15-historia.js)
+$('#bStory').onclick=()=>{audioInit();openStory()};
+$('#bStoryBack').onclick=()=>{$('#storyOv').hidden=true;$('#startOv').hidden=false};
+$('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};
 function showBest(){try{const b=localStorage.getItem('crisol_best');$('#bestTxt').textContent=b?`Tu mejor puesto: ${ord(b)}`:''}catch(e){}}
+
+// ================= MODO HISTORIA =================
+// Niveles de 5 fases × 6 rondas contra combates diseñados. Perder (o empatar) un combate acaba el intento.
+// La tienda solo ofrece campeones de tu mazo. Entre fases eliges 1 de 3 recompensas. El jefe (5-6) se une a tu colección.
+// Diseño: docs/modo-historia.md
+
+// ---- datos de los niveles ----
+// Un combate: {n: nombre, u: unidades, jefe?}. Unidad: monstruo Rd(id,col,fila,mult) o campeón Cp(id,estrellas,col,fila,objetos).
+// Coordenadas desde el lado rival: fila 0 = primera línea, 3 = retaguardia; columna 0..6.
+const Rd=(m,c,r,x)=>({m,c,r,x:x||1}), Cp=(ch,s,c,r,it)=>({ch,s,c,r,it:it||[]});
+const NIVELES=[
+ {n:1,nombre:'Claro del bosque',tema:0,premio:'matrona',fases:[
+  [null,
+   {n:'Roedines curiosos',k:1.84,u:[Rd('roedin',2,0),Rd('roedin',4,0)]},
+   {n:'Nido de Roedines',k:2.12,u:[Rd('roedin',1,0),Rd('roedin',3,0),Rd('roedin',5,0)]},
+   {n:'Escupidor al acecho',k:2.07,u:[Rd('roedin',2,0),Rd('roedin',4,0),Rd('escupidor',3,2)]},
+   {n:'Patrulla del claro',k:1.84,u:[Rd('roedin',1,0),Rd('roedin',5,0),Rd('escupidor',2,2),Rd('escupidor',4,2)]},
+   {n:'Rey de los Roedines',k:2.02,u:[Rd('roedin',3,0,2.2),Rd('roedin',1,0),Rd('roedin',5,0),Rd('escupidor',3,2)]}],
+  [{n:'Lobo solitario',k:2.43,u:[Rd('lobo',3,0,.8),Rd('roedin',1,0),Rd('roedin',5,0)]},
+   {n:'Pareja de caza',k:2.93,u:[Rd('lobo',2,0,.8),Rd('lobo',4,0,.8)]},
+   {n:'Emboscada',k:2.38,u:[Rd('lobo',2,0,.8),Rd('lobo',4,0,.8),Rd('escupidor',1,3),Rd('escupidor',5,3)]},
+   {n:'Manada',k:2.29,u:[Rd('lobo',1,0,.85),Rd('lobo',3,0,.85),Rd('lobo',5,0,.85)]},
+   {n:'Aullidos',k:2.88,u:[Rd('lobo',2,0,.9),Rd('lobo',4,0,.9),Rd('lobo',3,1,.9),Rd('escupidor',3,3)]},
+   {n:'Alfa de la manada',k:2.43,u:[Rd('lobo',3,0,1.6),Rd('lobo',1,1,.9),Rd('lobo',5,1,.9),Rd('escupidor',2,3),Rd('escupidor',4,3)]}],
+  [{n:'Guardabosques',k:4.1,u:[Cp('musgo',1,3,0),Cp('rama',1,3,3),Rd('roedin',1,0),Rd('roedin',5,0)]},
+   {n:'Druidas',k:3.15,u:[Cp('musgo',1,2,0),Cp('fresno',1,3,3),Cp('rama',1,4,3),Rd('lobo',4,0,.9)]},
+   {n:'Círculo de savia',k:2.75,u:[Cp('musgo',2,3,0),Cp('rama',1,2,3),Cp('fresno',1,4,3),Rd('roedin',1,0),Rd('roedin',5,0)]},
+   {n:'Cazadores y lobos',k:2.65,u:[Cp('rama',2,3,3),Cp('musgo',2,3,0),Rd('lobo',1,0),Rd('lobo',5,0)]},
+   {n:'Vigías del claro',k:2.5,u:[Cp('musgo',2,2,0),Cp('yunque',1,4,0),Cp('rama',2,2,3),Cp('fresno',1,4,3),Rd('escupidor',3,2)]},
+   {n:'Guardianes del claro',k:2.05,u:[Cp('musgo',2,3,0),Cp('alba',1,2,0),Cp('rama',2,2,3),Cp('fresno',2,4,3),Rd('lobo',5,1)]}],
+  [{n:'Manada hambrienta',k:5.55,u:[Rd('lobo',1,0,1.2),Rd('lobo',3,0,1.2),Rd('lobo',5,0,1.2),Rd('escupidor',2,3,1.2),Rd('escupidor',4,3,1.2)]},
+   {n:'Bandidos del bosque',k:2.3,u:[Cp('sombrio',2,0,1),Cp('vespa',2,6,1),Cp('musgo',2,3,0),Cp('rama',2,3,3),Cp('lira',2,4,3)]},
+   {n:'Coro astral',k:2.2,u:[Cp('lira',2,2,3),Cp('vespa',2,0,1),Cp('nebula',1,3,0),Cp('musgo',2,4,0),Cp('rama',2,4,3),Rd('lobo',1,0)]},
+   {n:'Crías de la Matrona',k:6.65,u:[Rd('lobo',2,0,1.3),Rd('lobo',4,0,1.3),Rd('roedin',1,1,2),Rd('roedin',5,1,2),Rd('escupidor',3,3,1.4),Rd('escupidor',1,3,1.4)]},
+   {n:'Guardia de raíces',k:1.75,u:[Cp('musgo',2,3,0,['cota']),Cp('alba',2,2,0),Cp('fresno',2,3,3,['vara']),Cp('rama',2,4,3,['arco']),Cp('espina',1,0,1),Rd('lobo',6,0)]},
+   {n:'Élite del bosque',k:1.6,u:[Cp('musgo',2,3,0,['troll']),Cp('alba',2,4,0),Cp('fresno',2,2,3,['sabio']),Cp('rama',2,4,3,['runica']),Cp('lira',2,3,3),Cp('vespa',2,0,1)]}],
+  [{n:'Furia del claro',k:5.1,u:[Rd('lobo',1,0,1.6),Rd('lobo',3,0,1.6),Rd('lobo',5,0,1.6),Rd('escupidor',2,3,1.6),Rd('escupidor',4,3,1.6),Rd('escupidor',3,2,1.6)]},
+   {n:'Consejo druida',k:1.55,u:[Cp('musgo',2,3,0,['troll','cota']),Cp('alba',2,2,0,['bastionob']),Cp('fresno',2,3,3,['sabio']),Cp('rama',2,2,3,['vendaval']),Cp('espina',1,5,1),Cp('nebula',2,4,0)]},
+   {n:'Asalto astral',k:2.3,u:[Cp('vespa',2,0,1,['ocaso']),Cp('lira',2,2,3,['vendaval']),Cp('nebula',2,3,0,['gigante']),Cp('kalima',2,4,3),Cp('coral',2,2,0),Cp('musgo',2,4,0)]},
+   {n:'Estampida',k:4.05,u:[Rd('lobo',1,0,1.9),Rd('lobo',3,0,1.9),Rd('lobo',5,0,1.9),Rd('roedin',2,1,3),Rd('roedin',4,1,3),Rd('escupidor',2,3,1.9),Rd('escupidor',4,3,1.9)]},
+   {n:'Guardianes eternos',k:1.1,u:[Cp('musgo',3,3,0,['troll','cota']),Cp('alba',2,2,0,['bastionob']),Cp('fresno',2,3,3,['sabio','savia']),Cp('rama',2,2,3,['vendaval']),Cp('espina',2,5,1,['ocaso']),Cp('nebula',2,4,0,['gigante']),Cp('lira',2,4,3)]},
+   {n:'La Matrona del risco',k:3.7,jefe:true,u:[Rd('matrona',3,0,2.6),Rd('lobo',1,0,1.8),Rd('lobo',5,0,1.8),Rd('escupidor',2,3,1.8),Rd('escupidor',4,3,1.8)]}],
+ ]},
+];
+// Jefes: habilidad propia (usa la pose «especial» del sprite) y más maná
+const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70}};
+
+// ---- colección y progreso (se guarda en este dispositivo) ----
+const HIST_KEY='crisol_historia_v1',MAZO_N=20;
+function histLoad(){let h=null;try{h=JSON.parse(localStorage.getItem(HIST_KEY))}catch(e){}
+  if(!h||!Array.isArray(h.col))h={col:ARENA_IDS.filter(id=>CH[id].cost<=4),hechos:[],mazo:null};
+  h.col=h.col.filter(id=>CH[id]);h.hechos=h.hechos||[];
+  if(!Array.isArray(h.mazo)||h.mazo.some(id=>!h.col.includes(id)))h.mazo=h.col.slice(0,MAZO_N);
+  return h}
+function histSave(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h))}catch(e){}}
+let HIST=histLoad();
+
+// ---- rivales de la ronda ----
+function storyRound(){const L=NIVELES[S.story.nivel-1];return L.fases[S.stage-1][S.round-1]}
+function storyRoundName(){const R=S.mode==='historia'&&storyRound();return R?(R.jefe?'Jefe: ':'')+R.n:''}
+function enemyTeam(team){return S.mode==='historia'?storyTeam(team):creepTeam(team)}
+function storyTeam(team){
+  const R=storyRound();if(!R)return [];
+  const fake={board:Array(28).fill(null)},out=[];
+  for(const e of R.u){
+    if(e.ch){fake.board[e.r*7+e.c]={uid:++S.uid,id:e.ch,star:e.s,items:e.it.slice()};continue}
+    const f=makeCreep(e.m,team,team===0?e.c:6-e.c,team===0?4+e.r:3-e.r,e.x);
+    if(R.jefe&&JEFES[e.m]){const J=JEFES[e.m];f.jefe=true;f.name+=' (jefa)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d};f.maxMana=J.mana;f.mana=0}
+    out.push(f);
+  }
+  const all=out.concat(teamFrom(fake,team)),k=R.k||1; // k: fuerza del combate (calibrada con simulaciones; ver docs/modo-historia.md)
+  for(const f of all){f.maxHp*=k;f.hp=f.maxHp;f.ad*=k;if(!f.creep)f.ap+=(k-1)*100}
+  return all;
+}
+
+// ---- avance ----
+function startStory(nivel){
+  const L=NIVELES[nivel-1];audioInit();
+  newGame('normal',{nivel,tema:L.tema,mazo:HIST.mazo.slice()});
+  document.body.classList.add('historia');dmgCb=null;renderDmg();
+  ['#startOv','#storyOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);layout();beginRound();
+}
+function storyNext(){
+  if(S.round<6)return nextRound();
+  if(S.stage<5)return showReward();
+  storyWin();
+}
+function storyWin(){
+  const L=NIVELES[S.story.nivel-1],nuevo=L.premio&&!HIST.col.includes(L.premio);
+  if(!HIST.hechos.includes(L.n))HIST.hechos.push(L.n);
+  if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}
+  histSave(HIST);S.phase='over';sfx('over');updateHUD();
+  endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>openStory());
+}
+function storyLost(){
+  const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();
+  endScreen('Derrota',`Tu equipo cayó en la ronda ${where}. Vuelves a la fase 1.`,where,'Reintentar',()=>startStory(n));
+}
+function endScreen(title,sub,place,btn,fn){
+  $('#endPlace').textContent=place;$('#endTitle').textContent=title;$('#endSub').textContent=sub;
+  $('#bAgain').textContent=btn;$('#bAgain').onclick=()=>{$('#endOv').hidden=true;fn()};
+  $('#bMenu').hidden=false;$('#endOv').hidden=false;
+}
+
+// ---- recompensas entre fases: elige 1 de 3 ----
+function rewardOptions(){
+  const f=S.stage,mazo=S.story.mazo,tipos=shuffle(['oro','objeto','campeon','xp']).slice(0,3);
+  return tipos.map(t=>{
+    if(t==='oro')return {t,v:6+f*2,n:`+${6+f*2} de oro`,d:'Para subir de nivel o refrescar la tienda'};
+    if(t==='xp')return {t,v:6,n:'+6 de experiencia',d:'Te acerca al siguiente nivel'};
+    if(t==='objeto'){const full=Object.keys(ITEMS).filter(k=>ITEMS[k].full),id=f>=3?pick(full):pick(ITEM_IDS);return {t,v:id,n:ITEMS[id].n,d:ITEMS[id].d}}
+    const cand=mazo.filter(id=>CH[id].cost<=Math.min(5,f+1)&&S.pool[id]>0),id=pick(cand.length?cand:mazo);
+    return {t,v:id,n:CH[id].name,d:`Campeón gratis (coste ${CH[id].cost}) · ${CH[id].traits.map(x=>TRAITS[x].n).join(' · ')}`};
+  });
+}
+function showReward(){
+  S.phase='reward';updateHUD();const box=$('#rewCards');box.innerHTML='';
+  rewardOptions().forEach(o=>{
+    const b=document.createElement('button');b.className='ccard';
+    const ico=o.t==='objeto'?itemBox(o.v,'','width:56px;height:56px'):o.t==='campeon'?`<div class="cg" style="border-color:${COST_COL[CH[o.v].cost-1]}"><img src="${portrait(o.v)}" alt=""></div>`
+      :`<div class="rewIco">${o.t==='oro'?'<span class="coin" style="width:40px;height:40px"></span>':'✦'}</div>`;
+    b.innerHTML=`${ico}<div class="cname">${o.n}</div><div class="ctr">${o.d}</div>`;
+    b.onclick=()=>{takeReward(o);$('#rewardOv').hidden=true;nextRound()};box.appendChild(b);
+  });
+  $('#rewTitle').textContent=`Fase ${S.stage} superada`;$('#rewardOv').hidden=false;sfx('carousel');
+}
+function takeReward(o){const hu=H();
+  if(o.t==='oro')hu.gold+=o.v;else if(o.t==='xp')addXP(hu,o.v);else if(o.t==='objeto')hu.items.push(o.v);
+  else{const r=giveUnit(hu,o.v);toast(r==='vendido'?`Sin sitio: ${CH[o.v].name} se vende por ${CH[o.v].cost} de oro`:`${CH[o.v].name} se une a tu equipo`)}
+}
+
+// ---- menú del modo Historia: niveles y mazo ----
+function openStory(){
+  HIST=histLoad();['#startOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);
+  const lv=$('#lvlList');lv.innerHTML='';
+  const totales=Math.max(5,NIVELES.length);
+  for(let n=1;n<=totales;n++){const L=NIVELES[n-1],hecho=HIST.hechos.includes(n),abierto=L&&(n===1||HIST.hechos.includes(n-1));
+    const b=document.createElement('button');b.className='lvl'+(hecho?' done':'')+(abierto?'':' locked');b.disabled=!abierto;
+    b.innerHTML=`<b>Nivel ${n}</b><span>${L?L.nombre:'Próximamente'}</span><small>${!L?'En preparación':hecho?'Superado':abierto?(L.premio&&!HIST.col.includes(L.premio)?'Jefe: se une a tu colección':'Disponible'):'Supera el anterior'}</small>`;
+    if(abierto)b.onclick=()=>{S=null;startStory(n)};lv.appendChild(b)}
+  renderDeck();$('#storyOv').hidden=false;
+}
+function renderDeck(){
+  const box=$('#deckGrid');box.innerHTML='';const m=new Set(HIST.mazo);
+  const col=HIST.col.slice().sort((a,b)=>CH[a].cost-CH[b].cost||CH[a].name.localeCompare(CH[b].name));
+  for(const id of col){const C=CH[id],on=m.has(id);const b=document.createElement('button');b.className='dk'+(on?' on':'');
+    b.title=`${C.name} · ${C.traits.map(t=>TRAITS[t].n).join(' · ')}`;
+    b.innerHTML=`<div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(id)}" alt=""></div><span>${C.name}</span>`;
+    b.onclick=()=>{if(on){HIST.mazo=HIST.mazo.filter(x=>x!==id)}else if(HIST.mazo.length<MAZO_N){HIST.mazo.push(id)}else{toast(`El mazo ya tiene ${MAZO_N}: quita uno antes`);return}histSave(HIST);renderDeck()};
+    box.appendChild(b)}
+  const n=HIST.mazo.length,ok=n===Math.min(MAZO_N,HIST.col.length);
+  $('#deckCount').textContent=`${n}/${MAZO_N}`+(HIST.col.length>MAZO_N?` · colección: ${HIST.col.length}`:'');
+  $('#deckWarn').textContent=ok?'':`Elige ${Math.min(MAZO_N,HIST.col.length)} campeones para jugar.`;
+  document.querySelectorAll('#lvlList .lvl:not(.locked)').forEach(b=>b.disabled=!ok);
+}
 
 // ================= LOOP =================
 let last=performance.now(),acc=0;
