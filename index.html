@@ -2308,6 +2308,41 @@ const NIVELES=[
    {n:'La Matrona del risco',k:3.7,jefe:true,u:[Rd('matrona',3,0,2.6),Rd('lobo',1,0,1.8),Rd('lobo',5,0,1.8),Rd('escupidor',2,3,1.8),Rd('escupidor',4,3,1.8)]}],
  ]},
 ];
+// Niveles 2-4: oleadas de monstruos básicos (Roedín, Escupidor, Lobo), cada nivel más difícil. Sin desbloqueos.
+// Cada fase trae más unidades; la última ronda de cada fase tiene un «alfa» (más grande); la 5-6 es una gran oleada.
+// pesos: proporción de cada monstruo por fase (1..5); K: fuerza calibrada de cada combate (29 valores, 1-2 … 5-6).
+function nivelOleadas(n,nombre,tema,de,pesos,final,K){
+  const nom={roedin:'Roedines',escupidor:'Escupidores',lobo:'Lobos'},grupo={roedin:'Enjambre',escupidor:'Lluvia',lobo:'Manada'},alfa={roedin:'Roedín alfa',escupidor:'Escupidor alfa',lobo:'Lobo alfa'};
+  const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}; // con semilla: siempre la misma colocación
+  const fases=[];let q=0;
+  for(let f=1;f<=5;f++){const fila=[];
+    for(let r=1;r<=6;r++){
+      if(f===1&&r===1){fila.push(null);continue}
+      const rr=srand(n*1000+f*50+r),cuantos=Math.min(9,2+f+Math.floor(r/2)),w=pesos[f-1],u=[];
+      const huecosD=mezcla([[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[1,1],[3,1],[5,1],[0,1],[2,1],[4,1],[6,1]],rr),huecosA=mezcla([[1,3],[3,3],[5,3],[2,2],[4,2],[0,3],[6,3],[2,3],[4,3]],rr);
+      const cuenta={roedin:0,escupidor:0,lobo:0};
+      for(let i=0;i<cuantos;i++){let x=rr()*(w[0]+w[1]+w[2]),m=x<w[0]?'roedin':x<w[0]+w[1]?'escupidor':'lobo';
+        const [c,fl]=(m==='escupidor'?huecosA:huecosD).shift()||(m==='escupidor'?huecosD:huecosA).shift();u.push(Rd(m,c,fl));cuenta[m]++}
+      const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
+      let nm=`${grupo[dom]} de ${nom[dom]}`;
+      if(r===6){const a=u.find(e=>e.m==='lobo')||u[0];a.x=1.8;nm=alfa[a.m]}
+      if(f===5&&r===6){u.length=0;final.forEach(e=>u.push(Rd(e[0],e[1],e[2],e[3])));nm=`Gran oleada ${de}`}
+      fila.push({n:nm+(r<6?' '+de:''),u,k:K[q++]});
+    }
+    fases.push(fila)}
+  return {n,nombre,tema,premio:null,fases};
+}
+NIVELES.push(
+ nivelOleadas(2,'La Fragua',1,'de la Fragua',[[5,4,0],[3,4,3],[2,4,4],[2,4,4],[1,5,4]],
+  [['roedin',3,0,3.5],['lobo',1,0,1.6],['lobo',5,0,1.6],['roedin',2,1],['roedin',4,1],['escupidor',1,3,1.4],['escupidor',3,3,1.4],['escupidor',5,3,1.4],['escupidor',3,2,1.4]],
+  [1,1.35,1.3,1.55,1.75,2.15,2.2,2.9,2.8,3.55,1.75,4.7,5.15,5.5,6.65,5.65,4.8,7.35,6.2,5.55,5.15,8.85,5.7,9.2,13.15,8.45,12.4,8.45,7.95]),
+ nivelOleadas(3,'Arrecife hundido',2,'del Arrecife',[[7,3,0],[5,2,3],[4,2,4],[4,2,4],[3,3,4]],
+  [['lobo',3,0,3],['roedin',1,0,1.8],['roedin',5,0,1.8],['roedin',2,1,1.8],['roedin',4,1,1.8],['lobo',0,1,1.5],['lobo',6,1,1.5],['escupidor',2,3,1.4],['escupidor',4,3,1.4]],
+  [0.85,1.45,1.5,1.55,1.45,2,3.55,2.3,2.4,3.2,1.8,4.25,4.55,5.05,5.7,6.15,9.8,9.2,7.3,11.6,6.55,6.55,5.5,11.2,10.75,7.45,15.25,11.45,6.1]),
+ nivelOleadas(4,'Umbral sombrío',3,'del Umbral',[[4,3,3],[2,2,6],[2,2,6],[1,3,6],[1,3,6]],
+  [['matrona',3,0,1.6],['lobo',1,0,2],['lobo',5,0,2],['lobo',2,1,1.6],['lobo',4,1,1.6],['escupidor',1,3,1.6],['escupidor',3,3,1.6],['escupidor',5,3,1.6],['roedin',3,1,2]],
+  [0.9,0.7,0.7,0.95,0.65,1.35,1.1,1.5,1.6,2.65,1.8,5.15,6.75,4.2,5.65,5,4.75,5.75,4.75,9.75,6,7.2,6.05,9.7,10.65,7.8,10.25,7.25,4.4]),
+);
 // Jefes: habilidad propia (usa la pose «especial» del sprite) y más maná
 const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70}};
 
