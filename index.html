@@ -166,7 +166,7 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
 #bLock{justify-content:center}
 #bLock[aria-pressed="true"]{background:#3a2f16;border-color:var(--gold)}
 #cards{grid-area:cards;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-.card{position:relative;border-radius:9px;background:var(--bg2);border:1px solid var(--line);padding:0;overflow:hidden;min-height:84px;display:flex;flex-direction:column;text-align:left;transition:transform .12s, box-shadow .12s}
+.card{-webkit-touch-callout:none;position:relative;border-radius:9px;background:var(--bg2);border:1px solid var(--line);padding:0;overflow:hidden;min-height:84px;display:flex;flex-direction:column;text-align:left;transition:transform .12s, box-shadow .12s}
 .card:hover:not(:disabled){transform:translateY(-2px)}
 .card:disabled{cursor:not-allowed}
 .card.poor .cname{opacity:.5}
@@ -1948,9 +1948,14 @@ function updateHUD(){
       <div class="ctr">${C.traits.map(t=>TRAITS[t].n).join(' · ')}</div>
       <div class="cown">${n?`<i class="f"></i>${n>1?'<i class="f"></i>':'<i></i>'}<i></i>`:''}</div>
       <div class="ccost"><span class="coin"></span>${C.cost}</div>`;
-    b.onclick=()=>{if(buy(hu,i)){updateHUD()}};
-    b.onmouseenter=()=>{if(!S.sel&&!S.selF)showInfo({preview:id})};
-    b.onmouseleave=()=>{if(infoPreview)hideInfo()};
+    // tocar o hacer clic: comprar. Ficha: al pasar el ratón (ordenador) o al mantener pulsado (móvil), sin comprar.
+    let lp=0,held=false;
+    b.onclick=()=>{if(held){held=false;return}if(infoPreview)hideInfo();if(buy(hu,i)){updateHUD()}};
+    b.onpointerenter=e=>{if(e.pointerType==='mouse'&&!S.sel&&!S.selF)showInfo({preview:id})};
+    b.onpointerleave=e=>{clearTimeout(lp);if(e.pointerType==='mouse'&&infoPreview)hideInfo()};
+    b.onpointerdown=e=>{held=false;if(e.pointerType==='mouse')return;clearTimeout(lp);lp=setTimeout(()=>{held=true;S.sel=null;S.selF=null;showInfo({preview:id})},450)};
+    b.onpointerup=b.onpointercancel=()=>clearTimeout(lp);
+    b.oncontextmenu=e=>e.preventDefault();
     cards.appendChild(b);
   }
   // traits
@@ -1989,7 +1994,7 @@ function itemTitle(it){const I=ITEMS[it];if(I.full)return `${I.n} (${ITEMS[I.r[0
   return `${I.n}: ${I.d}\nCon otro componente:\n`+ITEM_IDS.map(o=>`· ${ITEMS[o].n} → ${ITEMS[RECIPE[it+'+'+o]].n}`).join('\n')}
 
 // info panel
-let infoPreview=false;
+let infoPreview=false,infoKey='',infoT=0;
 function statRows(f){return `<div class="sgrid">
   <div><span>Vida</span>${Math.round(f.hp)}/${Math.round(f.maxHp)}</div><div><span>Daño</span>${Math.round(f.ad)}</div>
   <div><span>Vel. ataque</span>${Math.min(3,f.as*(1+f.asBonus)).toFixed(2)}</div><div><span>Alcance</span>${f.range}</div>
@@ -2023,9 +2028,11 @@ function showInfo(sel){
    ${sellable?`<button class="sellbtn" id="sellBtn">Vender por <span class="coin"></span>${valueOf(u)}</button>`:''}`;
   el.hidden=false;
   $('#infoX').onclick=()=>{hideInfo();S.sel=null;S.selF=null};
-  if(sellable)$('#sellBtn').onclick=()=>{sellAt(hu,sel.where,sel.i);S.sel=null;hideInfo();updateHUD()};
+  // En el móvil la ficha aparece bajo el dedo: el clic del mismo toque caería en «Vender». Se ignora durante 0,5 s tras abrirla.
+  const k=sel.where+sel.i+(u&&u.uid);if(k!==infoKey){infoKey=k;infoT=performance.now()}
+  if(sellable)$('#sellBtn').onclick=()=>{if(performance.now()-infoT<500)return;sellAt(hu,sel.where,sel.i);S.sel=null;hideInfo();updateHUD()};
 }
-function hideInfo(){$('#info').hidden=true;infoPreview=false}
+function hideInfo(){$('#info').hidden=true;infoPreview=false;infoKey=''}
 
 // ================= INPUT =================
 let drag=null;const ghost=$('#ghost');
