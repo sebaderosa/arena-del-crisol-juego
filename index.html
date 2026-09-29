@@ -1848,14 +1848,14 @@ function draw(){
       if(f.seed==null)f.seed=rnd()*6;
       let x=f.x*s,y=f.y*s;
       if(f.anim>0&&f.range<=1){const k=Math.sin((1-f.anim)*Math.PI)*.22;x+=(f.ax*s-x)*k;y+=(f.ay*s-y)*k}
-      drawUnit(x,y,{id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:f.face||1,t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
+      drawUnit(x,y,{scale:f.jefe?1.3:1,id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:f.face||1,t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
         bars:f.alive,team:f.team,hpF:f.hp/f.maxHp,maxHp:f.maxHp,shieldF:(f.shield+f.tshield)/f.maxHp,mana:f.ab?f.mana/f.maxMana:null,stun:f.alive&&f.stunT>0&&!(f.frozenT>0),sel:S.selF===f});
       if(f.alive)drawAuras(f,x,y,s,now);
     }
     drawParticles(cb,s);drawProjectiles(cb,s);drawFx(cb,s);
   }else if(S.phase==='carousel'&&S.carOpts){drawCarousel(now)
   }else{
-    if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawUnit(f.x*s,f.y*s,{creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
+    if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawUnit(f.x*s,f.y*s,{scale:f.jefe?1.3:1,creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
     hu.board.forEach((u,i)=>{if(!u||isHidden('board',i))return;const r=Math.floor(i/7),c=i%7,w=world(c,4+r);drawUnit(w.x*s,w.y*s,unitOpts(u,{face:c>3?-1:1,sel:S.sel&&S.sel.where==='board'&&S.sel.i===i}))});
   }
   ctx.restore();
@@ -2343,6 +2343,44 @@ NIVELES.push(
   [['matrona',3,0,1.6],['lobo',1,0,2],['lobo',5,0,2],['lobo',2,1,1.6],['lobo',4,1,1.6],['escupidor',1,3,1.6],['escupidor',3,3,1.6],['escupidor',5,3,1.6],['roedin',3,1,2]],
   [0.9,0.7,0.7,0.95,0.65,1.35,1.1,1.5,1.6,2.65,1.8,5.15,6.75,4.2,5.65,5,4.75,5.75,4.75,9.75,6,7.2,6.05,9.7,10.65,7.8,10.25,7.25,4.4]),
 );
+// Niveles 5-10: equipos de campeones rivales de un «clan» (rasgos del nivel), con monstruos en las primeras fases.
+// Estrellas y objetos suben por fase. Niveles 5, 7 y 10: jefe campeón de coste 5 (3★, objetos, escolta con sinergias)
+// que se une a tu colección. jefe: {id, obj, escolta:[[id,estrellas,col,fila,objetos],...]}.
+function nivelEquipos(n,nombre,tema,de,clan,jefe,K){
+  const fases=[],rango=['Avanzadilla','Patrulla','Guardia','Élite','Campeones'];let q=0;
+  const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  const huecos={tank:[[3,0],[2,0],[4,0],[1,0],[5,0],[0,0],[6,0],[3,1]],assassin:[[0,1],[6,1],[1,1],[5,1],[0,0],[6,0]],ranged:[[3,3],[2,3],[4,3],[1,3],[5,3],[0,3],[6,3],[3,2]],mage:[[2,3],[4,3],[3,2],[1,2],[5,2],[0,3],[6,3],[2,2]]};
+  const OBJ={tank:['muralla','troll','pua','bastionob','gigante'],assassin:['ocaso','vampira','runica','ojo'],ranged:['vendaval','runica','certero','ocaso'],mage:['sabio','precision','ancestral','egida']};
+  for(let f=1;f<=5;f++){const fila=[];
+    for(let r=1;r<=6;r++){
+      if(f===1&&r===1){fila.push(null);continue}
+      const rr=srand(n*1000+f*50+r),cuantos=Math.min(9,2+f+Math.floor(r/2)),u=[],usados=new Set(),libre=k=>!usados.has(k);
+      const est=f===1?1:f===2?(r>=4?2:1):f===5&&r>=4?3:2,nobj=f<=2?0:f===3?(r>=4?1:0):f===4?1:2;
+      const pool=mezcla(clan.slice(),rr);
+      for(let i=0;i<cuantos;i++){
+        if(f<=2&&i%2===1){const m=f===1?'roedin':'lobo',[c,fl]=huecos.tank.find(h=>libre(h+''))||[i%7,1];usados.add([c,fl]+'');u.push(Rd(m,c,fl));continue} // primeras fases: monstruos de escolta
+        const id=pool[i%pool.length],rol=CH[id].role,h=(huecos[rol]||huecos.tank).find(x=>libre(x+''))||[[0,1,2,3,4,5,6].find(c=>libre([c,2]+'')),2];
+        usados.add(h+'');u.push(Cp(id,est,h[0],h[1],mezcla(OBJ[rol].slice(),rr).slice(0,nobj)));
+      }
+      let nm=`${rango[f-1]} ${de}`;if(r===6)nm=`Capitanes ${de}`;
+      if(f===5&&r===6&&jefe){u.length=0;u.push(Cp(jefe.id,3,jefe.c,jefe.f,jefe.obj));jefe.escolta.forEach(e=>u.push(Cp(...e)));nm=`${CH[jefe.id].name} y su escolta`}
+      else if(f===5&&r===6){nm=`Gran final ${de}`}
+      fila.push({n:nm,u,k:K[q++],jefe:!!(f===5&&r===6&&jefe)});
+    }
+    fases.push(fila)}
+  return {n,nombre,tema,premio:jefe?jefe.id:null,fases};
+}
+NIVELES.push(
+ nivelEquipos(5,'Fragua de Titán',1,'de la Fragua',['tovo','yunque','brasa','coral','ebano','martillo','crisol','nebula'],
+  {id:'titan',c:3,f:0,obj:['muralla','pua','gigante'],escolta:[['tovo',2,2,0],['yunque',2,4,0],['ebano',2,1,0,['bastionob']],['martillo',2,6,1,['ocaso']],['brasa',2,3,3,['runica']],['crisol',2,4,3,['sabio']],['coral',2,5,0]]},[0.5,0.55,0.4,0.55,1,1.25,1.1,1.05,0.7,1,0.85,1.6,1.3,1.4,0.9,1.15,1.1,1.55,1.3,1.4,1.4,1.3,1.25,1.25,1.2,1.25,0.6,0.55,0.7]),
+ nivelEquipos(6,'Arrecife profundo',2,'del Arrecife',['nerea','coral','kalima','abisal','brasa','lira','rama','eclipse'],null,[0.35,0.65,0.55,0.55,0.7,1.05,0.85,1,0.75,1.1,0.8,1.3,1.3,1.45,1.1,1.3,1.1,1.45,1.45,1.45,1.45,1.4,1.45,1.45,1.4,1.45,0.65,0.7,0.75]),
+ nivelEquipos(7,'Umbral de espinas',3,'del Umbral',['sombrio','ceniza','vespa','ebano','martillo','eclipse','fresno','musgo'],
+  {id:'espina',c:3,f:1,obj:['ocaso','vampira','ojo'],escolta:[['musgo',2,3,0,['troll']],['alba',2,2,0],['fresno',2,4,3,['sabio']],['rama',2,2,3,['vendaval']],['sombrio',2,0,1,['runica']],['vespa',2,6,1],['martillo',2,5,0]]},[0.45,0.55,0.55,0.65,0.85,1.1,0.95,1,0.7,0.9,0.6,1.3,1.25,1.3,1,1.1,1.1,1.55,1.45,1.5,1.25,1.45,1.3,1.35,1.3,1.15,0.6,0.65,0.85]),
+ nivelEquipos(8,'Bosque antiguo',0,'del Bosque',['musgo','rama','fresno','alba','yunque','nebula','abisal','tovo'],null,[0.45,0.8,0.6,0.55,0.95,0.95,0.95,0.9,0.85,0.9,1,1.5,1.4,1.4,0.95,1.15,0.95,1.55,1.35,1.5,1.25,1.15,1.25,1.5,1.15,1.15,0.65,0.65,0.8]),
+ nivelEquipos(9,'Cielo astral',4,'del Cielo',['lira','vespa','nebula','nerea','ceniza','fresno','crisol','alba'],null,[0.4,0.6,0.6,0.55,0.7,0.85,1.05,1.15,0.75,1,0.75,1.55,1.35,1.45,1.1,1.15,0.95,1.8,1.4,1.6,1.45,1.45,1.45,1.4,1.45,1.4,0.55,0.55,0.9]),
+ nivelEquipos(10,'Trono estelar',4,'del Trono',['crisol','abisal','alba','eclipse','nebula','kalima','ebano','martillo'],
+  {id:'soberana',c:3,f:3,obj:['precision','sabio','caliz'],escolta:[['lira',3,2,3,['vendaval']],['nebula',2,3,0,['gigante']],['vespa',2,0,1,['ocaso']],['nerea',2,4,3,['sabio']],['ceniza',2,5,3,['precision']],['fresno',2,1,3],['crisol',2,3,2,['ancestral']],['alba',2,2,0,['bastionob']]]},[0.4,0.55,0.5,0.65,0.7,1.05,0.95,0.8,0.6,0.8,0.6,1.3,1.05,1.05,0.65,0.95,0.8,1.3,1.1,1.15,1.2,1.3,1.15,1.15,1.1,1,0.55,0.55,1]),
+);
 // Jefes: habilidad propia (usa la pose «especial» del sprite) y más maná
 const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70}};
 
@@ -2369,7 +2407,8 @@ function storyTeam(team){
     if(R.jefe&&JEFES[e.m]){const J=JEFES[e.m];f.jefe=true;f.name+=' (jefa)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d};f.maxMana=J.mana;f.mana=0}
     out.push(f);
   }
-  const all=out.concat(teamFrom(fake,team)),k=R.k||1; // k: fuerza del combate (calibrada con simulaciones; ver docs/modo-historia.md)
+  const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=NIVELES[S.story.nivel-1].premio;
+  if(R.jefe)for(const f of all)if(!f.creep&&f.id===premio&&f.star===3&&!f.jefe){f.jefe=true;f.name+=' (jefe)'} // campeón jefe // k: fuerza del combate (calibrada con simulaciones; ver docs/modo-historia.md)
   for(const f of all){f.maxHp*=k;f.hp=f.maxHp;f.ad*=k;if(!f.creep)f.ap+=(k-1)*100}
   return all;
 }
