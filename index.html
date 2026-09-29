@@ -61,7 +61,7 @@ h3{font-family:var(--display);font-weight:400;font-size:17px;margin:0 0 8px;lett
 /* side panels */
 aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
 #left{grid-area:traits;overflow:auto;align-self:start;display:flex;flex-direction:column;gap:10px;min-width:0}
-.cg img,#ghost .g img{width:118%;height:118%;margin-top:14%;object-fit:cover;display:block}
+.cg img,#ghost .g img{width:100%;height:100%;object-fit:cover;display:block}
 #dmg .dh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 #dmg .seg{margin:0 0 6px;display:flex;width:100%}
 #dmg .seg button{padding:4px 2px;font-size:12px;flex:1 1 0;min-width:0;white-space:nowrap}
@@ -69,7 +69,7 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
 #dmgLegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .drow{display:grid;grid-template-columns:28px 1fr auto;gap:2px 8px;align-items:center;padding:4px 0}
 .dp{width:28px;height:28px;border-radius:50%;border:2px solid;overflow:hidden;display:grid;place-items:center;font-family:var(--display);font-size:12px;color:#fff;background:#223038}
-.dp img{width:120%;height:120%;margin-top:18%;display:block}
+.dp img{width:100%;height:100%;display:block}
 .dname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dname .st{color:var(--gold-hi);font-size:11px;margin-left:3px}
 .dname .dd{color:var(--foe);font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-left:5px}
@@ -1141,25 +1141,24 @@ function gameOver(place){
 
 // carousel
 function carTiers(){const s=S.stage;return s===1?[1]:s===2?[1,2]:s===3?[2,3]:s===4?[3,4]:[3,4,5]}
+// El carrusel se juega sobre el campo: los 5 campeones esperan de pie en semicírculo, cada uno con su objeto.
+// Se elige tocando o haciendo clic en uno (14-controles.js); se dibuja en 10-avatares.js.
 function openCarousel(){
   if(!S.carOpts){const tiers=carTiers();S.carOpts=Array.from({length:5},()=>{const ex=maxed(H()),id=drawTier(pick(tiers),ex)||drawTier(1,ex)||drawTier(1);return {id,item:pick(ITEM_IDS)}})}
-  const box=$('#carCards');box.innerHTML='';
-  S.carOpts.forEach((o,i)=>{
-    const C=CH[o.id],I=ITEMS[o.item];
-    const b=document.createElement('button');b.className='ccard';
-    b.innerHTML=`<div class="cg" style="background:radial-gradient(circle at 35% 30%,${TRAITS[C.traits[0]].col},#1a1a1a);border-color:${COST_COL[C.cost-1]}"><img src="${portrait(C.id)}" alt=""></div>
-      <div class="cname">${C.name}</div><div class="ctr">${C.traits.map(t=>TRAITS[t].n).join(' · ')}</div>
-      <div class="row" style="gap:6px;justify-content:center">${itemBox(o.item,'sm')}<span style="font-size:12px">${I.n}</span></div>`;
-    b.onclick=()=>chooseCarousel(i);box.appendChild(b);
-  });
-  $('#carOv').hidden=false;sfx('carousel');
+  S.carPick=null;S.carHover=-1;hideInfo();
+  banner('Carrusel','Elige un campeón: su objeto va a tu inventario');sfx('carousel');
 }
+// posiciones del carrusel en coordenadas del tablero (las mismas que usa drawUnit); la primera, delante y en el centro
+function carSpots(){const s=M.size,cx=M.W/2,cy=world(0,3).y*s+s*.6,rx=Math.min(M.W*.36,s*4.2),ry=s*2.3;
+  return (S.carOpts||[]).map((o,i)=>{const a=Math.PI/2+i*Math.PI*2/5;return {i,x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry}})}
+function carouselAt(x,y){let best=-1,bd=(M.size*1.1)**2;for(const p of carSpots()){const d=(x-p.x)**2+(y-(p.y-M.size*.5))**2;if(d<bd){bd=d;best=p.i}}return best}
+function pickCarousel(i){if(S.carPick||i<0)return;S.carPick={i,t:performance.now()/1000};sfx('buy');setTimeout(()=>chooseCarousel(i),650)}
 function chooseCarousel(i){
   const o=S.carOpts[i],hu=H(),C=CH[o.id];
   const res=giveUnit(hu,o.id);hu.items.push(o.item); // el objeto va al inventario, no al campeón
   const tiers=carTiers();
   for(const p of S.players)if(p.alive&&!p.human){const ex=maxed(p),id=drawTier(pick(tiers),ex)||drawTier(1,ex);if(id)giveUnit(p,id);p.items.push(pick(ITEM_IDS));aiArrange(p);aiItems(p)}
-  S.carOpts=null;$('#carOv').hidden=true;
+  S.carOpts=null;S.carPick=null;
   const I=ITEMS[o.item].n;
   toast(res==='vendido'?`Banquillo y tablero llenos: ${C.name} se vende por ${C.cost} de oro · ${I} va a tu inventario`
     :res==='fusion'?`${C.name} se fusiona con tus copias · ${I} va a tu inventario`
@@ -1447,7 +1446,12 @@ const PORTRAIT={};
 function portrait(id){
   if(PORTRAIT[id])return PORTRAIT[id];
   const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d');
-  if(SPR[id]){const sp=SPR[id],h=96*2.05,w=h*sp.ar;g.drawImage(sp.img,48-w*sp.ax-4,-6,w,h);return PORTRAIT[id]=c.toDataURL()}const Ch=CH[id],L=LOOK[id];
+  // con sprite: encuadra la cabeza entera. El centro de la cara se busca en la franja 8-30 % de la altura del reposo
+  // (media de los píxeles opacos), para no descentrarse con armas, coletas o capas.
+  if(SPR[id]){const sp=SPR[id],im=sp.img,h=96*1.55,w=h*sp.ar;let fx=sp.ax;
+    try{const k=document.createElement('canvas'),W=k.width=Math.min(200,im.naturalWidth),H=k.height=Math.round(W/sp.ar),q=k.getContext('2d');q.drawImage(im,0,0,W,H);
+      const d=q.getImageData(0,Math.round(H*.08),W,Math.round(H*.22)).data;let sx=0,n=0;for(let i=3;i<d.length;i+=4)if(d[i]>128){sx+=((i-3)/4)%W;n++}if(n)fx=sx/n/W}catch(e){}
+    g.drawImage(im,48-w*fx,5,w,h);return PORTRAIT[id]=c.toDataURL()}const Ch=CH[id],L=LOOK[id];
   g.translate(44,122);const u=6.2/(L.bulk>1.3?1+(L.bulk-1.3)*.5:1);
   drawChamp(g,{look:L,col:TRAITS[Ch.traits[0]].col,col2:TRAITS[Ch.traits[1]].col,t:0,seed:0,atk:0,cast:0,flash:0},u);
   return PORTRAIT[id]=c.toDataURL();
@@ -1786,6 +1790,7 @@ function draw(){
       if(f.alive)drawAuras(f,x,y,s,now);
     }
     drawParticles(cb,s);drawProjectiles(cb,s);drawFx(cb,s);
+  }else if(S.phase==='carousel'&&S.carOpts){drawCarousel(now)
   }else{
     if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawUnit(f.x*s,f.y*s,{creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
     hu.board.forEach((u,i)=>{if(!u||isHidden('board',i))return;const r=Math.floor(i/7),c=i%7,w=world(c,4+r);drawUnit(w.x*s,w.y*s,unitOpts(u,{face:c>3?-1:1,sel:S.sel&&S.sel.where==='board'&&S.sel.i===i}))});
@@ -1796,6 +1801,34 @@ function draw(){
   ctx.restore();
 }
 
+// Carrusel sobre el campo: campeones de pie en semicírculo, con su objeto flotando encima y el nombre debajo
+function drawCarousel(now){
+  const s=M.size,pk=S.carPick,cx=M.W/2,cy=world(0,3).y*s+s*.6;
+  // altar central
+  const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,s*3.2);gr.addColorStop(0,'rgba(255,200,110,.28)');gr.addColorStop(1,'rgba(255,200,110,0)');
+  ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(cx,cy,s*3.4,s*1.9,0,0,7);ctx.fill();
+  ctx.save();ctx.strokeStyle='rgba(255,217,138,.45)';ctx.lineWidth=2;ctx.setLineDash([s*.3,s*.25]);ctx.lineDashOffset=-now*s*.6;ctx.beginPath();ctx.ellipse(cx,cy,s*1.2,s*.55,0,0,7);ctx.stroke();ctx.restore();
+  const fs=Math.round(Math.max(11,s*.36));
+  for(const p of carSpots().sort((a,b)=>a.y-b.y)){
+    const o=S.carOpts[p.i],C=CH[o.id],I=ITEMS[o.item],hov=S.carHover===p.i&&!pk,chosen=pk&&pk.i===p.i,faded=pk&&!chosen;
+    const hop=chosen?-Math.abs(Math.sin((now-pk.t)*9))*s*.45:0;
+    ctx.save();ctx.globalAlpha=faded?.35:1;
+    // plataforma
+    ctx.fillStyle=hov||chosen?'rgba(255,217,138,.32)':'rgba(255,217,138,.12)';ctx.strokeStyle=hov||chosen?'#ffd98a':'rgba(255,217,138,.5)';ctx.lineWidth=hov?2.5:1.5;
+    ctx.beginPath();ctx.ellipse(p.x,p.y+s*.45,s*.85,s*.3,0,0,7);ctx.fill();ctx.stroke();
+    drawUnit(p.x,p.y+hop,unitOpts({uid:p.i+1,id:o.id,star:1,items:[]},{scale:1.2,face:p.x<cx-2?1:-1,sel:hov,glow:chosen?1:0,alpha:faded?.35:1}));
+    // objeto flotando sobre la cabeza
+    const iw=s*.72,ix=p.x-iw/2,iy=p.y-s*2.55+hop+Math.sin(now*2.4+p.i)*s*.08,pic=ITEM_PIC[o.item];
+    ctx.fillStyle='rgba(10,15,20,.8)';ctx.strokeStyle=I.full?'#ffd98a':'rgba(255,255,255,.35)';ctx.lineWidth=1.5;roundRect(ix,iy,iw,iw,iw*.2);ctx.fill();ctx.stroke();
+    if(pic&&pic.complete&&pic.naturalWidth)ctx.drawImage(pic,ix+1,iy+1,iw-2,iw-2);else{ctx.fillStyle=I.col;ctx.fillRect(ix+iw*.2,iy+iw*.2,iw*.6,iw*.6)}
+    // nombre
+    ctx.font=`400 ${fs}px 'Marcellus SC', serif`;ctx.textAlign='center';const nw=ctx.measureText(C.name).width+12,ny=p.y+s*.95;
+    ctx.fillStyle='rgba(8,10,14,.78)';roundRect(p.x-nw/2,ny-fs*.9,nw,fs*1.3,5);ctx.fill();
+    ctx.fillStyle=hov||chosen?'#ffd98a':'#e5ecef';ctx.fillText(C.name,p.x,ny+fs*.1);
+    ctx.font=`600 ${Math.round(fs*.78)}px 'Barlow Semi Condensed', sans-serif`;ctx.fillStyle='#8b9fab';ctx.fillText(I.n,p.x,ny+fs*1.25);
+    ctx.restore();
+  }
+}
 function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
 
 // ================= SOUND (Web Audio, all synthesized) =================
@@ -1942,14 +1975,14 @@ function updateHUD(){
   fb.firstChild.textContent=S.phase==='combat'?'Combatiendo':S.type==='pve'&&pl?'Cazar':'Luchar';
   $('#fightSub').textContent=pl?(S.type==='pve'?'Monstruos · Espacio':'Espacio'):S.phase==='combat'?'Mira el combate':'';
   // count
-  const bc=boardCount(hu);$('#countTag').innerHTML=S.phase==='combat'?'':`<span style="color:${bc<hu.level?'#ffd98a':'#8b9fab'}">${bc}/${hu.level}</span> en tablero`;
-  $('#oppTag').textContent=S.phase==='combat'||pl?(S.type==='pve'?'Monstruos del crisol':S.opp?'Rival: '+S.opp.name+(S.opp.ghost?' (eco)':''):''):'';
+  const bc=boardCount(hu);$('#countTag').innerHTML=S.phase==='combat'||S.phase==='carousel'?'':`<span style="color:${bc<hu.level?'#ffd98a':'#8b9fab'}">${bc}/${hu.level}</span> en tablero`;
+  $('#oppTag').textContent=S.phase==='carousel'?'Carrusel · elige un campeón':S.phase==='combat'||pl?(S.type==='pve'?'Monstruos del crisol':S.opp?'Rival: '+S.opp.name+(S.opp.ghost?' (eco)':''):''):'';
   // shop
   const cards=$('#cards');cards.innerHTML='';
   const owned={},have=new Set();allUnits(hu).forEach(o=>{have.add(o.u.id);if(o.u.star===1)owned[o.u.id]=(owned[o.u.id]||0)+1});
   for(let i=0;i<5;i++){
     const id=hu.shop[i];const b=document.createElement('button');b.className='card';
-    if(!id){b.classList.add('sold');b.disabled=true;b.innerHTML='<span class="soldTxt">Comprado</span>';cards.appendChild(b);continue}
+    if(!id){b.classList.add('sold');b.disabled=true;b.innerHTML=hu.shop.length?'<span class="soldTxt">Comprado</span>':'';cards.appendChild(b);continue} // tienda aún vacía (primer carrusel): huecos sin texto
     const C=CH[id];const n=owned[id]||0;
     if(hu.gold<C.cost)b.classList.add('poor');
     if(n>=2)b.classList.add('up');else if(have.has(id))b.classList.add('own'); // ya lo tienes: parpadea
@@ -2060,6 +2093,7 @@ function fighterAt(x,y){if(!S.combat)return null;y=y-M.pad+M.size*.3;let best=nu
 cv.addEventListener('pointerdown',e=>{
   if(!S||S.phase==='idle'||S.phase==='over')return;
   const [x,y]=canvasPos(e);const h=hitAt(x,y);
+  if(S.phase==='carousel'){pickCarousel(carouselAt(x,y-M.pad));return}
   if(S.phase==='combat'||S.phase==='result'){
     const f=fighterAt(x,y);if(f&&!f.creep){S.selF=f;S.sel=null;showInfo({fighter:f})}else{S.selF=null;hideInfo()}
     // bench units still inspectable
@@ -2070,7 +2104,7 @@ cv.addEventListener('pointerdown',e=>{
   if(loc&&H()[loc.where][loc.i]){startDrag(e,{kind:'unit',from:loc});}
   else{S.sel=null;S.selF=null;hideInfo()}
 });
-cv.addEventListener('pointermove',e=>{const [x,y]=canvasPos(e);lastCanvas=[x,y]});
+cv.addEventListener('pointermove',e=>{const [x,y]=canvasPos(e);lastCanvas=[x,y];if(S&&S.phase==='carousel'){S.carHover=carouselAt(x,y-M.pad);cv.style.cursor=S.carHover>=0?'pointer':''}});
 cv.addEventListener('pointerleave',()=>{lastCanvas=null});
 let lastCanvas=null;
 function startDrag(e,d){
