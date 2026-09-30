@@ -409,6 +409,36 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .tc.bench{opacity:.75;filter:none}
 .tc.board{opacity:1;filter:none;box-shadow:0 0 0 1px #ffd98a,0 0 8px rgba(255,217,138,.7)}
 
+/* ===== mapa del mundo (modo Historia) ===== */
+.overlay.mapScreen{display:flex;flex-direction:column;padding:0;background:#070b0e;backdrop-filter:none;place-items:initial}
+.mapTop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:rgba(21,31,38,.92);border-bottom:1px solid var(--line);z-index:2}
+.mapTit{display:flex;flex-direction:column;align-items:center;line-height:1.1}.mapTit b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold-hi)}.mapTit span{font-size:13px;color:var(--muted)}
+#bDeck.warn{border-color:#ff9a5a;color:#ffb86b}
+.mapScroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.mapa{position:relative;width:min(560px,100%);margin:0 auto;border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04)}
+.mapPath{position:absolute;left:0;top:0;pointer-events:none}
+.mapPath path{fill:none;stroke:rgba(255,230,170,.45);stroke-width:10;stroke-linecap:round;stroke-dasharray:2 18}
+.mnode{position:absolute;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;border:3px solid #56697a;background:radial-gradient(circle at 35% 30%,#3a4b58,#1a252d);color:#c9d6dd;
+  font-family:var(--display);font-size:22px;display:grid;place-items:center;box-shadow:0 6px 14px rgba(0,0,0,.5);padding:0}
+.mnode small{position:absolute;top:62px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:var(--body);font-size:12px;font-weight:600;color:#e5ecef;text-shadow:0 1px 3px #000;background:rgba(0,0,0,.45);padding:1px 7px;border-radius:6px}
+.mnode.done{border-color:#e9b44c;background:radial-gradient(circle at 35% 30%,#ffe19a,#b98424);color:#2a1a05}
+.mnode.open{border-color:#ffd98a;background:radial-gradient(circle at 35% 30%,#6fd08a,#2d7a45);color:#fff;animation:mnPulse 1.4s ease-in-out infinite}
+.mnode.locked{opacity:.6;font-size:18px}
+.mnode.sel{outline:3px solid #fff;outline-offset:3px}
+.mprem{position:absolute;right:-18px;top:-14px;width:32px;height:32px;border-radius:50%;border:2px solid #ffd98a;background:#223038;box-shadow:0 0 10px rgba(255,217,138,.8)}
+@keyframes mnPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,217,138,.6),0 6px 14px rgba(0,0,0,.5)}50%{box-shadow:0 0 0 10px rgba(255,217,138,0),0 6px 14px rgba(0,0,0,.5)}}
+#mapAv{position:absolute;width:74px;height:74px;margin:-66px 0 0 -37px;pointer-events:none;z-index:3;filter:drop-shadow(0 6px 6px rgba(0,0,0,.6));transition:left .7s ease-in-out,top .7s ease-in-out}
+#mapAv.hop{animation:mapHop .7s ease-in-out}
+@keyframes mapHop{0%,100%{transform:translateY(0)}25%,75%{transform:translateY(-14px)}50%{transform:translateY(-4px)}}
+.mapCard{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(21,31,38,.95);border-top:1px solid var(--line)}
+.mcInfo{display:flex;flex-direction:column;gap:2px;min-width:0}.mcInfo b{font-family:var(--display);font-weight:400;font-size:19px;color:var(--gold-hi)}.mcInfo small{color:var(--muted)}
+.mpNew{display:flex;align-items:center;gap:6px;font-size:13px;color:#ffd98a}.mpNew img{width:28px;height:28px;border-radius:50%;border:2px solid #ffd98a}
+.mpOk{font-size:13px;color:#8be29f}.mpNo{font-size:13px;color:var(--muted)}
+.mapCard .big{flex:none}
+@media (prefers-reduced-motion:reduce){.mnode.open{animation:none}#mapAv{transition:none}}
+.mapScroll{background:radial-gradient(ellipse at 50% 60%,#16222b,#070b0e 70%)}
+.mapa{width:min(720px,100%);box-shadow:0 0 60px rgba(0,0,0,.6)}
+
 </style>
 
 <div id="app">
@@ -511,13 +541,16 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
   </div>
 </div>
 
-<div class="overlay" id="storyOv" hidden>
+<div class="overlay mapScreen" id="storyOv" hidden>
+  <div class="mapTop"><button class="btn" id="bStoryBack">Volver</button><div class="mapTit"><b id="mapWorld">Mundo 1</b><span id="mapName"></span></div><button class="btn" id="bDeck">Mazo</button></div>
+  <div class="mapScroll" id="mapScroll"><div class="mapa" id="mapa"></div></div>
+  <div class="mapCard" id="mapCard"></div>
+</div>
+
+<div class="overlay" id="deckOv" hidden>
   <div class="modal wide">
-    <div class="row" style="justify-content:space-between"><h2>Modo Historia</h2><button class="btn" id="bStoryBack">Volver</button></div>
-    <p class="sub" style="margin-top:0">Supera las 4 fases de cada nivel sin perder ningún combate. Si caes, vuelves a la fase 1. El jefe final se une a tu colección.</p>
-    <div id="lvlList"></div>
-    <div class="row" style="justify-content:space-between;margin-top:16px"><h3 style="margin:0">Tu mazo <span id="deckCount" class="best"></span></h3><span class="best" id="deckWarn"></span></div>
-    <p class="sub" style="margin:2px 0 8px;font-size:14px">La tienda solo ofrece los campeones de tu mazo. Toca un campeón para quitarlo o añadirlo.</p>
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Tu mazo <span id="deckCount" class="best"></span></h2><button class="big" id="bDeckOk">Listo</button></div>
+    <p class="sub" style="margin:6px 0 8px;font-size:14px">La tienda solo ofrece los campeones de tu mazo. Toca un campeón para quitarlo o añadirlo. <span id="deckWarn" style="color:#ffb86b"></span></p>
     <div id="deckGrid"></div>
   </div>
 </div>
@@ -588,11 +621,14 @@ const CH={};
  ['titan','Titán','Ti',5,['forja','guardian'],'tank',1,120,60,{n:'Bastión',k:'shield',v:[800,1200,4000],d:2}],
  ['espina','Reina Espina','RE',5,['bosque','asesino'],'assassin',1,70,10,{n:'Cosecha',k:'execute',v:[900,1400,5000],heal:.5}],
  // solo modo Historia (story): se gana al derrotar a la jefa del nivel 1
+ ['lobo','Lobo bicéfalo','Lb',3,['monstruo','asesino'],'assassin',1,60,10,{n:'Doble mordisco',k:'doble',v:[150,225,360]}],
+ ['draco','Draco antiguo','Dr',5,['monstruo','arcano'],'mage',3,120,40,{n:'Aliento de fuego',k:'aliento',v:[380,570,1800],r:1}],
  ['matrona','Matrona','Ma',3,['monstruo','coloso'],'tank',1,90,30,{n:'Instinto materno',k:'materno',v:[130,200,340],r:1,d:1}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
 });
+CH.lobo.story=true;CH.lobo.escala=1.1;CH.draco.story=true;CH.draco.escala=1.35; // monstruos jugables del modo Historia (niveles 12 y 15)
 CH.matrona.story=true;CH.matrona.escala=1.25;CH.matrona.pas={cria:.25}; // pas: pasivo propio del campeón (la cría remata cada golpe)
  // escala: tamaño en el tablero (los monstruos jugables son más grandes)
 const CH_IDS=Object.keys(CH);
@@ -1048,6 +1084,8 @@ class Combat{
         en.forEach((e,i)=>{const d=Math.hypot(e.x-f.x,e.y-f.y);this.proj.push({x:f.x,y:f.y,src:f,tgt:e,t:-i*.12,dur:Math.max(.14,d/13),kind:V.proj||'arrow',col,big:true,hit:()=>{this.damage(f,e,f.ad*v/100,'phys');if(this.vis)this.emit(5,e.x,e.y-.45,{col:[col,'#ffffff'],sp:2.5,shape:'spark',life:.3,glow:1})}})});break}
       case 'execute':{const en=this.enemies(f);if(!en.length)break;const e=en.reduce((a,b)=>a.hp<b.hp?a:b);
         shoot(e,V.proj||'dash',()=>{const d=this.damage(f,e,v*sp,'magic');if(ab.heal)this.heal(f,d*ab.heal,f);this.impact(V.imp||'slash',e.x,e.y,col)},{speed:32});break}
+      case 'doble':if(t){for(let i=0;i<2;i++){this.damage(f,t,v*sp,'magic');if(!t.alive)break}this.impact('slash',t.x,t.y,col);this.impact('slash',t.x+.15,t.y-.1,col)}break; // dos mordiscos seguidos
+      case 'aliento':if(t){const fuego=()=>{this.impact('explode',t.x,t.y,col,ab.r);inR(t.c,t.r,ab.r).forEach(e=>{this.damage(f,e,v*sp,'magic');if(e.alive){e.burnT=3;e.burnDps=v*sp*.08;e.burnSrc=f}})};shoot(t,'orb',fuego,{always:1,speed:9})}break; // área y quemadura 3 s
       case 'materno':this.allies(f).filter(a=>hexDist(f.c,f.r,a.c,a.r)<=ab.r).forEach(a=>{a.tshield+=v*sp;a.tshieldT=Math.max(a.tshieldT,4);a.shCol=col;f.healing+=v*sp;this.impact('metal',a.x,a.y,col)});
         this.impact('slam',f.x,f.y,col,ab.r);inR(f.c,f.r,ab.r).forEach(e=>{e.stunT=Math.max(e.stunT,ab.d)});break;
       case 'shield':f.tshield+=v*sp;f.healing+=v*sp;f.tshieldT=4;f.shCol=col;this.impact(V.imp||'metal',f.x,f.y,col);if(ab.d){this.impact('slam',f.x,f.y,col,1);inR(f.c,f.r,1).forEach(e=>e.stunT=Math.max(e.stunT,ab.d))}break;
@@ -1073,6 +1111,7 @@ class Combat{
       if(f.tshieldT>0){f.tshieldT-=dt;if(f.tshieldT<=0)f.tshield=0}
       if(f.regenMana&&f.ab)f.mana=Math.min(f.maxMana,f.mana+f.regenMana*dt);
       if(f.regenPct&&f.hp<f.maxHp)f.hp=Math.min(f.maxHp,f.hp+f.maxHp*f.regenPct/100*dt);
+      if(f.burnT>0){f.burnT-=dt;if((f.burnAcc=(f.burnAcc||0)+dt)>=.5){f.burnAcc-=.5;this.damage(f.burnSrc,f,f.burnDps*.5,'magic',false,{extra:1});if(this.vis&&f.alive)this.emit(3,f.x,f.y-.4,{col:['#ffb13a','#ff6a2a'],sp:.6,up:-1.2,life:.5,sz:.07,glow:1})}} // quemadura
       if(f.pas.crecePod)f.ap+=f.pas.crecePod*dt;
       if(f.pas.quemaAura&&(f.quemaT=(f.quemaT||0)+dt)>=1){f.quemaT-=1;
         this.enemies(f).filter(e=>hexDist(f.c,f.r,e.c,e.r)<=1).forEach(e=>this.damage(f,e,f.pas.quemaAura,'magic',false,{extra:1}))}
@@ -2256,6 +2295,8 @@ function abilDesc(ab,star){const v=ab.v[star-1];switch(ab.k){
   case 'volley':return `Dispara a los ${ab.n2} enemigos más cercanos por el ${v}% de su daño de ataque.`;
   case 'aoeSelf':return `Golpea el suelo: ${v} de daño mágico a los enemigos a ${ab.r} casilla${ab.r>1?'s':''} y los aturde ${ab.d} s.`;
   case 'execute':return `Golpea al enemigo con menos vida por ${v} de daño mágico.`+(ab.heal?` Se cura el ${ab.heal*100}% del daño.`:'');
+  case 'doble':return `Muerde dos veces a su objetivo: ${v} de daño mágico cada mordisco.`;
+  case 'aliento':return `Escupe fuego: ${v} de daño mágico al objetivo y a los enemigos a ${ab.r} casilla, que arden 3 s (${Math.round(v*.16)} de daño por segundo).`;
   case 'materno':return `Protege a su camada: ella y los aliados adyacentes ganan un escudo de ${v} durante 4 s, y aturde ${ab.d} s a los enemigos adyacentes.`;
   case 'teamHeal':return ab.r>50?`Cura ${v} de vida a todos los aliados.`:`Cura ${v} de vida a los aliados a ${ab.r} casillas o menos.`;
 }}
@@ -2397,6 +2438,8 @@ $('#bAgain').onclick=backToMenu;
 // modo Historia (15-historia.js)
 $('#bStory').onclick=()=>{audioInit();openStory()};
 $('#bStoryBack').onclick=()=>{$('#storyOv').hidden=true;$('#startOv').hidden=false};
+$('#bDeck').onclick=()=>openDeck();$('#bDeckOk').onclick=()=>{$('#deckOv').hidden=true;renderMapCard()};
+window.addEventListener('resize',()=>{if(!$('#storyOv').hidden)renderMap(false)});
 $('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};
 function showBest(){try{const b=localStorage.getItem('crisol_best');$('#bestTxt').textContent=b?`Tu mejor puesto: ${ord(b)}`:''}catch(e){}}
 
@@ -2495,12 +2538,13 @@ function nivelEquipos(n,nombre,tema,de,clan,jefe,K){
         usados.add(h+'');u.push(Cp(id,est,h[0],h[1],mezcla(OBJ[rol].slice(),rr).slice(0,nobj)));
       }
       let nm=`${rango[fo-1]} ${de}`;if(r===6)nm=`Capitanes ${de}`;
-      if(f===NFASES&&r===6&&jefe){u.length=0;u.push(Cp(jefe.id,3,jefe.c,jefe.f,jefe.obj));jefe.escolta.forEach(e=>u.push(Cp(...e)));nm=`${CH[jefe.id].name} y su escolta`}
+      if(f===NFASES&&r===6&&jefe){u.length=0;if(jefe.m){const b=Rd(jefe.m,jefe.c,jefe.f,jefe.x);b.jefe=true;u.push(b)}else u.push(Cp(jefe.id,3,jefe.c,jefe.f,jefe.obj));
+        jefe.escolta.forEach(e=>u.push(Array.isArray(e)?Cp(...e):e));nm=`${jefe.nombre||CH[jefe.id].name} y su escolta`}
       else if(f===NFASES&&r===6){nm=`Gran final ${de}`}
       fila.push({n:nm,u,k:K[q++],jefe:!!(f===NFASES&&r===6&&jefe)});
     }
     fases.push(fila)}
-  return {n,nombre,tema,premio:jefe?jefe.id:null,fases};
+  return {n,nombre,tema,premio:jefe?jefe.premio||jefe.id:null,fases};
 }
 NIVELES.push(
  nivelEquipos(5,'Fragua de Titán',1,'de la Fragua',['tovo','yunque','brasa','coral','ebano','martillo','crisol','nebula'],
@@ -2513,8 +2557,19 @@ NIVELES.push(
  nivelEquipos(10,'Trono estelar',4,'del Trono',['crisol','abisal','alba','eclipse','nebula','kalima','ebano','martillo'],
   {id:'soberana',c:3,f:3,obj:['precision','sabio','caliz'],escolta:[['lira',3,2,3,['vendaval']],['nebula',2,3,0,['gigante']],['vespa',2,0,1,['ocaso']],['nerea',2,4,3,['sabio']],['ceniza',2,5,3,['precision']],['fresno',2,1,3],['crisol',2,3,2,['ancestral']],['alba',2,2,0,['bastionob']]]},[0.3,0.45,0.35,0.45,0.5,0.825,0.65,0.675,0.425,0.475,0.4,0.45,0.3,0.35,0.325,0.425,0.275,0.45,0.325,0.375,0.275,0.325,0.25]),
 );
+NIVELES.push(
+ nivelEquipos(11,'Senda de ceniza',1,'de la Senda',['martillo','sombrio','yunque','brasa','vespa','crisol','ebano','tovo'],null,[0.375,0.55,0.5,0.725,0.7,0.85,0.725,0.775,0.575,0.65,0.575,0.475,0.475,0.525,0.45,0.5,0.45,0.525,0.425,0.45,0.375,0.35,0.3]),
+ nivelEquipos(12,'Guarida del alfa',0,'de la Guarida',['musgo','rama','vespa','sombrio','espina','fresno','lira','alba'],
+  {m:'lobo',x:3.2,c:3,f:0,premio:'lobo',nombre:'El Lobo alfa',escolta:[Rd('lobo',1,0,1.4),Rd('lobo',5,0,1.4),['espina',2,0,1,['ocaso']],['vespa',2,6,1,['runica']],['rama',2,2,3,['vendaval']],['fresno',2,4,3,['sabio']],['musgo',2,3,1,['troll']]]},[0.2,0.375,0.5,0.35,0.425,1.1,0.95,0.925,0.325,0.55,0.375,0.525,0.425,0.425,0.375,0.4,0.35,0.525,0.425,0.375,0.35,0.4,0.8]),
+ nivelEquipos(13,'Arrecife de tormentas',2,'de la Tormenta',['nerea','kalima','coral','abisal','ceniza','soberana','nebula','lira'],null,[0.375,0.4,0.35,0.5,0.725,0.825,0.775,0.675,0.425,0.725,0.475,0.525,0.375,0.35,0.3,0.35,0.275,0.425,0.325,0.3,0.325,0.325,0.175]),
+ nivelEquipos(14,'Umbral eterno',3,'del Umbral eterno',['ebano','eclipse','ceniza','sombrio','espina','titan','abisal','martillo'],null,[0.3,0.475,0.275,0.375,0.425,0.675,0.375,0.55,0.35,0.35,0.325,0.425,0.4,0.375,0.3,0.325,0.275,0.425,0.325,0.325,0.325,0.325,0.2]),
+ nivelEquipos(15,'Cumbre del Draco',4,'de la Cumbre',['soberana','titan','crisol','abisal','eclipse','alba','espina','nebula'],
+  {m:'draco',x:1,c:3,f:1,premio:'draco',nombre:'El Draco antiguo',escolta:[Rd('lobo',1,0,2),Rd('lobo',5,0,2),['titan',2,3,0,['muralla']],['abisal',2,2,0,['pua']],['eclipse',2,1,3,['vendaval']],['crisol',2,5,3,['sabio']],['soberana',2,3,3,['precision']]]},[0.275,0.425,0.225,0.25,0.45,0.75,0.55,0.725,0.425,0.375,0.35,0.35,0.275,0.3,0.2,0.25,0.2,0.325,0.175,0.175,0.175,0.175,0.65]),
+);
 // Jefes: habilidad propia (usa la pose «especial» del sprite) y más maná
-const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70}};
+const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70},
+ lobo:{n:'Aullido del alfa',k:'aoeSelf',v:[280],r:1,d:1.2,mana:60},
+ draco:{n:'Aliento de fuego',k:'aoe',v:[460],r:1,mana:80}};
 
 // ---- colección y progreso (se guarda en este dispositivo) ----
 const HIST_KEY='crisol_historia_v1',MAZO_N=20;
@@ -2536,7 +2591,8 @@ function storyTeam(team){
   for(const e of R.u){
     if(e.ch){fake.board[e.r*7+e.c]={uid:++S.uid,id:e.ch,star:e.s,items:e.it.slice()};continue}
     const f=makeCreep(e.m,team,team===0?e.c:6-e.c,team===0?4+e.r:3-e.r,e.x);
-    if(R.jefe&&JEFES[e.m]){const J=JEFES[e.m];f.jefe=true;f.name+=' (jefa)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d};f.maxMana=J.mana;f.mana=0}
+    // jefe monstruo (si hay varios del mismo tipo, el marcado con .jefe)
+    if(R.jefe&&JEFES[e.m]&&(e.jefe||!R.u.some(x=>x.jefe))){const J=JEFES[e.m];f.jefe=true;f.name+=e.m==='matrona'?' (jefa)':' (jefe)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d};f.maxMana=J.mana;f.mana=0}
     out.push(f);
   }
   const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=NIVELES[S.story.nivel-1].premio;
@@ -2553,7 +2609,7 @@ function startStory(nivel){
   const L=NIVELES[nivel-1];audioInit();
   newGame('normal',{nivel,tema:L.tema,mazo:HIST.mazo.slice()});
   document.body.classList.add('historia');dmgCb=null;renderDmg();
-  ['#startOv','#storyOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);layout();beginRound();
+  ['#startOv','#storyOv','#deckOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);layout();beginRound();
 }
 function storyNext(){
   if(S.round<6)return nextRound();
@@ -2626,16 +2682,54 @@ function takeReward(o){const hu=H();
 }
 
 // ---- menú del modo Historia: niveles y mazo ----
+// ---- mapa del mundo: camino de niveles con tu personaje encima ----
+// MUNDOS: cada mundo agrupa niveles (números de NIVELES). Para añadir el Mundo 2, añade otra entrada con sus niveles.
+const MUNDOS=[{n:1,nombre:'Tierras del Crisol',niveles:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}];
+const MAPA_PASO=112; // separación vertical entre niveles en el mapa (px)
+// punto de extensión para una futura energía: devuelve el motivo si no se puede jugar ahora
+function puedeJugar(n){return null}
+function nivelAbierto(n){return !!NIVELES[n-1]&&(n===1||HIST.hechos.includes(n-1))}
+let mapSel=null;
 function openStory(){
-  HIST=histLoad();['#startOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);
-  const lv=$('#lvlList');lv.innerHTML='';
-  const totales=Math.max(5,NIVELES.length);
-  for(let n=1;n<=totales;n++){const L=NIVELES[n-1],hecho=HIST.hechos.includes(n),abierto=L&&(n===1||HIST.hechos.includes(n-1));
-    const b=document.createElement('button');b.className='lvl'+(hecho?' done':'')+(abierto?'':' locked');b.disabled=!abierto;
-    b.innerHTML=`<b>Nivel ${n}</b><span>${L?L.nombre:'Próximamente'}</span><small>${!L?'En preparación':hecho?'Superado':abierto?(L.premio&&!HIST.col.includes(L.premio)?'Jefe: se une a tu colección':'Disponible'):'Supera el anterior'}</small>`;
-    if(abierto)b.onclick=()=>{S=null;startStory(n)};lv.appendChild(b)}
-  renderDeck();$('#storyOv').hidden=false;
+  HIST=histLoad();['#startOv','#endOv','#rewardOv','#deckOv'].forEach(s=>$(s).hidden=true);
+  const M=MUNDOS[0],ult=M.niveles.filter(nivelAbierto);
+  mapSel=HIST.sel&&nivelAbierto(HIST.sel)?HIST.sel:ult[ult.length-1];
+  $('#mapWorld').textContent=`Mundo ${M.n}`;$('#mapName').textContent=M.nombre;
+  $('#storyOv').hidden=false;renderMap(true);
 }
+function mapPos(i,N,W){const x=W/2+Math.sin(i*1.15)*Math.min(W*.3,160);return [x,(N-1-i)*MAPA_PASO+90]}
+function renderMap(scroll){
+  const M=MUNDOS[0],N=M.niveles.length,box=$('#mapa'),W=box.clientWidth||360,H=(N-1)*MAPA_PASO+180;box.style.height=H+'px';
+  // fondo: cada tramo toma el color de su escenario
+  const stops=M.niveles.map((n,i)=>{const th=THEMES[NIVELES[n-1].tema];return `${th.sky[1]} ${Math.round(mapPos(i,N,W)[1]/H*100)}%`});
+  box.style.background=`radial-gradient(circle at 30% 20%,rgba(255,255,255,.05),transparent 40%),linear-gradient(to bottom,${stops.reverse().join(',')})`;
+  const pts=M.niveles.map((n,i)=>mapPos(i,N,W));
+  let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=1;i<N;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i],my=(y0+y1)/2;d+=` C${x0},${my} ${x1},${my} ${x1},${y1}`}
+  box.innerHTML=`<svg class="mapPath" width="${W}" height="${H}"><path d="${d}"/></svg>`;
+  M.niveles.forEach((n,i)=>{const L=NIVELES[n-1],hecho=HIST.hechos.includes(n),abierto=nivelAbierto(n),[x,y]=pts[i];
+    const b=document.createElement('button');b.className='mnode'+(hecho?' done':abierto?' open':' locked')+(n===mapSel?' sel':'');b.style.left=x+'px';b.style.top=y+'px';
+    b.innerHTML=`<span>${hecho?'✓':abierto?n:'🔒'}</span>`+(L.premio&&!HIST.col.includes(L.premio)?`<img class="mprem" src="${portrait(L.premio)}" alt="">`:'')+`<small>${n}. ${L.nombre}</small>`;
+    b.onclick=()=>{if(!abierto){toast('Supera el nivel anterior para desbloquearlo');return}if(mapSel===n){playSel();return}mapSel=n;HIST.sel=n;histSave(HIST);moveAvatar();renderMapMarks();renderMapCard()};
+    box.appendChild(b)});
+  const av=document.createElement('img');av.id='mapAv';av.src=avatarImgBig(myAv,'#53c476');box.appendChild(av);
+  moveAvatar(true);renderMapCard();
+  if(scroll){const i=M.niveles.indexOf(mapSel),sc=$('#mapScroll');sc.scrollTop=Math.max(0,pts[i][1]-sc.clientHeight*.55)}
+}
+function renderMapMarks(){document.querySelectorAll('#mapa .mnode').forEach((b,i)=>b.classList.toggle('sel',MUNDOS[0].niveles[i]===mapSel))}
+function moveAvatar(inst){const M=MUNDOS[0],i=M.niveles.indexOf(mapSel),W=$('#mapa').clientWidth||360,[x,y]=mapPos(i,M.niveles.length,W),av=$('#mapAv');if(!av)return;
+  if(inst)av.style.transition='none';else{av.style.transition='';av.classList.remove('hop');void av.offsetWidth;av.classList.add('hop')}
+  av.style.left=x+'px';av.style.top=(y-34)+'px';if(inst){void av.offsetWidth;av.style.transition=''}}
+function renderMapCard(){
+  const n=mapSel,L=NIVELES[n-1],hecho=HIST.hechos.includes(n),ok=HIST.mazo.length===Math.min(MAZO_N,HIST.col.length),motivo=puedeJugar(n);
+  const premio=L.premio?(HIST.col.includes(L.premio)?`<span class="mpOk">✓ ${CH[L.premio].name} ya está en tu colección</span>`:`<span class="mpNew"><img src="${portrait(L.premio)}" alt="">Jefe: ${CH[L.premio].name} se une a tu colección</span>`):'<span class="mpNo">Sin premio de campeón</span>';
+  $('#mapCard').innerHTML=`<div class="mcInfo"><b>Nivel ${n} · ${L.nombre}</b><small>${THEMES[L.tema].n} · 4 fases${hecho?' · superado':''}</small>${premio}</div>
+    <button class="big" id="bPlay"${ok&&!motivo?'':' disabled'}>${hecho?'Repetir':'Jugar'}</button>`;
+  $('#bPlay').onclick=playSel;
+  $('#bDeck').textContent=`Mazo ${HIST.mazo.length}/${MAZO_N}`;$('#bDeck').classList.toggle('warn',!ok);
+}
+function playSel(){const ok=HIST.mazo.length===Math.min(MAZO_N,HIST.col.length);if(!ok){toast('Completa tu mazo antes de jugar');openDeck();return}const m=puedeJugar(mapSel);if(m){toast(m);return}S=null;startStory(mapSel)}
+function openDeck(){renderDeck();$('#deckOv').hidden=false}
+function avatarImgBig(kind,col){const k='big'+kind+col;if(AVIMG[k])return AVIMG[k];const [c,g]=mkCanvas(96,96);drawAvatar(g,48,90,34,kind,col,0);return AVIMG[k]=c.toDataURL()}
 function renderDeck(){
   const box=$('#deckGrid');box.innerHTML='';const m=new Set(HIST.mazo);
   const col=HIST.col.slice().sort((a,b)=>CH[a].cost-CH[b].cost||CH[a].name.localeCompare(CH[b].name));
@@ -2647,7 +2741,7 @@ function renderDeck(){
   const n=HIST.mazo.length,ok=n===Math.min(MAZO_N,HIST.col.length);
   $('#deckCount').textContent=`${n}/${MAZO_N}`+(HIST.col.length>MAZO_N?` · colección: ${HIST.col.length}`:'');
   $('#deckWarn').textContent=ok?'':`Elige ${Math.min(MAZO_N,HIST.col.length)} campeones para jugar.`;
-  document.querySelectorAll('#lvlList .lvl:not(.locked)').forEach(b=>b.disabled=!ok);
+  if(mapSel&&!$('#storyOv').hidden)renderMapCard();
 }
 
 // ================= LOOP =================
