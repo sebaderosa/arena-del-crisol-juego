@@ -600,7 +600,7 @@ const TRAITS={
  arcano:{n:'Arcano',kind:'Clase',col:'#b57be8',tiers:[2,4],vals:[30,80],d:v=>`Arcanos: +${v}% de poder de habilidad.`},
  asesino:{n:'Asesino',kind:'Clase',col:'#d45a6a',tiers:[2,4],vals:[25,50],d:v=>`Asesinos: saltan a la retaguardia al empezar y ganan +${v}% de prob. de crítico.`},
  coloso:{n:'Coloso',kind:'Clase',col:'#a0896a',tiers:[2,4],vals:[300,750],d:v=>`Colosos: +${v} de vida máxima.`},
- monstruo:{n:'Monstruo',kind:'Origen',col:'#b07a4a',tiers:[1,2,3],vals:[15,30,50],d:v=>`Monstruos: +${v}% de vida máxima y de daño.`},
+ monstruo:{n:'Monstruo',kind:'Origen',col:'#b07a4a',tiers:[2,4,6],vals:[20,40,75],d:v=>`Monstruos: +${v}% de vida máxima y de daño.`},
 };
 const ROLE={
  tank:{hp:[650,760,880,1020,1250],ad:[48,55,62,72,88],as:.6,ar:40,mr:40},
@@ -637,12 +637,18 @@ const CH={};
  ['lobo','Lobo bicéfalo','Lb',3,['monstruo','asesino'],'assassin',1,60,10,{n:'Doble mordisco',k:'doble',v:[150,225,360]}],
  ['draco','Draco antiguo','Dr',5,['monstruo','arcano'],'mage',3,120,40,{n:'Aliento de fuego',k:'aliento',v:[380,570,1800],r:1}],
  ['matrona','Matrona','Ma',3,['monstruo','coloso'],'tank',1,90,30,{n:'Instinto materno',k:'materno',v:[130,200,340],r:1,d:1}],
+ // Mundo 2 (jefes de los niveles 20, 25 y 30)
+ ['reygoblin','Rey Goblin','RG',4,['monstruo','coloso'],'tank',1,90,30,{n:'¡Por el botín!',k:'arenga',v:[300,450,1100],r:2,h:40,d:4}],
+ ['reinaarana','Reina Araña','RA',4,['monstruo','asesino'],'assassin',1,70,20,{n:'Telaraña',k:'telarana',v:[220,330,800],r:1,d:1.5}],
+ ['dracqueen','Dracqueen','DQ',5,['monstruo','arcano'],'mage',2,100,30,{n:'Corte de murciélagos',k:'murcielagos',v:[300,450,1500],n2:[2,3,4],heal:.5}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
 });
 CH.lobo.story=true;CH.lobo.escala=1.1;CH.draco.story=true;CH.draco.escala=1.35; // monstruos jugables del modo Historia (niveles 12 y 15)
-CH.matrona.story=true;CH.matrona.escala=1.25;CH.matrona.pas={cria:.25}; // pas: pasivo propio del campeón (la cría remata cada golpe)
+CH.matrona.story=true;CH.matrona.escala=1.25;CH.matrona.pas={cria:.25};
+CH.reygoblin.story=true;CH.reygoblin.escala=1.2;CH.reinaarana.story=true;CH.reinaarana.escala=1.25;CH.reinaarana.pas={veneno:.4};
+CH.dracqueen.story=true;CH.dracqueen.escala=1.2;CH.dracqueen.pas={robo:.25}; // Dracqueen: roba vida con sus ataques // pas: pasivo propio del campeón (la cría remata cada golpe)
  // escala: tamaño en el tablero (los monstruos jugables son más grandes)
 const CH_IDS=Object.keys(CH);
 const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
@@ -754,8 +760,17 @@ const CREEPS={
  // Matrona: menos aguante que el antiguo Gólem (2800 vida, 60 armadura) pero pega más, y su cría remata cada golpe con un 40 % extra
  matrona:{name:'Matrona del risco',glyph:'Ma',hp:2300,ad:125,as:.6,range:1,ar:45,mr:40,col:'#7a5a3c',pas:{cria:.4}},
  draco:{name:'Draco antiguo',glyph:'Dr',hp:5200,ad:190,as:.6,range:2,ar:70,mr:70,col:'#a8483a'},
+ // Mundo 2, la Caverna. pas.veneno: el golpe envenena (daño mágico en 3 s); jump: salta a la retaguardia; regen: % de vida por segundo
+ goblin:{name:'Goblin',glyph:'Go',hp:420,ad:36,as:.75,range:1,ar:15,mr:10,col:'#7a9a3a'},
+ hondero:{name:'Goblin hondero',glyph:'Gh',hp:320,ad:42,as:.65,range:3,ar:5,mr:10,col:'#9aa04a'},
+ murcielago:{name:'Murciélago',glyph:'Mc',hp:300,ad:30,as:1,range:1,ar:5,mr:15,col:'#6a5480',pas:{robo:.4},jump:true},
+ arana:{name:'Araña de cueva',glyph:'Ar',hp:480,ad:40,as:.7,range:1,ar:20,mr:15,col:'#5a4466',pas:{veneno:.5}},
+ trol:{name:'Trol de caverna',glyph:'Tr',hp:1500,ad:85,as:.5,range:1,ar:35,mr:15,col:'#6f8a78',regen:2},
+ reygoblin:{name:'Rey Goblin',glyph:'RG',hp:2600,ad:110,as:.7,range:1,ar:50,mr:35,col:'#8aa83a'},
+ reinaarana:{name:'Reina Araña',glyph:'RA',hp:3000,ad:120,as:.8,range:1,ar:45,mr:45,col:'#6a3a78',pas:{veneno:.6}},
+ dracqueen:{name:'Dracqueen',glyph:'DQ',hp:4200,ad:150,as:.75,range:2,ar:55,mr:65,col:'#b0205a',pas:{robo:.3}},
 };
-const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55};
+const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15};
 const ODDS=[[1,0,0,0,0],[1,0,0,0,0],[.75,.25,0,0,0],[.55,.30,.15,0,0],[.45,.33,.20,.02,0],[.30,.40,.25,.05,0],[.19,.35,.35,.10,.01],[.18,.25,.32,.22,.03],[.10,.20,.25,.35,.10]];
 const POOL_SIZE=[22,18,14,10,8];
 const XP_NEED=[0,2,2,6,10,20,36,48,72];
@@ -921,8 +936,8 @@ function makeFighter(u,team,c,r,cnt){
 function makeCreep(k,team,c,r,m){
   const K=CREEPS[k],w=world(c,r);m=m||1;
   return {team,c,r,x:w.x,y:w.y,alive:true,creep:true,id:k,name:K.name,glyph:K.glyph,cost:0,star:1,traits:[],col:K.col,col2:'#3a2a22',
-    maxHp:K.hp*m,hp:K.hp*m,ad:K.ad*m,as:K.as,range:K.range,ar:K.ar,mr:K.mr,maxMana:1,mana:0,ap:0,crit:0,critDmg:1.5,dmgMult:1,asBonus:0,pas:K.pas||{},
-    shield:0,tshield:0,tshieldT:0,regenMana:0,regenPct:0,ab:null,items:[],atkCd:.4+rnd()*.4,stunT:0,hasteT:0,haste:0,move:null,target:null,anim:0,deadT:0,flash:0,dealt:0,dealtP:0,dealtM:0,taken:0,healing:0,face:1};
+    maxHp:K.hp*m,hp:K.hp*m,ad:K.ad*m,as:K.as,range:K.range,ar:K.ar,mr:K.mr,maxMana:1,mana:0,ap:0,crit:0,critDmg:1.5,dmgMult:1,asBonus:0,pas:Object.assign({},K.pas||{}),jump:!!K.jump,
+    shield:0,tshield:0,tshieldT:0,regenMana:0,regenPct:K.regen||0,ab:null,items:[],atkCd:.4+rnd()*.4,stunT:0,hasteT:0,haste:0,move:null,target:null,anim:0,deadT:0,flash:0,dealt:0,dealtP:0,dealtM:0,taken:0,healing:0,face:1};
 }
 function teamFrom(p,team){
   const cnt=traitCounts(p.board),out=[];
@@ -1019,11 +1034,20 @@ class Combat{
     if(P.cria&&t.alive){this.damage(f,t,dmg*P.cria,'phys',false,{extra:1});if(this.vis)this.emit(4,t.x,t.y-.5,{col:['#d9b38c','#ffffff'],sp:2,shape:'spark',life:.25})} // la cría de la Matrona remata
     if(P.tercer&&(f.nAtk=(f.nAtk||0)+1)%3===0){this.damage(f,t,P.tercer,'magic',false,{extra:1});this.impact('shadow',t.x,t.y,'#c9a8ff')}
     if(P.barrido)this.enemies(f).filter(e=>e!==t&&hexDist(t.c,t.r,e.c,e.r)<=1).forEach(e=>this.damage(f,e,dmg*P.barrido,'phys',false,{extra:1}));
+    if(P.veneno&&t.alive)this.envenenar(f,t,dmg*P.veneno);
     if(!t.alive)return;
     if(P.rompeAr&&(t.rotoAr||0)<P.rompeAr*6){t.rotoAr=(t.rotoAr||0)+P.rompeAr;t.ar-=P.rompeAr}
     if(P.rompeMr&&(t.rotoMr||0)<P.rompeMr*6){t.rotoMr=(t.rotoMr||0)+P.rompeMr;t.mr-=P.rompeMr}
     if(P.aturdir&&rnd()<P.aturdir){t.stunT=Math.max(t.stunT,1);this.text(t,'Aturdido','#ffe27a')}
   }
+  // veneno: daño mágico repartido en 3 s (usa el mismo contador que la quemadura, en verde)
+  envenenar(src,t,total){const prev=t.burnT>0&&t.burnCol==='v'?t.burnDps:0;t.burnT=3;t.burnDps=Math.max(prev,total/3);t.burnSrc=src;t.burnCol='v'}
+  // invoca monstruos en las casillas libres más cercanas (murciélagos de Dracqueen); m: multiplicador de vida y daño
+  summon(f,kind,n,m){const seen=new Set([key(f.c,f.r)]),q=[[f.c,f.r]],out=[];
+    while(q.length&&out.length<n){const [c,r]=q.shift();for(const [nc,nr] of neighbors(c,r)){const k=key(nc,nr);if(seen.has(k))continue;seen.add(k);q.push([nc,nr]);
+      if(!this.grid.has(k)&&out.length<n){const b=makeCreep(kind,f.team,nc,nr,m);b.summ=true;b.seed=rnd()*6;this.f.push(b);this.grid.set(k,b);out.push(b);
+        if(this.vis)this.emit(10,b.x,b.y-.4,{col:['#c9a8ff','#ff7aa8','#2a1d35'],sp:2,life:.5,glow:1})}}}
+    out.forEach(b=>{if(b.jump)this.jump(b)});return out}
   heal(t,amt,src){if(!t.alive)return;const h=Math.min(amt,t.maxHp-t.hp);t.hp+=h;if(src)src.healing+=h;if(h>1)this.text(t,'+'+Math.round(h),'#8be29f')}
   kill(t){
     t.alive=false;t.hp=0;this.grid.delete(key(t.c,t.r));
@@ -1098,7 +1122,13 @@ class Combat{
       case 'execute':{const en=this.enemies(f);if(!en.length)break;const e=en.reduce((a,b)=>a.hp<b.hp?a:b);
         shoot(e,V.proj||'dash',()=>{const d=this.damage(f,e,v*sp,'magic');if(ab.heal)this.heal(f,d*ab.heal,f);this.impact(V.imp||'slash',e.x,e.y,col)},{speed:32});break}
       case 'doble':if(t){for(let i=0;i<2;i++){this.damage(f,t,v*sp,'magic');if(!t.alive)break}this.impact('slash',t.x,t.y,col);this.impact('slash',t.x+.15,t.y-.1,col)}break; // dos mordiscos seguidos
-      case 'aliento':if(t){const fuego=()=>{this.impact('explode',t.x,t.y,col,ab.r);inR(t.c,t.r,ab.r).forEach(e=>{this.damage(f,e,v*sp,'magic');if(e.alive){e.burnT=3;e.burnDps=v*sp*.08;e.burnSrc=f}})};shoot(t,'orb',fuego,{always:1,speed:9})}break; // área y quemadura 3 s
+      case 'aliento':if(t){const fuego=()=>{this.impact('explode',t.x,t.y,col,ab.r);inR(t.c,t.r,ab.r).forEach(e=>{this.damage(f,e,v*sp,'magic');if(e.alive){e.burnT=3;e.burnDps=v*sp*.08;e.burnSrc=f;e.burnCol=null}})};shoot(t,'orb',fuego,{always:1,speed:9})}break; // área y quemadura 3 s
+      case 'arenga':this.allies(f).filter(a=>hexDist(f.c,f.r,a.c,a.r)<=ab.r).forEach(a=>{a.haste=Math.max(a.hasteT>0?a.haste:0,ab.h/100);a.hasteT=Math.max(a.hasteT,ab.d);this.impact('notes',a.x,a.y,col)});
+        f.tshield+=v*sp;f.healing+=v*sp;f.tshieldT=Math.max(f.tshieldT,4);f.shCol='#ffd24a';this.impact('metal',f.x,f.y,'#ffd24a');break; // el rey arenga: velocidad a su corte y escudo para él
+      case 'telarana':if(t)shoot(t,'orb',()=>{this.impact('ice',t.x,t.y,'#e8e0f0');inR(t.c,t.r,ab.r).forEach(e=>{this.damage(f,e,v*sp,'magic');if(e.alive){e.stunT=Math.max(e.stunT,ab.d);this.envenenar(f,e,v*sp*.3)}})},{always:1,speed:10});break; // red pegajosa: daño, inmoviliza y envenena
+      case 'murcielagos':{const n=Array.isArray(ab.n2)?ab.n2[f.star-1]:ab.n2||2,m=f.creep?f.ad/CREEPS[f.id].ad*.45:[1,1.7,3][f.star-1]*sp;
+        if(t)shoot(t,'orb',()=>{const d=this.damage(f,t,v*sp,'magic');if(ab.heal)this.heal(f,d*ab.heal,f);this.impact('shadow',t.x,t.y,col)},{speed:12});
+        this.summon(f,'murcielago',n,m);this.impact('shadow',f.x,f.y,'#ff7aa8');break} // beso vampírico (se cura) y convoca murciélagos
       case 'materno':this.allies(f).filter(a=>hexDist(f.c,f.r,a.c,a.r)<=ab.r).forEach(a=>{a.tshield+=v*sp;a.tshieldT=Math.max(a.tshieldT,4);a.shCol=col;f.healing+=v*sp;this.impact('metal',a.x,a.y,col)});
         this.impact('slam',f.x,f.y,col,ab.r);inR(f.c,f.r,ab.r).forEach(e=>{e.stunT=Math.max(e.stunT,ab.d)});break;
       case 'shield':f.tshield+=v*sp;f.healing+=v*sp;f.tshieldT=4;f.shCol=col;this.impact(V.imp||'metal',f.x,f.y,col);if(ab.d){this.impact('slam',f.x,f.y,col,1);inR(f.c,f.r,1).forEach(e=>e.stunT=Math.max(e.stunT,ab.d))}break;
@@ -1124,7 +1154,7 @@ class Combat{
       if(f.tshieldT>0){f.tshieldT-=dt;if(f.tshieldT<=0)f.tshield=0}
       if(f.regenMana&&f.ab)f.mana=Math.min(f.maxMana,f.mana+f.regenMana*dt);
       if(f.regenPct&&f.hp<f.maxHp)f.hp=Math.min(f.maxHp,f.hp+f.maxHp*f.regenPct/100*dt);
-      if(f.burnT>0){f.burnT-=dt;if((f.burnAcc=(f.burnAcc||0)+dt)>=.5){f.burnAcc-=.5;this.damage(f.burnSrc,f,f.burnDps*.5,'magic',false,{extra:1});if(this.vis&&f.alive)this.emit(3,f.x,f.y-.4,{col:['#ffb13a','#ff6a2a'],sp:.6,up:-1.2,life:.5,sz:.07,glow:1})}} // quemadura
+      if(f.burnT>0){f.burnT-=dt;if((f.burnAcc=(f.burnAcc||0)+dt)>=.5){f.burnAcc-=.5;this.damage(f.burnSrc,f,f.burnDps*.5,'magic',false,{extra:1});if(this.vis&&f.alive)this.emit(3,f.x,f.y-.4,{col:f.burnCol==='v'?['#9be05a','#5fae3a']:['#ffb13a','#ff6a2a'],sp:.6,up:-1.2,life:.5,sz:.07,glow:1})}}else if(f.burnCol)f.burnCol=null; // quemadura o veneno
       if(f.pas.crecePod)f.ap+=f.pas.crecePod*dt;
       if(f.pas.quemaAura&&(f.quemaT=(f.quemaT||0)+dt)>=1){f.quemaT-=1;
         this.enemies(f).filter(e=>hexDist(f.c,f.r,e.c,e.r)<=1).forEach(e=>this.damage(f,e,f.pas.quemaAura,'magic',false,{extra:1}))}
@@ -1638,6 +1668,44 @@ function drawCreep(g,o,u){
       g.strokeStyle=col;g.lineWidth=1.8*u;g.beginPath();g.moveTo(2.6*u,-6.5*u);g.quadraticCurveTo(4*u,-10*u,(5+k)*u,-10.4*u);g.stroke();
       g.save();g.translate((5.2+k*1.4)*u,-10.6*u);g.fillStyle=col;g.beginPath();g.ellipse(.8*u,0,2*u,1.2*u,0,0,Math.PI*2);g.fill();g.fillStyle='#ffd24a';g.shadowColor='#ff8a3a';g.shadowBlur=4*u;circ(g,1.2*u,-.4*u,.35*u);g.fill();g.shadowBlur=0;
       g.strokeStyle='#e8dcc0';g.lineWidth=.5*u;g.beginPath();g.moveTo(-.4*u,-.8*u);g.lineTo(-1.8*u,-2.2*u);g.stroke();if(k>.2){g.fillStyle='rgba(255,140,50,'+k+')';g.beginPath();g.moveTo(2.6*u,0);g.lineTo(6*u,-1.4*u);g.lineTo(6*u,1.4*u);g.fill()}g.restore();break}
+    // ---- Mundo 2 (dibujos provisionales hasta tener sprites) ----
+    case 'goblin':case 'hondero':case 'reygoblin':{const K=o.creep==='reygoblin'?1.55:1,b=Math.sin(T*5)*.2*u;g.save();g.scale(K,K);
+      g.fillStyle=dk;g.fillRect(-1.3*u,-2.2*u,1*u,2.2*u);g.fillRect(.3*u,-2.2*u,1*u,2.2*u);
+      g.fillStyle=o.creep==='reygoblin'?C('#8a2a3a'):C('#5a4a32');g.beginPath();g.ellipse(0,-3.6*u+b,2*u,1.9*u,0,0,7);g.fill();
+      if(o.creep==='reygoblin'){g.fillStyle=C('#e8e0d0');g.fillRect(-2*u,-2.2*u+b,4*u,.5*u)}
+      g.fillStyle=col;circ(g,.3*u,-6.3*u+b,1.8*u);g.fill();
+      g.beginPath();g.moveTo(-1.1*u,-6.8*u+b);g.lineTo(-3.8*u,-7.9*u+b);g.lineTo(-1*u,-5.8*u+b);g.fill();g.beginPath();g.moveTo(1.5*u,-6.9*u+b);g.lineTo(3.9*u,-8.1*u+b);g.lineTo(1.7*u,-5.8*u+b);g.fill();
+      eye(1*u,-6.6*u+b,.5*u,'#c0202a');
+      if(o.creep==='reygoblin'){g.fillStyle='#ffd24a';g.beginPath();g.moveTo(-1.3*u,-7.7*u+b);g.lineTo(-1.3*u,-9.3*u+b);g.lineTo(-.5*u,-8.4*u+b);g.lineTo(.3*u,-9.6*u+b);g.lineTo(1.1*u,-8.4*u+b);g.lineTo(1.9*u,-9.3*u+b);g.lineTo(1.9*u,-7.7*u+b);g.closePath();g.fill()}
+      g.save();g.translate((1.9+k)*u,-3.8*u+b);
+      if(o.creep==='hondero'){g.rotate(-1.2+k*2);g.strokeStyle='#6a4a2a';g.lineWidth=.3*u;g.beginPath();g.moveTo(0,0);g.lineTo(0,-2.4*u);g.stroke();g.fillStyle='#8a8078';circ(g,0,-2.6*u,.45*u);g.fill()}
+      else if(o.creep==='reygoblin'){g.rotate(-.9+k);g.fillStyle='#c9a23a';g.fillRect(0,-.25*u,3.4*u,.5*u);g.fillStyle='#ff5a8a';circ(g,3.6*u,0,.6*u);g.fill()}
+      else{g.rotate(-.6+k);g.fillStyle='#cfd6da';g.fillRect(0,-.25*u,2.2*u,.5*u)}
+      g.restore();g.restore();break}
+    case 'murcielago':{const fl2=Math.sin(T*14)*.9,h=-4.6*u+Math.sin(T*3)*.4*u;g.fillStyle=dk;
+      for(const s of [-1,1]){g.save();g.translate(0,h);g.scale(s,1);g.rotate(fl2*.5);g.beginPath();g.moveTo(.4*u,0);g.lineTo(3.6*u,-1.6*u);g.lineTo(3.2*u,.2*u);g.lineTo(2.4*u,-.3*u);g.lineTo(1.6*u,.6*u);g.closePath();g.fill();g.restore()}
+      g.fillStyle=col;g.beginPath();g.ellipse(k*u,h,1.2*u,1.4*u,0,0,7);g.fill();g.beginPath();g.moveTo(-.3*u+k*u,h-1.1*u);g.lineTo(-.1*u+k*u,h-2.2*u);g.lineTo(.4*u+k*u,h-1.2*u);g.fill();
+      g.fillStyle='#ff4a6a';circ(g,.6*u+k*u,h-.3*u,.25*u);g.fill();break}
+    case 'arana':case 'reinaarana':{const K=o.creep==='reinaarana'?1.7:1;g.save();g.scale(K,K);g.strokeStyle=dk;g.lineWidth=.45*u;
+      for(let i=0;i<4;i++)for(const s of [-1,1]){const a=Math.sin(T*8+i+(s>0?1:0))*(o.walk?.4:.08),x0=(i-1.5)*.7*u;g.beginPath();g.moveTo(x0,-2.4*u);g.quadraticCurveTo(x0+s*.2*u+(i-1.5)*1.2*u,-4.2*u,x0+(i-1.5)*1.9*u+a*u,-.1*u);g.stroke()}
+      g.fillStyle=col;g.beginPath();g.ellipse(-1.6*u,-2.8*u,2.4*u,1.9*u,0,0,7);g.fill();g.fillStyle=o.creep==='reinaarana'?'#e05a9a':C('#a0405a');g.beginPath();g.ellipse(-1.8*u,-3.2*u,.9*u,.6*u,0,0,7);g.fill();
+      g.fillStyle=dk;g.beginPath();g.ellipse((1.2+k)*u,-2.6*u,1.3*u,1.1*u,0,0,7);g.fill();
+      g.fillStyle='#ff3a4a';for(const [ex,ey] of [[1.6,-3],[2.1,-2.8],[1.7,-2.5],[2.2,-2.3]]){circ(g,(ex+k)*u,ey*u,.17*u);g.fill()}
+      if(o.creep==='reinaarana'){g.fillStyle='#e8c0ff';g.beginPath();g.moveTo((.6+k)*u,-3.6*u);g.lineTo((.8+k)*u,-4.6*u);g.lineTo((1.2+k)*u,-3.9*u);g.lineTo((1.6+k)*u,-4.8*u);g.lineTo((1.9+k)*u,-3.6*u);g.closePath();g.fill()}
+      g.restore();break}
+    case 'trol':{const a=p>=0?Math.sin(p*Math.PI)*2:0;g.fillStyle=dk;g.fillRect(-2.4*u,-3.4*u,1.8*u,3.4*u);g.fillRect(.6*u,-3.4*u,1.8*u,3.4*u);
+      g.fillStyle=col;g.beginPath();g.ellipse(0,-6.4*u,3.8*u,3.6*u,0,0,7);g.fill();g.fillStyle=C(shade(o.col,.2));g.beginPath();g.ellipse(.6*u,-5.6*u,2.2*u,2.2*u,0,0,7);g.fill();
+      g.fillStyle=col;circ(g,1.6*u,-10*u,1.7*u);g.fill();eye(2.2*u,-10.3*u,.45*u,'#ffb03a');g.fillStyle='#e8e0c8';g.fillRect(2.2*u,-9.1*u,.35*u,.6*u);
+      g.save();g.translate(3.6*u,-6.4*u);g.rotate(-a-.2);g.fillStyle='#5a3e26';g.fillRect(-.5*u,0,1*u,4.8*u);g.fillStyle='#4a3420';circ(g,0,5.2*u,1.3*u);g.fill();g.restore();break}
+    case 'dracqueen':{const b=Math.sin(T*3)*.2*u;g.fillStyle=C('#3a0a1e');g.beginPath();g.moveTo(-.6*u,-9.4*u+b);g.lineTo(-5*u,-.2*u);g.lineTo(2.6*u,-.2*u);g.closePath();g.fill();
+      g.fillStyle=C('#1a0a14');g.beginPath();g.moveTo(-1.6*u,-9.6*u+b);g.lineTo(-3.6*u,-11.6*u+b);g.lineTo(-1*u,-10.6*u+b);g.fill();
+      g.fillStyle=col;g.beginPath();g.moveTo(-1.4*u,-8.2*u+b);g.lineTo(1.6*u,-8.2*u+b);g.lineTo(2.8*u,0);g.lineTo(-2.6*u,0);g.closePath();g.fill();
+      g.fillStyle='#ffd24a';for(let i=0;i<4;i++){circ(g,(-.2+i*.1)*u,(-7+i*1.6)*u+b,.18*u);g.fill()}
+      g.fillStyle=C('#f2e6f0');circ(g,.4*u,-9.6*u+b,1.4*u);g.fill();
+      g.fillStyle=C('#ff5ab8');g.beginPath();g.ellipse(-.4*u,-11.2*u+b,2.4*u,2.2*u,0,0,7);g.fill();g.beginPath();g.ellipse(-1.8*u,-9.4*u+b,1.1*u,1.9*u,0,0,7);g.fill();
+      g.fillStyle='#ffd24a';g.beginPath();g.moveTo(-1.2*u,-13.1*u+b);g.lineTo(-.9*u,-14.2*u+b);g.lineTo(-.3*u,-13.4*u+b);g.lineTo(.3*u,-14.4*u+b);g.lineTo(.8*u,-13.2*u+b);g.closePath();g.fill();
+      g.fillStyle='#1a0a14';circ(g,1.1*u,-9.8*u+b,.25*u);g.fill();g.fillStyle='#d0103a';g.fillRect(.6*u,-9*u+b,.9*u,.25*u);g.fillStyle='#fff';g.fillRect(.8*u,-8.8*u+b,.15*u,.35*u);g.fillRect(1.2*u,-8.8*u+b,.15*u,.35*u);
+      g.save();g.translate(2*u,-6.6*u+b);g.rotate(-.8+k*.9);g.fillStyle=C('#f2e6f0');g.fillRect(0,-.25*u,2.4*u,.5*u);g.fillStyle='#ffd24a';g.beginPath();g.moveTo(2.4*u,-.9*u);g.lineTo(3.6*u,0);g.lineTo(2.4*u,.9*u);g.closePath();g.fill();g.restore();break}
   }
 }
 // full unit: ground ring + figure + overlays. (x,y) = hex centre
@@ -1655,7 +1723,9 @@ function drawUnit(x,y,o){
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
   const esc=!o.creep&&CH[o.id]&&CH[o.id].escala||1;if(esc!==1)ctx.scale(esc,esc);
-  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id])drawSprite(ctx,o,SPR[o.id],s,sc);else drawChamp(ctx,o,u);
+  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id])drawSprite(ctx,o,SPR[o.id],s,sc);
+  else if(!LOOK[o.id]&&CREEPS[o.id])drawCreep(ctx,Object.assign({},o,{creep:o.id,col:CREEPS[o.id].col}),u); // monstruo jugable sin sprite: su dibujo de monstruo
+  else drawChamp(ctx,o,u);
   ctx.restore();
   // overlays
   const top=y-s*(SPR[o.id]?(o.bars?1.5:1.38)*(o.creep?CREEP_SCALE[o.id]||1:CH[o.id]&&CH[o.id].escala||1):(o.bars?1.12:.98))*sc;
@@ -1683,6 +1753,7 @@ function portrait(id){
     try{const k=document.createElement('canvas'),W=k.width=Math.min(200,im.naturalWidth),H=k.height=Math.round(W/sp.ar),q=k.getContext('2d');q.drawImage(im,0,0,W,H);
       const d=q.getImageData(0,Math.round(H*.08),W,Math.round(H*.22)).data;let sx=0,n=0;for(let i=3;i<d.length;i+=4)if(d[i]>128){sx+=((i-3)/4)%W;n++}if(n)fx=sx/n/W}catch(e){}
     g.drawImage(im,48-w*fx,5,w,h);return PORTRAIT[id]=c.toDataURL()}const Ch=CH[id],L=LOOK[id];
+  if(!L&&CREEPS[id]){g.translate(40,92);drawCreep(g,{creep:id,col:CREEPS[id].col,t:0,seed:0,atk:0,flash:0},id==='dracqueen'?5.4:id==='trol'?6:7);return PORTRAIT[id]=c.toDataURL()} // monstruo sin sprite
   g.translate(44,122);const u=6.2/(L.bulk>1.3?1+(L.bulk-1.3)*.5:1);
   drawChamp(g,{look:L,col:TRAITS[Ch.traits[0]].col,col2:TRAITS[Ch.traits[1]].col,t:0,seed:0,atk:0,cast:0,flash:0},u);
   return PORTRAIT[id]=c.toDataURL();
@@ -1807,6 +1878,10 @@ const THEMES=[
  {n:'Arrecife hundido',sky:['#06182a','#0c2a3c'],pa:'#123547',pb:'#163b4e',ea:'#1c2a40',eb:'#213047',line:'#2a5d70',lineE:'#384a70',side:'#051320',mid:'rgba(110,220,255,.5)',amb:'bubble',ac:['#bdefff','#7fd6ff'],prop:'reef'},
  {n:'Umbral sombrío',sky:['#0f0b18','#1a1328'],pa:'#231d32',pb:'#282039',ea:'#2b1827',eb:'#311c2d',line:'#43375e',lineE:'#58324b',side:'#0b0812',mid:'rgba(180,140,255,.5)',amb:'wisp',ac:['#b28cff','#7a5ad0'],prop:'umbra'},
  {n:'Cielo astral',sky:['#060918','#0e1434'],pa:'#1b2148',pb:'#1f2752',ea:'#2b1e46',eb:'#31224f',line:'#3c4d8e',lineE:'#5c3c8e',side:'#050716',mid:'rgba(255,240,170,.55)',amb:'star',ac:['#ffffff','#fff5a0','#cfe0ff'],prop:'astral'},
+ // Mundo 2 (índices 5-7): solo modo Historia
+ {n:'Caverna de setas',sky:['#070d12','#0d1a22'],pa:'#1c2a2c',pb:'#203032',ea:'#231f2c',eb:'#282333',line:'#2f5a5a',lineE:'#4a3a60',side:'#050a0d',mid:'rgba(120,200,255,.5)',amb:'firefly',ac:['#7fd8ff','#c49bff'],prop:'cave'},
+ {n:'Minas de cristal',sky:['#0a0b18','#141630'],pa:'#23243a',pb:'#282a42',ea:'#2e2230',eb:'#342636',line:'#3e4a80',lineE:'#6a3e5e',side:'#060712',mid:'rgba(255,190,120,.5)',amb:'ember',ac:['#ffc070','#b8e8ff'],prop:'mine'},
+ {n:'Castillo carmesí',sky:['#140509','#240a12'],pa:'#2c1a20',pb:'#321e25',ea:'#3a1418',eb:'#42181d',line:'#5a2e3a',lineE:'#7a2430',side:'#0c0305',mid:'rgba(255,80,110,.5)',amb:'wisp',ac:['#ff5a7a','#c43a5a'],prop:'castle'},
 ];
 const themeIdx=()=>S&&S.mode==='historia'?S.story.tema:Math.min(5,S?S.stage:1)-1; // Historia: el escenario es el del nivel
 const curTheme=()=>THEMES[themeIdx()];
@@ -1880,6 +1955,23 @@ function drawProps(g,th,s){
         {const x=cx+(rr()-.5)*w*.4,y=H*(.2+rr()*.5),r=Math.min(w*.3,s*1.6);const pg=g.createRadialGradient(x-r*.3,y-r*.3,1,x,y,r);pg.addColorStop(0,'#8f7fe0');pg.addColorStop(1,'#2a2260');g.fillStyle=pg;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.strokeStyle='rgba(255,230,170,.55)';g.lineWidth=2;g.beginPath();g.ellipse(x,y,r*1.6,r*.4,-.3,0,7);g.stroke()}
         for(let i=0;i<4;i++){const x=a+rr()*w,y=H*(.4+rr()*.55),h=s*(.6+rr()*.9);g.fillStyle='rgba(120,220,255,.75)';g.beginPath();g.moveTo(x,y-h);g.lineTo(x+h*.3,y-h*.3);g.lineTo(x,y);g.lineTo(x-h*.3,y-h*.3);g.closePath();g.fill();g.strokeStyle='rgba(230,250,255,.8)';g.lineWidth=1;g.stroke()}
         g.strokeStyle='rgba(200,210,255,.25)';g.lineWidth=1;g.beginPath();let px=a+rr()*w,py=H*rr()*.5;g.moveTo(px,py);for(let i=0;i<4;i++){px=a+rr()*w;py=H*rr()*.6;g.lineTo(px,py)}g.stroke();
+        break;
+      case 'cave': // estalactitas y setas que brillan
+        for(let i=0;i<7;i++){const x=a+rr()*w,h=s*(.8+rr()*2.2),k=s*(.2+rr()*.25);g.fillStyle=pick(['#141c22','#18222a']);g.beginPath();g.moveTo(x-k,0);g.lineTo(x+k,0);g.lineTo(x,h);g.closePath();g.fill()}
+        for(let i=0;i<5;i++){const x=a+rr()*w,y=H*(.45+rr()*.5),r=s*(.25+rr()*.35),c=pick(['120,200,255','190,140,255','110,230,210']);
+          const lg=g.createRadialGradient(x,y-r,1,x,y-r,r*3.2);lg.addColorStop(0,`rgba(${c},.45)`);lg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=lg;g.beginPath();g.arc(x,y-r,r*3.2,0,7);g.fill();
+          g.fillStyle='#cfd8dc';g.fillRect(x-r*.18,y-r*1.1,r*.36,r*1.1);g.fillStyle=`rgb(${c})`;g.beginPath();g.ellipse(x,y-r*1.1,r,r*.55,0,Math.PI,0);g.fill()}
+        for(let i=0;i<4;i++){const x=a+rr()*w,y=H*(.3+rr()*.65);g.fillStyle='#1b252c';g.beginPath();g.ellipse(x,y,s*(.4+rr()*.5),s*.28,0,Math.PI,0);g.fill()}
+        break;
+      case 'mine': // vigas de madera, farolillos y cristales
+        for(let i=0;i<2;i++){const x=a+w*(.25+i*.5)+(rr()-.5)*w*.2,y=H*(.35+rr()*.4),h=s*2.4,k=s*1.1;g.fillStyle='#3a2616';g.fillRect(x-k,y-h,s*.22,h);g.fillRect(x+k-s*.22,y-h,s*.22,h);g.fillRect(x-k,y-h,k*2,s*.22);
+          const lg=g.createRadialGradient(x,y-h+s*.6,1,x,y-h+s*.6,s*1.4);lg.addColorStop(0,'rgba(255,190,100,.6)');lg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=lg;g.beginPath();g.arc(x,y-h+s*.6,s*1.4,0,7);g.fill();g.fillStyle='#ffc070';g.fillRect(x-s*.12,y-h+s*.4,s*.24,s*.32)}
+        for(let i=0;i<5;i++){const x=a+rr()*w,y=H*(.3+rr()*.65),h=s*(.6+rr()*1.1),c=pick(['#9fe6ff','#d9a8ff','#ffc9e8']);g.globalAlpha=.85;g.fillStyle=c;g.beginPath();g.moveTo(x,y-h);g.lineTo(x+h*.28,y-h*.35);g.lineTo(x+h*.18,y);g.lineTo(x-h*.2,y);g.lineTo(x-h*.28,y-h*.4);g.closePath();g.fill();g.globalAlpha=1;g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1;g.beginPath();g.moveTo(x,y-h);g.lineTo(x,y);g.stroke()}
+        break;
+      case 'castle': // ventanales góticos y cristales rojos
+        for(let i=0;i<2;i++){const x=a+w*(.3+i*.4),y=H*(.2+rr()*.35),k=s*.55,h=s*1.8;const lg=g.createRadialGradient(x,y,1,x,y,s*2);lg.addColorStop(0,'rgba(255,60,90,.35)');lg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=lg;g.beginPath();g.arc(x,y,s*2,0,7);g.fill();
+          g.fillStyle='#2a1016';g.fillRect(x-k*1.4,y-h*.6,k*2.8,h*1.3);g.fillStyle='#8a1a30';g.beginPath();g.moveTo(x-k,y+h*.5);g.lineTo(x-k,y-h*.2);g.quadraticCurveTo(x,y-h*.8,x+k,y-h*.2);g.lineTo(x+k,y+h*.5);g.closePath();g.fill();g.strokeStyle='#3a1a20';g.lineWidth=2;g.beginPath();g.moveTo(x,y-h*.5);g.lineTo(x,y+h*.5);g.moveTo(x-k,y+h*.1);g.lineTo(x+k,y+h*.1);g.stroke()}
+        for(let i=0;i<5;i++){const x=a+rr()*w,y=H*(.45+rr()*.5),h=s*(.5+rr()*.9);g.fillStyle='rgba(255,50,80,.85)';g.beginPath();g.moveTo(x,y-h);g.lineTo(x+h*.25,y-h*.3);g.lineTo(x,y);g.lineTo(x-h*.25,y-h*.3);g.closePath();g.fill()}
         break;
     }
   }
@@ -2151,6 +2243,10 @@ const MUSIC=[
   {root:53,sc:[0,2,4,6,7,9,11],bpm:70,prog:[0,1,4,0]},
   {root:48,sc:[0,2,3,5,7,8,10],bpm:66,prog:[0,5,2,4]},
   {root:52,sc:[0,2,4,6,7,9,11],bpm:62,prog:[0,4,5,1]},
+  // Mundo 2: caverna (dórico, lento), minas (menor natural), castillo carmesí (frigio, dramático)
+  {root:47,sc:[0,2,3,5,7,9,10],bpm:68,prog:[0,3,4,3]},
+  {root:49,sc:[0,2,3,5,7,8,10],bpm:80,prog:[0,5,6,4]},
+  {root:46,sc:[0,1,3,5,7,8,10],bpm:74,prog:[0,1,5,4]},
 ];
 const MUS={timer:null,next:0,step:0};
 const mtof=m=>440*Math.pow(2,(m-69)/12);
@@ -2182,7 +2278,7 @@ function renderDmg(){
   const box=$('#dmg');if(!dmgCb){box.hidden=true;return}box.hidden=false;
   $('#dmgRound').textContent=dmgLabel;
   const val=f=>dmgMetric==='dealt'?f.dealt:dmgMetric==='taken'?f.taken:f.healing;
-  const rows=dmgCb.f.filter(f=>f.team===dmgTeam).sort((a,b)=>val(b)-val(a));
+  const rows=dmgCb.f.filter(f=>f.team===dmgTeam&&!f.summ).sort((a,b)=>val(b)-val(a));
   const max=Math.max(1,...rows.map(val));
   $('#dmgLegend').innerHTML=dmgMetric==='dealt'?`<span><i style="background:${DCOL.phys}"></i>Físico</span><span><i style="background:${DCOL.magic}"></i>Mágico</span>`:dmgMetric==='taken'?'<span>Daño recibido tras armadura y escudos</span>':'<span>Curación y escudos generados</span>';
   $('#dmgRows').innerHTML=rows.map(f=>{
@@ -2318,6 +2414,9 @@ function abilDesc(ab,star){const v=ab.v[star-1];switch(ab.k){
   case 'execute':return `Golpea al enemigo con menos vida por ${v} de daño mágico.`+(ab.heal?` Se cura el ${ab.heal*100}% del daño.`:'');
   case 'doble':return `Muerde dos veces a su objetivo: ${v} de daño mágico cada mordisco.`;
   case 'aliento':return `Escupe fuego: ${v} de daño mágico al objetivo y a los enemigos a ${ab.r} casilla, que arden 3 s (${Math.round(v*.16)} de daño por segundo).`;
+  case 'arenga':return `Arenga a su corte: los aliados a ${ab.r} casillas ganan +${ab.h}% de velocidad de ataque durante ${ab.d} s y él gana un escudo de ${v}.`;
+  case 'telarana':return `Lanza una telaraña: ${v} de daño mágico al objetivo y a los enemigos a ${ab.r} casilla, que quedan atrapados ${ab.d} s y envenenados (${Math.round(v*.3)} de daño en 3 s).`;
+  case 'murcielagos':return `Beso vampírico: ${v} de daño mágico al objetivo (se cura la mitad) y convoca ${Array.isArray(ab.n2)?ab.n2[star-1]:ab.n2} murciélagos que roban vida.`;
   case 'materno':return `Protege a su camada: ella y los aliados adyacentes ganan un escudo de ${v} durante 4 s, y aturde ${ab.d} s a los enemigos adyacentes.`;
   case 'teamHeal':return ab.r>50?`Cura ${v} de vida a todos los aliados.`:`Cura ${v} de vida a los aliados a ${ab.r} casillas o menos.`;
 }}
@@ -2587,10 +2686,68 @@ NIVELES.push(
  nivelEquipos(15,'Cumbre del Draco',4,'de la Cumbre',['soberana','titan','crisol','abisal','eclipse','alba','espina','nebula'],
   {m:'draco',x:1,c:3,f:1,premio:'draco',nombre:'El Draco antiguo',escolta:[Rd('lobo',1,0,2),Rd('lobo',5,0,2),['titan',2,3,0,['muralla']],['abisal',2,2,0,['pua']],['eclipse',2,1,3,['vendaval']],['crisol',2,5,3,['sabio']],['soberana',2,3,3,['precision']]]},[0.275,0.425,0.225,0.25,0.45,0.75,0.55,0.725,0.425,0.375,0.35,0.35,0.275,0.3,0.2,0.25,0.2,0.325,0.175,0.175,0.175,0.175,0.65]),
 );
+// ---- Mundo 2, Caverna profunda (niveles 16-30) ----
+// Equipos de campeones escoltados por monstruos de la cueva en todas las fases (menos en las últimas).
+// mons: {monstruo: peso}. Jefes (20, 25, 30): monstruos que se unen a tu colección. x de los monstruos: sube por fase.
+function nivelCueva(n,nombre,tema,de,mons,clan,jefe,K){
+  const fases=[],rango=['Avanzadilla','Patrulla','Guardia','Élite','Campeones'];let q=0;
+  const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+  const huecos={tank:[[3,0],[2,0],[4,0],[1,0],[5,0],[0,0],[6,0],[3,1]],assassin:[[0,1],[6,1],[1,1],[5,1],[0,0],[6,0]],ranged:[[3,3],[2,3],[4,3],[1,3],[5,3],[0,3],[6,3],[3,2]],mage:[[2,3],[4,3],[3,2],[1,2],[5,2],[0,3],[6,3],[2,2]]};
+  const OBJ={tank:['muralla','troll','pua','bastionob','gigante'],assassin:['ocaso','vampira','runica','ojo'],ranged:['vendaval','runica','certero','ocaso'],mage:['sabio','precision','ancestral','egida']};
+  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles'};
+  const X=[1,1.5,2.1,2.8,3.4],cada=[2,2,3,3,4]; // multiplicador de los monstruos y 1 de cada «cada» unidades es monstruo
+  const tot=Object.values(mons).reduce((a,b)=>a+b,0);
+  for(let f=1;f<=NFASES;f++){const fila=[],fo=FO[f-1];
+    for(let r=1;r<=6;r++){
+      if(f===1&&r===1){fila.push(null);continue}
+      const rr=srand(n*1000+fo*50+r),cuantos=Math.min(9,2+fo+Math.floor(r/2)),u=[],usados=new Set(),libre=k=>!usados.has(k),cuenta={};
+      const est=fo===1?1:fo===2?(r>=4?2:1):fo===5&&r===6?3:2,nobj=fo<=2?0:fo===3?(r>=4?1:0):fo===4?1:2;
+      const pool=mezcla(clan.slice(),rr);let ci=0;
+      const hueco=rol=>(huecos[rol]||huecos.tank).find(x=>libre(x+''))||[[0,1,2,3,4,5,6].find(c=>libre([c,2]+''))??0,2];
+      for(let i=0;i<cuantos;i++){
+        if(i%cada[fo-1]===cada[fo-1]-1||(fo===1&&i===0)){let x=rr()*tot,m=Object.keys(mons).find(k=>(x-=mons[k])<0)||Object.keys(mons)[0];
+          const h=hueco(ROLM[m]);usados.add(h+'');u.push(Rd(m,h[0],h[1],X[fo-1]));cuenta[m]=(cuenta[m]||0)+1;continue}
+        const id=pool[ci++%pool.length],rol=CH[id].role,h=hueco(rol);
+        usados.add(h+'');u.push(Cp(id,est,h[0],h[1],mezcla(OBJ[rol].slice(),rr).slice(0,nobj)));
+      }
+      const dom=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
+      let nm=fo===1&&dom?`${NOM[dom]} ${de}`:`${rango[fo-1]} ${de}`;if(r===6)nm=`Capitanes ${de}`;
+      if(f===NFASES&&r===6&&jefe){u.length=0;const b=Rd(jefe.m,jefe.c,jefe.f,jefe.x);b.jefe=true;u.push(b);
+        jefe.escolta.forEach(e=>u.push(Array.isArray(e)?Cp(...e):e));nm=`${jefe.nombre} y su corte`}
+      else if(f===NFASES&&r===6){nm=`Gran final ${de}`}
+      fila.push({n:nm,u,k:K[q++],jefe:!!(f===NFASES&&r===6&&jefe)});
+    }
+    fases.push(fila)}
+  return {n,nombre,tema,premio:jefe?jefe.premio:null,fases};
+}
+NIVELES.push(
+ nivelCueva(16,'Boca de la caverna',5,'de la Boca',{goblin:3,hondero:2},['tovo','brasa','sombrio','lira','musgo','rama','vespa','coral'],null,[0.425,0.7,0.6,0.625,0.675,1.225,0.9,1.025,0.65,0.725,0.55,0.875,0.675,0.675,0.6,0.65,0.725,0.725,0.7,0.7,0.55,0.65,0.5]),
+ nivelCueva(17,'Nido de murciélagos',5,'del Nido',{murcielago:3,goblin:1},['ceniza','sombrio','ebano','eclipse','vespa','martillo','lira','nerea'],null,[0.375,0.725,0.675,0.55,0.75,1.175,0.95,0.9,0.575,0.85,0.475,0.8,0.525,0.6,0.5,0.575,0.6,0.7,0.65,0.6,0.525,0.5,0.375]),
+ nivelCueva(18,'Galería de setas',5,'de las Setas',{arana:2,murcielago:1,hondero:1},['musgo','fresno','rama','alba','nebula','ceniza','espina','kalima'],null,[0.4,0.625,0.6,0.275,0.375,0.925,0.575,0.875,0.65,0.575,0.425,0.75,0.45,0.5,0.5,0.475,0.6,0.5,0.6,0.6,0.475,0.475,0.325]),
+ nivelCueva(19,'Puente del trol',5,'del Puente',{trol:1,goblin:2,hondero:2},['yunque','tovo','martillo','crisol','abisal','brasa','coral','titan'],null,[0.5,0.5,0.45,0.625,0.525,1.175,0.8,0.75,0.425,0.525,0.5,0.575,0.45,0.575,0.575,0.55,0.525,0.5,0.5,0.55,0.425,0.35,0.35]),
+ nivelCueva(20,'Salón del Rey Goblin',5,'del Salón',{goblin:3,hondero:2,trol:1},['tovo','yunque','martillo','brasa','eclipse','ebano','crisol','kalima'],
+  {m:'reygoblin',x:1.2,c:3,f:1,premio:'reygoblin',nombre:'El Rey Goblin',escolta:[Rd('trol',2,0,1.2),Rd('trol',4,0,1.2),Rd('goblin',3,0,2),Rd('hondero',1,3,2),Rd('hondero',5,3,2),['martillo',2,0,1,['ocaso']],['crisol',2,3,3,['sabio']],['eclipse',2,6,3,['vendaval']]]},[0.275,0.5,0.5,0.35,0.525,1.15,0.9,0.925,0.4,0.525,0.45,0.675,0.4,0.675,0.525,0.5,0.475,0.45,0.5,0.4,0.45,0.5,0.975]),
+ nivelCueva(21,'Minas de cristal',6,'de las Minas',{goblin:2,hondero:2,trol:1},['kalima','nerea','coral','abisal','lira','nebula','soberana','alba'],null,[0.325,0.325,0.4,0.45,0.375,1.225,0.9,0.9,0.6,0.55,0.5,0.65,0.625,0.575,0.525,0.45,0.575,0.625,0.425,0.425,0.425,0.425,0.2]),
+ nivelCueva(22,'Vagonetas perdidas',6,'de las Vagonetas',{murcielago:2,arana:2,goblin:1},['sombrio','vespa','martillo','espina','eclipse','ceniza','ebano','brasa'],null,[0.475,0.65,0.55,0.7,0.525,0.725,0.8,0.825,0.625,0.425,0.45,0.6,0.65,0.575,0.525,0.55,0.575,0.625,0.525,0.575,0.525,0.5,0.325]),
+ nivelCueva(23,'Lago subterráneo',6,'del Lago',{arana:2,trol:1,murcielago:1},['nerea','coral','kalima','abisal','ceniza','crisol','fresno','soberana'],null,[0.575,0.525,0.525,0.55,0.5,0.775,0.65,0.9,0.525,0.65,0.45,0.575,0.625,0.525,0.375,0.625,0.525,0.525,0.45,0.525,0.45,0.425,0.3]),
+ nivelCueva(24,'Veta profunda',6,'de la Veta',{goblin:1,hondero:1,murcielago:1,arana:1,trol:1},['titan','crisol','soberana','abisal','alba','espina','eclipse','nebula'],null,[0.35,0.625,0.4,0.475,0.5,0.55,0.65,0.6,0.475,0.4,0.35,0.475,0.35,0.375,0.375,0.375,0.45,0.425,0.4,0.45,0.4,0.325,0.25]),
+ nivelCueva(25,'Cubil de la Reina Araña',6,'del Cubil',{arana:4,murcielago:1},['sombrio','vespa','martillo','espina','ceniza','eclipse','ebano','fresno'],
+  {m:'reinaarana',x:1.1,c:3,f:1,premio:'reinaarana',nombre:'La Reina Araña',escolta:[Rd('arana',1,0,2.2),Rd('arana',5,0,2.2),Rd('arana',3,0,2.2),['espina',2,0,1,['ocaso']],['ebano',2,2,0,['muralla']],['ceniza',2,2,3,['sabio']],['eclipse',2,4,3,['vendaval']]]},[0.425,0.65,0.375,0.6,0.5,0.7,0.625,0.625,0.375,0.475,0.575,0.475,0.525,0.525,0.45,0.575,0.5,0.575,0.55,0.55,0.5,0.5,0.875]),
+ nivelCueva(26,'Escalinata carmesí',7,'de la Escalinata',{murcielago:3,goblin:1},['ceniza','ebano','eclipse','sombrio','soberana','nebula','lira','vespa'],null,[0.5,0.825,0.575,0.575,0.825,1.325,0.9,0.975,0.525,0.825,0.575,0.775,0.625,0.575,0.475,0.525,0.575,0.55,0.55,0.55,0.525,0.425,0.35]),
+ nivelCueva(27,'Cripta de gárgolas',7,'de la Cripta',{trol:1,murcielago:2,arana:1},['titan','ebano','abisal','yunque','crisol','espina','eclipse','martillo'],null,[0.275,0.275,0.425,0.325,0.375,0.7,0.5,0.8,0.325,0.375,0.375,0.625,0.5,0.475,0.425,0.45,0.475,0.525,0.525,0.475,0.4,0.5,0.275]),
+ nivelCueva(28,'Salón de los espejos',7,'de los Espejos',{murcielago:2,hondero:1,arana:1},['soberana','crisol','ceniza','nerea','fresno','lira','alba','nebula'],null,[0.45,0.525,0.425,0.625,0.875,1.175,1,0.8,0.6,0.85,0.825,0.65,0.55,0.85,0.575,0.525,0.6,0.55,0.525,0.525,0.6,0.475,0.35]),
+ nivelCueva(29,'Antesala del trono',7,'de la Antesala',{murcielago:2,trol:1,arana:1,goblin:1},['espina','titan','soberana','eclipse','abisal','crisol','alba','ebano'],null,[0.25,0.45,0.4,0.525,0.725,1.075,0.9,0.7,0.5,0.475,0.475,0.6,0.45,0.3,0.45,0.425,0.5,0.5,0.575,0.45,0.4,0.3,0.15]),
+ nivelCueva(30,'Trono de Dracqueen',7,'del Trono carmesí',{murcielago:4,arana:1},['soberana','espina','titan','eclipse','crisol','abisal','ceniza','ebano'],
+  {m:'dracqueen',x:1,c:3,f:2,premio:'dracqueen',nombre:'Dracqueen',escolta:[Rd('murcielago',0,1,3),Rd('murcielago',6,1,3),Rd('trol',3,0,1.6),['titan',2,2,0,['muralla']],['abisal',2,4,0,['pua']],['soberana',2,2,3,['precision']],['eclipse',2,4,3,['vendaval']],['espina',2,6,0,['ocaso']]]},[0.5,0.575,0.525,0.525,0.85,1.15,0.75,0.75,0.55,0.575,0.525,0.6,0.3,0.5,0.45,0.475,0.525,0.5,0.575,0.35,0.375,0.4,0.725]),
+);
 // Jefes: habilidad propia (usa la pose «especial» del sprite) y más maná
 const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70},
  lobo:{n:'Aullido del alfa',k:'aoeSelf',v:[280],r:1,d:1.2,mana:60},
- draco:{n:'Aliento de fuego',k:'aoe',v:[460],r:1,mana:80}};
+ draco:{n:'Aliento de fuego',k:'aoe',v:[460],r:1,mana:80},
+ reygoblin:{n:'¡Por el botín!',k:'arenga',v:[600],r:2,h:50,d:5,mana:70},
+ reinaarana:{n:'Telaraña',k:'telarana',v:[340],r:1,d:1.6,mana:60},
+ dracqueen:{n:'Corte de murciélagos',k:'murcielagos',v:[420],n2:3,heal:.5,mana:75}};
+const JEFAS=['matrona','reinaarana','dracqueen'];
 
 // ---- colección y progreso (se guarda en este dispositivo) ----
 const HIST_KEY='crisol_historia_v1',MAZO_N=20;
@@ -2613,7 +2770,7 @@ function storyTeam(team){
     if(e.ch){fake.board[e.r*7+e.c]={uid:++S.uid,id:e.ch,star:e.s,items:e.it.slice()};continue}
     const f=makeCreep(e.m,team,team===0?e.c:6-e.c,team===0?4+e.r:3-e.r,e.x);
     // jefe monstruo (si hay varios del mismo tipo, el marcado con .jefe)
-    if(R.jefe&&JEFES[e.m]&&(e.jefe||!R.u.some(x=>x.jefe))){const J=JEFES[e.m];f.jefe=true;f.name+=e.m==='matrona'?' (jefa)':' (jefe)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d};f.maxMana=J.mana;f.mana=0}
+    if(R.jefe&&JEFES[e.m]&&(e.jefe||!R.u.some(x=>x.jefe))){const J=JEFES[e.m];f.jefe=true;f.name+=JEFAS.includes(e.m)?' (jefa)':' (jefe)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d,h:J.h,n2:J.n2,heal:J.heal};f.maxMana=J.mana;f.mana=0}
     out.push(f);
   }
   const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=NIVELES[S.story.nivel-1].premio;
