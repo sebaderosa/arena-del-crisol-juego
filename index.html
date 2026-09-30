@@ -354,6 +354,50 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
   #info{bottom:calc(var(--shopH,190px) + var(--itH,0px) + 6px)}
 }
 
+/* ===== presentación de un campeón desbloqueado ===== */
+.overlay.unlock{background:radial-gradient(circle at 38% 50%,rgba(70,50,15,.55),rgba(4,6,9,.94) 65%);backdrop-filter:blur(4px);overflow:hidden;z-index:30}
+.ulRays{position:absolute;left:38%;top:50%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;opacity:0;
+  background:repeating-conic-gradient(from 0deg,rgba(255,214,120,.2) 0deg 6deg,rgba(255,214,120,0) 6deg 18deg);
+  -webkit-mask:radial-gradient(circle,#000 0,rgba(0,0,0,.6) 22%,transparent 55%);mask:radial-gradient(circle,#000 0,rgba(0,0,0,.6) 22%,transparent 55%)}
+.ulFlash{position:absolute;inset:0;background:radial-gradient(circle at 38% 50%,#fff8dc,rgba(255,220,140,.4) 30%,transparent 60%);opacity:0;pointer-events:none}
+.ulSparks{position:absolute;inset:0;pointer-events:none}
+.ulSparks i{position:absolute;width:6px;height:6px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 10px 3px rgba(255,210,110,.8);opacity:0}
+.ulWrap{position:relative;display:flex;align-items:center;justify-content:center;gap:4vw;width:100%;max-width:1100px}
+.ulHero{flex:0 0 auto;height:min(72vh,560px);display:flex;align-items:flex-end;justify-content:center;opacity:0}
+.ulHero img{height:100%;width:auto;filter:drop-shadow(0 0 28px rgba(255,210,110,.75)) drop-shadow(0 12px 30px rgba(0,0,0,.6))}
+.ulCard{width:min(380px,92vw);background:linear-gradient(180deg,rgba(28,40,50,.96),rgba(17,26,32,.96));border:1px solid var(--gold);border-radius:14px;padding:18px 18px 16px;
+  box-shadow:0 0 0 1px rgba(255,217,138,.25),0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(233,180,76,.25);opacity:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.ulCard h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,42px);margin:0;color:var(--gold-hi);line-height:1;text-shadow:0 0 18px rgba(255,210,110,.5)}
+.ulSub{display:flex;align-items:center;gap:12px}.ulSub .icost{display:flex;align-items:center;gap:4px;font-weight:700}
+.ulTraits p{margin:2px 0;font-size:13px;color:#c6d3da}
+.ulStats{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 14px;font-variant-numeric:tabular-nums}
+.ulStats div{display:flex;justify-content:space-between;border-bottom:1px dotted #2b3d48}.ulStats span{color:var(--muted)}
+.ulCard .big{margin-top:6px;align-self:stretch}
+.unlock.play .ulRays{animation:ulRaysIn 1.2s ease-out .2s forwards,ulSpin 24s linear infinite}
+.unlock.play .ulFlash{animation:ulFlash 1s ease-out .15s}
+.unlock.play .ulHero{animation:ulHeroIn 1.1s cubic-bezier(.2,1.4,.4,1) .35s forwards,ulBob 3.2s ease-in-out 1.5s infinite}
+.unlock.play .ulCard{animation:ulCardIn .7s cubic-bezier(.2,1,.3,1) 1.1s forwards}
+.unlock.play .ulSparks i{animation-name:ulSpark;animation-timing-function:ease-out;animation-iteration-count:infinite}
+@keyframes ulRaysIn{to{opacity:1}}
+@keyframes ulSpin{to{transform:rotate(360deg)}}
+@keyframes ulFlash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+@keyframes ulHeroIn{0%{opacity:0;transform:scale(.25) translateY(40px);filter:brightness(4) blur(6px)}60%{opacity:1;filter:brightness(1.6) blur(0)}100%{opacity:1;transform:scale(1);filter:none}}
+@keyframes ulBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes ulCardIn{0%{opacity:0;transform:translateX(60px)}100%{opacity:1;transform:none}}
+@keyframes ulCardUp{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:none}}
+@keyframes ulSpark{0%{opacity:0;transform:translateY(0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translateY(-120px) scale(1.2)}}
+@media (max-width:760px){
+  .overlay.unlock{place-items:start center;overflow:auto}
+  .ulWrap{flex-direction:column;gap:10px;padding:10px 0 20px}
+  .ulHero{height:34vh}
+  .ulRays,.ulFlash{left:50%}.ulRays{top:22%}
+  .unlock.play .ulCard{animation-name:ulCardUp}
+}
+@media (prefers-reduced-motion:reduce){.unlock.play .ulRays,.unlock.play .ulHero,.unlock.play .ulCard{animation:none;opacity:1}.ulSparks{display:none}}
+/* ficha de desbloqueo en el móvil: a todo el ancho y con los textos completos */
+@media (max-width:760px){.ulCard{width:auto;max-width:380px;align-self:stretch;margin:0 4px}.ulWrap{padding-inline:0}}
+.ulCard .crole span{display:inline}.ulCard .tp b{display:inline}.ulCard .tp i{display:none}.ulCard .tp{font-size:11px;line-height:16px;padding:0 6px}
+
 </style>
 
 <div id="app">
@@ -473,6 +517,11 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
     <div class="sub" style="margin:0">Elige una recompensa.</div>
     <div id="rewCards"></div>
   </div>
+</div>
+
+<div class="overlay unlock" id="unlockOv" hidden>
+  <div class="ulRays"></div><div class="ulFlash"></div><div class="ulSparks"></div>
+  <div class="ulWrap"><div class="ulHero"></div><div class="ulCard"></div></div>
 </div>
 
 <div id="ghost" hidden></div>
@@ -2493,7 +2542,8 @@ function storyWin(){
   if(!HIST.hechos.includes(L.n))HIST.hechos.push(L.n);
   if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}
   histSave(HIST);S.phase='over';sfx('over');updateHUD();
-  endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>openStory());
+  const fin=()=>endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>openStory());
+  if(nuevo)setTimeout(()=>showUnlock(L.premio,fin),900);else fin();
 }
 function storyLost(){
   const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();
@@ -2503,6 +2553,26 @@ function endScreen(title,sub,place,btn,fn){
   $('#endPlace').textContent=place;$('#endTitle').textContent=title;$('#endSub').textContent=sub;
   $('#bAgain').textContent=btn;$('#bAgain').onclick=()=>{$('#endOv').hidden=true;fn()};
   $('#bMenu').hidden=false;$('#endOv').hidden=false;
+}
+
+// ---- presentación al desbloquear un campeón: rayos de luz, el campeón en grande y su ficha al lado ----
+function showUnlock(id,next){
+  const C=CH[id],f=makeFighter({uid:0,id,star:1,items:[]},0,0,4,{}),src=SPRITE_SRC[id]&&SPRITE_SRC[id].src;
+  const ov=$('#unlockOv'),stat=(n,v)=>`<div><span>${n}</span><b>${v}</b></div>`;
+  ov.querySelector('.ulHero').innerHTML=`<img src="${src||portrait(id)}" alt="${C.name}">`;
+  ov.querySelector('.ulCard').innerHTML=`<div class="lbl">Nuevo campeón</div>
+    <h2>${C.name}</h2>
+    <div class="ulSub"><span class="icost"><span class="coin"></span>${C.cost}</span>${roleTag(C.role)}</div>
+    <div class="tps">${C.traits.map(traitPill).join('')}</div>
+    <div class="ulTraits">${C.traits.map(t=>`<p><b style="color:${TRAITS[t].col}">${TRAITS[t].n}:</b> ${TRAITS[t].d(TRAITS[t].vals[0])}</p>`).join('')}</div>
+    <div class="ulStats">${stat('Vida',Math.round(f.maxHp))}${stat('Daño',Math.round(f.ad))}${stat('Vel. ataque',f.as.toFixed(2))}${stat('Alcance',f.range)}${stat('Armadura',Math.round(f.ar))}${stat('Res. mágica',Math.round(f.mr))}${stat('Maná',f.maxMana)}</div>
+    <div class="abil"><b>${C.ab.n}</b><br>${abilDesc(C.ab,1)}<br><small>2★: ${abilDesc(C.ab,2)}</small><br><small>3★: ${abilDesc(C.ab,3)}</small></div>
+    <button class="big" id="bUnlockOk">¡A mi colección!</button>`;
+  const sp=ov.querySelector('.ulSparks');sp.innerHTML='';
+  for(let i=0;i<28;i++){const s=document.createElement('i');s.style.left=(10+Math.random()*80)+'%';s.style.top=(30+Math.random()*60)+'%';s.style.animationDelay=(.6+Math.random()*2.4)+'s';s.style.animationDuration=(1.6+Math.random()*1.8)+'s';sp.appendChild(s)}
+  ov.classList.remove('play');void ov.offsetWidth;ov.classList.add('play');ov.hidden=false;
+  sfx('merge3');setTimeout(()=>sfx('levelup'),700);
+  $('#bUnlockOk').onclick=()=>{ov.hidden=true;next&&next()};
 }
 
 // ---- recompensas entre fases: elige 1 de 3 ----
