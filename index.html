@@ -588,12 +588,13 @@ const CH={};
  ['titan','Titán','Ti',5,['forja','guardian'],'tank',1,120,60,{n:'Bastión',k:'shield',v:[800,1200,4000],d:2}],
  ['espina','Reina Espina','RE',5,['bosque','asesino'],'assassin',1,70,10,{n:'Cosecha',k:'execute',v:[900,1400,5000],heal:.5}],
  // solo modo Historia (story): se gana al derrotar a la jefa del nivel 1
- ['matrona','Matrona','Ma',3,['monstruo','coloso'],'tank',1,90,30,{n:'Pisotón materno',k:'aoeSelf',v:[180,270,450],r:1,d:1.5}],
+ ['matrona','Matrona','Ma',3,['monstruo','coloso'],'tank',1,90,30,{n:'Instinto materno',k:'materno',v:[130,200,340],r:1,d:1}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
 });
-CH.matrona.story=true;CH.matrona.escala=1.25; // escala: tamaño en el tablero (los monstruos jugables son más grandes)
+CH.matrona.story=true;CH.matrona.escala=1.25;CH.matrona.pas={cria:.25}; // pas: pasivo propio del campeón (la cría remata cada golpe)
+ // escala: tamaño en el tablero (los monstruos jugables son más grandes)
 const CH_IDS=Object.keys(CH);
 const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
 const ITEMS={
@@ -843,7 +844,7 @@ function makeFighter(u,team,c,r,cnt){
     col:TRAITS[C.traits[0]].col,col2:TRAITS[C.traits[1]].col,maxHp:C.hp*sm,ad:C.ad*sm,as:C.as,range:C.range,ar:C.ar,mr:C.mr,
     maxMana:C.mana,mana:C.start,ap:0,crit:.05,critDmg:1.5,dmgMult:1,asBonus:0,shield:0,tshield:0,tshieldT:0,regenMana:0,regenPct:0,
     ab:C.ab,look:LOOK[u.id],items:u.items.slice(),atkCd:.25+rnd()*.35,stunT:0,hasteT:0,haste:0,move:null,target:null,anim:0,deadT:0,flash:0,dealt:0,dealtP:0,dealtM:0,taken:0,healing:0,face:1};
-  f.pas={};
+  f.pas=Object.assign({},C.pas||{}); // pasivo propio del campeón (p. ej. la cría de la Matrona) + los de sus objetos
   for(const it of f.items){const I=ITEMS[it],s=I.s;if(s.ad)f.ad+=s.ad;if(s.as)f.asBonus+=s.as;if(s.ap)f.ap+=s.ap;if(s.mana)f.mana+=s.mana;if(s.ar)f.ar+=s.ar;if(s.mr)f.mr+=s.mr;if(s.hp)f.maxHp+=s.hp;if(s.crit)f.crit+=s.crit;
     for(const k in I.p||{})f.pas[k]=(f.pas[k]||0)+I.p[k]}
   const P=f.pas;
@@ -1047,6 +1048,8 @@ class Combat{
         en.forEach((e,i)=>{const d=Math.hypot(e.x-f.x,e.y-f.y);this.proj.push({x:f.x,y:f.y,src:f,tgt:e,t:-i*.12,dur:Math.max(.14,d/13),kind:V.proj||'arrow',col,big:true,hit:()=>{this.damage(f,e,f.ad*v/100,'phys');if(this.vis)this.emit(5,e.x,e.y-.45,{col:[col,'#ffffff'],sp:2.5,shape:'spark',life:.3,glow:1})}})});break}
       case 'execute':{const en=this.enemies(f);if(!en.length)break;const e=en.reduce((a,b)=>a.hp<b.hp?a:b);
         shoot(e,V.proj||'dash',()=>{const d=this.damage(f,e,v*sp,'magic');if(ab.heal)this.heal(f,d*ab.heal,f);this.impact(V.imp||'slash',e.x,e.y,col)},{speed:32});break}
+      case 'materno':this.allies(f).filter(a=>hexDist(f.c,f.r,a.c,a.r)<=ab.r).forEach(a=>{a.tshield+=v*sp;a.tshieldT=Math.max(a.tshieldT,4);a.shCol=col;f.healing+=v*sp;this.impact('metal',a.x,a.y,col)});
+        this.impact('slam',f.x,f.y,col,ab.r);inR(f.c,f.r,ab.r).forEach(e=>{e.stunT=Math.max(e.stunT,ab.d)});break;
       case 'shield':f.tshield+=v*sp;f.healing+=v*sp;f.tshieldT=4;f.shCol=col;this.impact(V.imp||'metal',f.x,f.y,col);if(ab.d){this.impact('slam',f.x,f.y,col,1);inR(f.c,f.r,1).forEach(e=>e.stunT=Math.max(e.stunT,ab.d))}break;
       case 'heal':this.heal(f,v*sp,f);this.impact(V.imp||'leaves',f.x,f.y,col);break;
       case 'haste':f.haste=v/100;f.hasteT=ab.d;this.impact(V.imp||'notes',f.x,f.y,col);break;
@@ -2253,6 +2256,7 @@ function abilDesc(ab,star){const v=ab.v[star-1];switch(ab.k){
   case 'volley':return `Dispara a los ${ab.n2} enemigos más cercanos por el ${v}% de su daño de ataque.`;
   case 'aoeSelf':return `Golpea el suelo: ${v} de daño mágico a los enemigos a ${ab.r} casilla${ab.r>1?'s':''} y los aturde ${ab.d} s.`;
   case 'execute':return `Golpea al enemigo con menos vida por ${v} de daño mágico.`+(ab.heal?` Se cura el ${ab.heal*100}% del daño.`:'');
+  case 'materno':return `Protege a su camada: ella y los aliados adyacentes ganan un escudo de ${v} durante 4 s, y aturde ${ab.d} s a los enemigos adyacentes.`;
   case 'teamHeal':return ab.r>50?`Cura ${v} de vida a todos los aliados.`:`Cura ${v} de vida a los aliados a ${ab.r} casillas o menos.`;
 }}
 function showInfo(sel){
