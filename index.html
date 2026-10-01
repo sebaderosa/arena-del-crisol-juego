@@ -505,7 +505,25 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .fiNav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:56px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--gold-hi);font-size:30px;line-height:1;padding:0}
 .fiNav:hover{border-color:var(--gold-hi);background:rgba(233,180,76,.12)}
 .fiNav.prev{left:6px}.fiNav.next{right:6px}
-@media (max-width:760px){.ficha{padding-inline:14px;padding-bottom:70px}.fiNav{top:auto;bottom:10px;transform:none;width:64px;height:44px}.fiNav.prev{left:calc(50% - 72px)}.fiNav.next{right:calc(50% - 72px)}}
+/* ficha en el móvil: personaje pequeño arriba con las flechas a los lados, y todo el texto compacto para que quepa sin desplazarse */
+@media (max-width:760px){
+  #fichaOv{padding:8px}
+  .ficha{box-sizing:border-box;padding:10px 12px;max-height:calc(100dvh - 16px);overflow:auto}
+  .fiWrap{grid-template-columns:1fr;gap:6px}
+  .fiEscena canvas{width:150px!important;height:150px!important}
+  .fiNav{top:10px;transform:none;width:44px;height:150px;font-size:34px}
+  .fiNav.prev{left:calc(50% - 75px - 52px)}.fiNav.next{right:calc(50% - 75px - 52px)}
+  .ficha .ix{top:4px;right:6px}
+  .fiDatos h2{font-size:22px;margin:0 0 2px}
+  .fiDatos .lbl{font-size:10px}
+  .fiHist{font-size:12.5px;margin:4px 0;line-height:1.3}
+  .fiTraits p{font-size:12px;margin:2px 0;line-height:1.3}
+  .fiStats{font-size:12px;margin:4px 0}.fiStats td{padding:0 10px}
+  .fiDatos .sgrid{font-size:12px;gap:0 10px}.fiDatos .sgrid div{padding:1px 0}
+  .fiDatos .abil{font-size:12px;padding:6px 8px;margin-top:4px;line-height:1.3}
+  .fiDatos .abil small{font-size:11px}
+  .fiNivel{font-size:12px;margin:4px 0 0}
+}
 
 </style>
 
@@ -1529,9 +1547,10 @@ function layout(){
   const vw=window.innerWidth,vh=window.innerHeight,narrow=vw<=900;
   const topH=$('#top').offsetHeight+6,shopH=$('#shop').offsetHeight+6,itH=narrow?$('#itemsBar').offsetHeight+6:0;
   const availW=Math.max(240,vw-(narrow?8:2*(PANEL_W+20))),availH=Math.max(240,vh-topH-shopH-itH-10);
-  const size=Math.max(14,Math.min(availW/(SQ3*7.5),availH/14.45)); // 14.45 = alto del tablero sin su margen superior (que puede quedar bajo la barra)
+  // 14.45 = alto del tablero sin su margen superior; ARRIBA: hueco extra (en casillas) para que las cabezas de la fila de arriba no queden bajo la barra
+  const ARRIBA=.85,size=Math.max(14,Math.min(availW/(SQ3*7.5),availH/(14.45+ARRIBA)));
   const pad=size*.75,W=size*SQ3*7.5,slot=W/9,benchY=pad+size*12.5+size*.45,BH=benchY+slot+4;
-  const CW=vw,ox=(CW-W)/2,oy=topH-pad+Math.max(0,(vh-topH-shopH-itH-(BH-pad))/2);
+  const CW=vw,ox=(CW-W)/2,oy=topH-pad+size*ARRIBA+Math.max(0,(vh-topH-shopH-itH-(BH-pad)-size*ARRIBA)/2);
   M={size,W,H:vh,BH,slot,benchY,pad,CW,ox,oy,narrow};DPR=Math.min(2,window.devicePixelRatio||1);BG.key=null;
   cv.width=Math.round(CW*DPR);cv.height=Math.round(vh*DPR);cv.style.width=CW+'px';cv.style.height=vh+'px';ctx.setTransform(DPR,0,0,DPR,0,0);
   const r=document.documentElement.style;r.setProperty('--topH',topH+'px');r.setProperty('--shopH',shopH+'px');r.setProperty('--itH',itH+'px');
