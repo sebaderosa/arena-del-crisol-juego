@@ -680,9 +680,9 @@ const TRAITS={
  forja:{n:'Forja',kind:'Origen',col:'#e2703a',tiers:[2,4,6],vals:[20,45,80],d:v=>`Unidades de Forja: +${v} de armadura y resistencia mágica.`},
  marea:{n:'Marea',kind:'Origen',col:'#38a9cc',tiers:[2,4],vals:[4,10],d:v=>`Unidades de Marea: regeneran ${v} de maná por segundo.`},
  umbra:{n:'Siniestro',kind:'Origen',col:'#8f70dc',tiers:[2,4],vals:[20,50],d:v=>`Unidades siniestras: +${v}% de daño infligido.`},
- bosque:{n:'Bosque',kind:'Origen',col:'#62b04c',tiers:[2,4],vals:[2,5],d:v=>`Unidades de Bosque: regeneran un ${v}% de su vida máxima por segundo.`},
+ bosque:{n:'Bosque',kind:'Origen',col:'#62b04c',tiers:[2,4],vals:[5,10],d:v=>`Unidades de Bosque: regeneran un ${v}% de su vida máxima por segundo.`},
  astral:{n:'Astral',kind:'Origen',col:'#e3c455',tiers:[2,4],vals:[15,35],d:v=>`Todo el equipo: +${v}% de velocidad de ataque.`},
- tirador:{n:'Tirador',kind:'Clase',col:'#d7a15a',tiers:[2,4],vals:[30,75],d:v=>`Tiradores: +${v}% de velocidad de ataque.`},
+ tirador:{n:'Tirador',kind:'Clase',col:'#d7a15a',tiers:[2,3,4,5],vals:[15,30,55,75],d:v=>`Tiradores: +${v}% de velocidad de ataque.`},
  guardian:{n:'Guardián',kind:'Clase',col:'#7fa3b8',tiers:[2,4],vals:[150,400],d:v=>`Todo el equipo empieza el combate con un escudo de ${v}.`},
  arcano:{n:'Arcano',kind:'Clase',col:'#b57be8',tiers:[2,4],vals:[30,80],d:v=>`Arcanos: +${v}% de poder de habilidad.`},
  asesino:{n:'Asesino',kind:'Clase',col:'#d45a6a',tiers:[2,4],vals:[25,50],d:v=>`Asesinos: saltan a la retaguardia al empezar y ganan +${v}% de prob. de crítico.`},
@@ -2752,7 +2752,7 @@ function nivelOleadas(n,nombre,tema,de,pesos,final,K){
 NIVELES.push(
  nivelOleadas(2,'La Fragua',1,'de la Fragua',[[5,4,0],[3,4,3],[2,4,4],[2,4,4],[1,5,4]],
   [['roedin',3,0,3.5],['lobo',1,0,1.6],['lobo',5,0,1.6],['roedin',2,1],['roedin',4,1],['escupidor',1,3,1.4],['escupidor',3,3,1.4],['escupidor',5,3,1.4],['escupidor',3,2,1.4]],
-  [0.73,1.12,1.165,1.31,1.265,1.845,1.65,1.65,1.46,1.75,0.875,2.625,2.185,1.945,1.505,2.335,1.8,3.11,4.275,2.675,4.08,2.77,2.525]),
+  [0.715,1.095,1.14,1.28,1.24,1.805,1.615,1.615,1.43,1.715,0.855,2.57,2.14,1.905,1.475,2.285,1.76,3.045,4.185,2.62,3.995,2.71,2.47]),
  nivelOleadas(3,'Arrecife hundido',2,'del Arrecife',[[7,3,0],[5,2,3],[4,2,4],[4,2,4],[3,3,4]],
   [['lobo',3,0,3],['roedin',1,0,1.8],['roedin',5,0,1.8],['roedin',2,1,1.8],['roedin',4,1,1.8],['lobo',0,1,1.5],['lobo',6,1,1.5],['escupidor',2,3,1.4],['escupidor',4,3,1.4]],
   [0.785,1.18,0.985,1.18,1.425,1.865,2.16,1.865,1.72,2.21,0.835,3.44,2.555,3.44,1.67,1.915,1.525,3.785,3.54,2.26,5.01,3.54,1.865]),
@@ -2790,23 +2790,23 @@ function nivelEquipos(n,nombre,tema,de,clan,jefe,K){
 }
 NIVELES.push(
  nivelEquipos(5,'Fragua de Titán',1,'de la Fragua',['tovo','yunque','brasa','coral','ebano','martillo','crisol','nebula'],
-  {id:'titan',c:3,f:0,obj:['muralla','pua','gigante'],escolta:[['tovo',2,2,0],['yunque',2,4,0],['ebano',2,1,0,['bastionob']],['martillo',2,6,1,['ocaso']],['brasa',2,3,3,['runica']],['crisol',2,4,3,['sabio']],['coral',2,5,0]]},[0.4,0.59,0.455,0.535,0.725,1.02,0.94,0.805,0.51,0.59,0.51,0.59,0.375,0.485,0.375,0.455,0.32,0.51,0.375,0.43,0.43,0.455,0.35]),
- nivelEquipos(6,'Arrecife profundo',2,'del Arrecife',['nerea','coral','kalima','abisal','brasa','lira','rama','eclipse'],null,[0.35,0.54,0.43,0.54,0.675,0.975,0.73,0.81,0.515,0.675,0.485,0.43,0.38,0.43,0.405,0.405,0.43,0.485,0.46,0.46,0.38,0.46,0.245]),
+  {id:'titan',c:3,f:0,obj:['muralla','pua','gigante'],escolta:[['tovo',2,2,0],['yunque',2,4,0],['ebano',2,1,0,['bastionob']],['martillo',2,6,1,['ocaso']],['brasa',2,3,3,['runica']],['crisol',2,4,3,['sabio']],['coral',2,5,0]]},[0.395,0.58,0.45,0.525,0.715,1.005,0.925,0.795,0.505,0.58,0.505,0.58,0.37,0.48,0.37,0.45,0.315,0.505,0.37,0.425,0.425,0.45,0.345]),
+ nivelEquipos(6,'Arrecife profundo',2,'del Arrecife',['nerea','coral','kalima','abisal','brasa','lira','rama','eclipse'],null,[0.325,0.5,0.4,0.5,0.625,0.905,0.675,0.75,0.475,0.625,0.45,0.4,0.35,0.4,0.375,0.375,0.4,0.45,0.425,0.425,0.35,0.425,0.225]),
  nivelEquipos(7,'Umbral de espinas',3,'del Umbral',['sombrio','ceniza','vespa','ebano','martillo','eclipse','fresno','musgo'],
-  {id:'espina',c:3,f:1,obj:['ocaso','vampira','ojo'],escolta:[['musgo',2,3,0,['troll']],['alba',2,2,0],['fresno',2,4,3,['sabio']],['rama',2,2,3,['vendaval']],['sombrio',2,0,1,['runica']],['vespa',2,6,1],['martillo',2,5,0]]},[0.37,0.495,0.37,0.52,0.67,0.87,0.745,0.745,0.495,0.545,0.445,0.52,0.495,0.495,0.395,0.445,0.395,0.47,0.47,0.445,0.395,0.395,0.37]),
- nivelEquipos(8,'Bosque antiguo',0,'del Bosque',['musgo','rama','fresno','alba','yunque','nebula','abisal','tovo'],null,[0.445,0.74,0.53,0.5,0.71,0.65,0.74,0.855,0.65,0.65,0.5,0.59,0.5,0.5,0.355,0.5,0.445,0.56,0.385,0.385,0.415,0.415,0.295]),
- nivelEquipos(9,'Cielo astral',4,'del Cielo',['lira','vespa','nebula','nerea','ceniza','fresno','crisol','alba'],null,[0.34,0.445,0.445,0.365,0.625,0.785,0.705,0.73,0.47,0.575,0.445,0.495,0.415,0.445,0.415,0.415,0.415,0.415,0.47,0.47,0.415,0.365,0.235]),
+  {id:'espina',c:3,f:1,obj:['ocaso','vampira','ojo'],escolta:[['musgo',2,3,0,['troll']],['alba',2,2,0],['fresno',2,4,3,['sabio']],['rama',2,2,3,['vendaval']],['sombrio',2,0,1,['runica']],['vespa',2,6,1],['martillo',2,5,0]]},[0.31,0.415,0.31,0.44,0.565,0.73,0.625,0.625,0.415,0.46,0.375,0.44,0.415,0.415,0.33,0.375,0.33,0.395,0.395,0.375,0.33,0.33,0.31]),
+ nivelEquipos(8,'Bosque antiguo',0,'del Bosque',['musgo','rama','fresno','alba','yunque','nebula','abisal','tovo'],null,[0.405,0.675,0.485,0.46,0.65,0.595,0.675,0.78,0.595,0.595,0.46,0.54,0.46,0.46,0.325,0.46,0.405,0.51,0.35,0.35,0.38,0.38,0.27]),
+ nivelEquipos(9,'Cielo astral',4,'del Cielo',['lira','vespa','nebula','nerea','ceniza','fresno','crisol','alba'],null,[0.325,0.425,0.425,0.35,0.595,0.75,0.675,0.7,0.45,0.55,0.425,0.475,0.395,0.425,0.395,0.395,0.395,0.395,0.45,0.45,0.395,0.35,0.225]),
  nivelEquipos(10,'Trono estelar',4,'del Trono',['crisol','abisal','alba','eclipse','nebula','kalima','ebano','martillo'],
-  {id:'soberana',c:3,f:3,obj:['precision','sabio','caliz'],escolta:[['lira',3,2,3,['vendaval']],['nebula',2,3,0,['gigante']],['vespa',2,0,1,['ocaso']],['nerea',2,4,3,['sabio']],['ceniza',2,5,3,['precision']],['fresno',2,1,3],['crisol',2,3,2,['ancestral']],['alba',2,2,0,['bastionob']]]},[0.315,0.475,0.37,0.475,0.53,0.87,0.685,0.715,0.45,0.5,0.425,0.475,0.315,0.37,0.345,0.45,0.29,0.475,0.345,0.395,0.29,0.345,0.265]),
+  {id:'soberana',c:3,f:3,obj:['precision','sabio','caliz'],escolta:[['lira',3,2,3,['vendaval']],['nebula',2,3,0,['gigante']],['vespa',2,0,1,['ocaso']],['nerea',2,4,3,['sabio']],['ceniza',2,5,3,['precision']],['fresno',2,1,3],['crisol',2,3,2,['ancestral']],['alba',2,2,0,['bastionob']]]},[0.31,0.465,0.365,0.465,0.52,0.855,0.675,0.7,0.44,0.49,0.415,0.465,0.31,0.365,0.34,0.44,0.285,0.465,0.34,0.39,0.285,0.34,0.26]),
 );
 NIVELES.push(
- nivelEquipos(11,'Senda de ceniza',1,'de la Senda',['martillo','sombrio','yunque','brasa','vespa','crisol','ebano','tovo'],null,[0.435,0.635,0.58,0.84,0.81,0.985,0.84,0.895,0.665,0.75,0.665,0.55,0.55,0.605,0.52,0.58,0.52,0.605,0.49,0.52,0.435,0.405,0.345]),
+ nivelEquipos(11,'Senda de ceniza',1,'de la Senda',['martillo','sombrio','yunque','brasa','vespa','crisol','ebano','tovo'],null,[0.41,0.6,0.55,0.795,0.765,0.93,0.795,0.845,0.63,0.71,0.63,0.52,0.52,0.57,0.49,0.55,0.49,0.57,0.465,0.49,0.41,0.38,0.325]),
  nivelEquipos(12,'Guarida del alfa',0,'de la Guarida',['musgo','rama','vespa','sombrio','espina','fresno','lira','alba'],
-  {m:'lobo',x:3.2,c:3,f:0,premio:'lobo',nombre:'El Lobo alfa',escolta:[Rd('lobo',1,0,1.4),Rd('lobo',5,0,1.4),['espina',2,0,1,['ocaso']],['vespa',2,6,1,['runica']],['rama',2,2,3,['vendaval']],['fresno',2,4,3,['sabio']],['musgo',2,3,1,['troll']]]},[0.23,0.43,0.575,0.405,0.49,1.265,1.095,1.065,0.375,0.635,0.43,0.605,0.49,0.49,0.43,0.46,0.405,0.605,0.49,0.43,0.405,0.46,0.92]),
- nivelEquipos(13,'Arrecife de tormentas',2,'de la Tormenta',['nerea','kalima','coral','abisal','ceniza','soberana','nebula','lira'],null,[0.42,0.45,0.39,0.56,0.81,0.925,0.865,0.755,0.475,0.81,0.53,0.585,0.42,0.39,0.335,0.39,0.31,0.475,0.365,0.335,0.365,0.365,0.195]),
- nivelEquipos(14,'Umbral eterno',3,'del Umbral eterno',['ebano','eclipse','ceniza','sombrio','espina','titan','abisal','martillo'],null,[0.345,0.545,0.315,0.43,0.49,0.775,0.43,0.635,0.405,0.405,0.375,0.49,0.46,0.43,0.345,0.375,0.315,0.49,0.375,0.375,0.375,0.375,0.23]),
+  {m:'lobo',x:3.2,c:3,f:0,premio:'lobo',nombre:'El Lobo alfa',escolta:[Rd('lobo',1,0,1.4),Rd('lobo',5,0,1.4),['espina',2,0,1,['ocaso']],['vespa',2,6,1,['runica']],['rama',2,2,3,['vendaval']],['fresno',2,4,3,['sabio']],['musgo',2,3,1,['troll']]]},[0.21,0.39,0.525,0.37,0.445,1.15,0.995,0.97,0.34,0.58,0.39,0.55,0.445,0.445,0.39,0.42,0.37,0.55,0.445,0.39,0.37,0.42,0.835]),
+ nivelEquipos(13,'Arrecife de tormentas',2,'de la Tormenta',['nerea','kalima','coral','abisal','ceniza','soberana','nebula','lira'],null,[0.435,0.465,0.4,0.58,0.835,0.955,0.89,0.78,0.49,0.835,0.545,0.605,0.435,0.4,0.345,0.4,0.32,0.49,0.375,0.345,0.375,0.375,0.2]),
+ nivelEquipos(14,'Umbral eterno',3,'del Umbral eterno',['ebano','eclipse','ceniza','sombrio','espina','titan','abisal','martillo'],null,[0.365,0.58,0.335,0.46,0.52,0.825,0.46,0.675,0.43,0.43,0.4,0.52,0.49,0.46,0.365,0.4,0.335,0.52,0.4,0.4,0.4,0.4,0.245]),
  nivelEquipos(15,'Cumbre del Draco',4,'de la Cumbre',['soberana','titan','crisol','abisal','eclipse','alba','espina','nebula'],
-  {m:'draco',x:1,c:3,f:1,premio:'draco',nombre:'El Draco antiguo',escolta:[Rd('lobo',1,0,2),Rd('lobo',5,0,2),['titan',2,3,0,['muralla']],['abisal',2,2,0,['pua']],['eclipse',2,1,3,['vendaval']],['crisol',2,5,3,['sabio']],['soberana',2,3,3,['precision']]]},[0.285,0.44,0.235,0.26,0.465,0.78,0.57,0.755,0.44,0.39,0.365,0.365,0.285,0.31,0.21,0.26,0.21,0.34,0.18,0.18,0.18,0.18,0.675]),
+  {m:'draco',x:1,c:3,f:1,premio:'draco',nombre:'El Draco antiguo',escolta:[Rd('lobo',1,0,2),Rd('lobo',5,0,2),['titan',2,3,0,['muralla']],['abisal',2,2,0,['pua']],['eclipse',2,1,3,['vendaval']],['crisol',2,5,3,['sabio']],['soberana',2,3,3,['precision']]]},[0.31,0.475,0.255,0.28,0.5,0.845,0.615,0.815,0.475,0.42,0.395,0.395,0.31,0.335,0.225,0.28,0.225,0.365,0.195,0.195,0.195,0.195,0.73]),
 );
 // ---- Mundo 2, Caverna profunda (niveles 16-30) ----
 // Equipos de campeones escoltados por monstruos de la cueva en todas las fases (menos en las últimas).
@@ -2843,18 +2843,18 @@ function nivelCueva(n,nombre,tema,de,mons,clan,jefe,K){
   return {n,nombre,tema,premio:jefe?jefe.premio:null,fases};
 }
 NIVELES.push(
- nivelCueva(16,'Boca de la caverna',5,'de la Boca',{goblin:3,hondero:2},['tovo','brasa','sombrio','lira','musgo','rama','vespa','coral'],null,[0.395,0.655,0.56,0.585,0.63,1.145,0.84,0.96,0.61,0.68,0.515,0.82,0.63,0.63,0.56,0.61,0.68,0.68,0.655,0.655,0.515,0.61,0.47]),
- nivelCueva(17,'Nido de murciélagos',5,'del Nido',{murcielago:3,goblin:1},['ceniza','sombrio','ebano','eclipse','vespa','martillo','lira','nerea'],null,[0.345,0.67,0.62,0.505,0.69,1.08,0.875,0.83,0.53,0.785,0.44,0.735,0.485,0.555,0.46,0.53,0.555,0.645,0.6,0.555,0.485,0.46,0.345]),
- nivelCueva(18,'Galería de setas',5,'de las Setas',{arana:2,murcielago:1,hondero:1},['musgo','fresno','rama','alba','nebula','ceniza','espina','kalima'],null,[0.4,0.63,0.605,0.275,0.375,0.93,0.58,0.88,0.655,0.58,0.425,0.755,0.45,0.505,0.505,0.475,0.605,0.505,0.605,0.605,0.475,0.475,0.325]),
- nivelCueva(19,'Puente del trol',5,'del Puente',{trol:1,goblin:2,hondero:2},['yunque','tovo','martillo','crisol','abisal','brasa','coral','titan'],null,[0.48,0.48,0.43,0.6,0.5,1.125,0.765,0.72,0.405,0.5,0.48,0.55,0.43,0.55,0.55,0.525,0.5,0.48,0.48,0.525,0.405,0.335,0.335]),
+ nivelCueva(16,'Boca de la caverna',5,'de la Boca',{goblin:3,hondero:2},['tovo','brasa','sombrio','lira','musgo','rama','vespa','coral'],null,[0.415,0.69,0.59,0.615,0.665,1.205,0.885,1.01,0.64,0.715,0.54,0.865,0.665,0.665,0.59,0.64,0.715,0.715,0.69,0.69,0.54,0.64,0.495]),
+ nivelCueva(17,'Nido de murciélagos',5,'del Nido',{murcielago:3,goblin:1},['ceniza','sombrio','ebano','eclipse','vespa','martillo','lira','nerea'],null,[0.375,0.73,0.675,0.55,0.75,1.175,0.95,0.905,0.575,0.855,0.48,0.8,0.525,0.605,0.5,0.575,0.605,0.7,0.655,0.605,0.525,0.5,0.375]),
+ nivelCueva(18,'Galería de setas',5,'de las Setas',{arana:2,murcielago:1,hondero:1},['musgo','fresno','rama','alba','nebula','ceniza','espina','kalima'],null,[0.41,0.645,0.62,0.28,0.385,0.955,0.595,0.9,0.67,0.595,0.435,0.775,0.46,0.515,0.515,0.485,0.62,0.515,0.62,0.62,0.485,0.485,0.335]),
+ nivelCueva(19,'Puente del trol',5,'del Puente',{trol:1,goblin:2,hondero:2},['yunque','tovo','martillo','crisol','abisal','brasa','coral','titan'],null,[0.495,0.495,0.445,0.62,0.515,1.165,0.79,0.745,0.42,0.515,0.495,0.57,0.445,0.57,0.57,0.545,0.515,0.495,0.495,0.545,0.42,0.345,0.345]),
  nivelCueva(20,'Salón del Rey Goblin',5,'del Salón',{goblin:3,hondero:2,trol:1},['tovo','yunque','martillo','brasa','eclipse','ebano','crisol','kalima'],
-  {m:'reygoblin',x:1.2,c:3,f:1,premio:'reygoblin',nombre:'El Rey Goblin',escolta:[Rd('trol',2,0,1.2),Rd('trol',4,0,1.2),Rd('goblin',3,0,2),Rd('hondero',1,3,2),Rd('hondero',5,3,2),['martillo',2,0,1,['ocaso']],['crisol',2,3,3,['sabio']],['eclipse',2,6,3,['vendaval']]]},[0.255,0.46,0.46,0.325,0.485,1.06,0.83,0.855,0.37,0.485,0.415,0.625,0.37,0.625,0.485,0.46,0.44,0.415,0.46,0.37,0.415,0.46,0.9]),
- nivelCueva(21,'Minas de cristal',6,'de las Minas',{goblin:2,hondero:2,trol:1},['kalima','nerea','coral','abisal','lira','nebula','soberana','alba'],null,[0.31,0.31,0.38,0.43,0.36,1.17,0.86,0.86,0.575,0.525,0.475,0.62,0.595,0.55,0.5,0.43,0.55,0.595,0.405,0.405,0.405,0.405,0.19]),
- nivelCueva(22,'Vagonetas perdidas',6,'de las Vagonetas',{murcielago:2,arana:2,goblin:1},['sombrio','vespa','martillo','espina','eclipse','ceniza','ebano','brasa'],null,[0.455,0.625,0.53,0.67,0.505,0.695,0.765,0.79,0.6,0.41,0.43,0.575,0.625,0.55,0.505,0.53,0.55,0.6,0.505,0.55,0.505,0.48,0.31]),
+  {m:'reygoblin',x:1.2,c:3,f:1,premio:'reygoblin',nombre:'El Rey Goblin',escolta:[Rd('trol',2,0,1.2),Rd('trol',4,0,1.2),Rd('goblin',3,0,2),Rd('hondero',1,3,2),Rd('hondero',5,3,2),['martillo',2,0,1,['ocaso']],['crisol',2,3,3,['sabio']],['eclipse',2,6,3,['vendaval']]]},[0.275,0.495,0.495,0.35,0.52,1.14,0.895,0.92,0.4,0.52,0.445,0.675,0.4,0.675,0.52,0.495,0.475,0.445,0.495,0.4,0.445,0.495,0.97]),
+ nivelCueva(21,'Minas de cristal',6,'de las Minas',{goblin:2,hondero:2,trol:1},['kalima','nerea','coral','abisal','lira','nebula','soberana','alba'],null,[0.325,0.325,0.4,0.45,0.38,1.225,0.9,0.9,0.605,0.55,0.5,0.65,0.625,0.575,0.525,0.45,0.575,0.625,0.425,0.425,0.425,0.425,0.2]),
+ nivelCueva(22,'Vagonetas perdidas',6,'de las Vagonetas',{murcielago:2,arana:2,goblin:1},['sombrio','vespa','martillo','espina','eclipse','ceniza','ebano','brasa'],null,[0.48,0.66,0.56,0.705,0.53,0.73,0.805,0.83,0.63,0.43,0.455,0.605,0.66,0.58,0.53,0.56,0.58,0.63,0.53,0.58,0.53,0.505,0.325]),
  nivelCueva(23,'Lago subterráneo',6,'del Lago',{arana:2,trol:1,murcielago:1},['nerea','coral','kalima','abisal','ceniza','crisol','fresno','soberana'],null,[0.555,0.505,0.505,0.53,0.48,0.745,0.625,0.865,0.505,0.625,0.435,0.555,0.6,0.505,0.36,0.6,0.505,0.505,0.435,0.505,0.435,0.41,0.29]),
  nivelCueva(24,'Veta profunda',6,'de la Veta',{goblin:1,hondero:1,murcielago:1,arana:1,trol:1},['titan','crisol','soberana','abisal','alba','espina','eclipse','nebula'],null,[0.325,0.58,0.37,0.44,0.465,0.51,0.605,0.56,0.44,0.37,0.325,0.44,0.325,0.35,0.35,0.35,0.42,0.395,0.37,0.42,0.37,0.3,0.23]),
  nivelCueva(25,'Cubil de la Reina Araña',6,'del Cubil',{arana:4,murcielago:1},['sombrio','vespa','martillo','espina','ceniza','eclipse','ebano','fresno'],
-  {m:'reinaarana',x:1.1,c:3,f:1,premio:'reinaarana',nombre:'La Reina Araña',escolta:[Rd('arana',1,0,2.2),Rd('arana',5,0,2.2),Rd('arana',3,0,2.2),['espina',2,0,1,['ocaso']],['ebano',2,2,0,['muralla']],['ceniza',2,2,3,['sabio']],['eclipse',2,4,3,['vendaval']]]},[0.4,0.615,0.355,0.565,0.47,0.66,0.59,0.59,0.355,0.45,0.545,0.45,0.495,0.495,0.425,0.545,0.47,0.545,0.52,0.52,0.47,0.47,0.825]),
+  {m:'reinaarana',x:1.1,c:3,f:1,premio:'reinaarana',nombre:'La Reina Araña',escolta:[Rd('arana',1,0,2.2),Rd('arana',5,0,2.2),Rd('arana',3,0,2.2),['espina',2,0,1,['ocaso']],['ebano',2,2,0,['muralla']],['ceniza',2,2,3,['sabio']],['eclipse',2,4,3,['vendaval']]]},[0.42,0.65,0.375,0.595,0.495,0.695,0.62,0.62,0.375,0.475,0.575,0.475,0.52,0.52,0.45,0.575,0.495,0.575,0.55,0.55,0.495,0.495,0.87]),
  nivelCueva(26,'Escalinata carmesí',7,'de la Escalinata',{murcielago:3,goblin:1},['ceniza','ebano','eclipse','sombrio','soberana','nebula','lira','vespa'],null,[0.525,0.86,0.6,0.6,0.86,1.385,0.94,1.02,0.55,0.86,0.6,0.81,0.655,0.6,0.495,0.55,0.6,0.575,0.575,0.575,0.55,0.445,0.365]),
  nivelCueva(27,'Cripta de gárgolas',7,'de la Cripta',{trol:1,murcielago:2,arana:1},['titan','ebano','abisal','yunque','crisol','espina','eclipse','martillo'],null,[0.285,0.285,0.435,0.335,0.385,0.72,0.515,0.82,0.335,0.385,0.385,0.645,0.515,0.49,0.435,0.465,0.49,0.54,0.54,0.49,0.41,0.515,0.285]),
  nivelCueva(28,'Salón de los espejos',7,'de los Espejos',{murcielago:2,hondero:1,arana:1},['soberana','crisol','ceniza','nerea','fresno','lira','alba','nebula'],null,[0.485,0.565,0.46,0.675,0.94,1.265,1.075,0.86,0.645,0.915,0.89,0.7,0.59,0.915,0.62,0.565,0.645,0.59,0.565,0.565,0.645,0.51,0.375]),
@@ -2879,7 +2879,7 @@ function histLoad(){let h=null;try{h=JSON.parse(localStorage.getItem(HIST_KEY))}
   if(!Array.isArray(h.mazo)||h.mazo.some(id=>!h.col.includes(id)))h.mazo=mazoValido(h.col).slice(0,MAZO_N);
   else if(excesos(h.mazo).length)h.mazo=mazoValido(h.mazo); // mazos guardados antes de los límites por rasgo
   return h}
-// ---- límites del mazo: de cada rasgo, como mucho tantos campeones como su último umbral (Forja y Monstruo 6, el resto 4) ----
+// ---- límites del mazo: de cada rasgo, como mucho tantos campeones como su último umbral (Forja y Monstruo 6, Tirador 5, el resto 4) ----
 const traitMax=t=>TRAITS[t].tiers[TRAITS[t].tiers.length-1];
 function traitCuenta(ids){const c={};ids.forEach(id=>CH[id].traits.forEach(t=>c[t]=(c[t]||0)+1));return c}
 function excesos(ids){const c=traitCuenta(ids);return Object.keys(c).filter(t=>c[t]>traitMax(t))}
