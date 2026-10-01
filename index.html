@@ -531,7 +531,7 @@ body.historia .stage .lbl{text-transform:none;letter-spacing:.02em}
 
 /* ===== menú principal ===== */
 .overlay.menuPrin{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,2.5vh,26px);padding:14px 16px 24px;background:#07090c;backdrop-filter:none;overflow:auto}
-.mpFondo{position:fixed;inset:-30px;background:center/cover no-repeat;filter:blur(14px) brightness(.32) saturate(1.2);z-index:-1;transform:scale(1.08)}
+.mpFondo{position:fixed;inset:0;background:center/cover no-repeat;filter:brightness(.6) saturate(1.1);z-index:-1}
 .menuPrin::after{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 35%,rgba(233,140,40,.18),transparent 60%),linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.65))}
 .mpTop{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
 .menuPrin .mpLogo{margin-top:56px}
@@ -1628,7 +1628,7 @@ const SPRITE_SRC={"brasa":{"ax":0.499,"src":"recursos/sprites/brasa/idle.webp?v=
 // Iconos de objetos: los incrusta tools/build.py desde assets/objetos/<id>.webp. Sin icono, se usa el cuadrado de color con letra.
 const ITEM_IMG={"ancestral":"recursos/objetos/ancestral.webp?v=e41e2bfa","arco":"recursos/objetos/arco.webp?v=ce26f340","bastionob":"recursos/objetos/bastionob.webp?v=b006918a","batuta":"recursos/objetos/batuta.webp?v=d8fc6452","brisa":"recursos/objetos/brisa.webp?v=d124c003","caliz":"recursos/objetos/caliz.webp?v=5a39aac2","certero":"recursos/objetos/certero.webp?v=80cdfb87","corazavi":"recursos/objetos/corazavi.webp?v=322fbe43","cota":"recursos/objetos/cota.webp?v=1f5b320e","cristal":"recursos/objetos/cristal.webp?v=76d44309","duelista":"recursos/objetos/duelista.webp?v=d68d1f1d","egida":"recursos/objetos/egida.webp?v=5aa6eb6e","espejo":"recursos/objetos/espejo.webp?v=c4f37076","filoarc":"recursos/objetos/filoarc.webp?v=025959fb","fuente":"recursos/objetos/fuente.webp?v=cbf9633d","gema":"recursos/objetos/gema.webp?v=b7f4a596","gigante":"recursos/objetos/gigante.webp?v=ab118242","guantel":"recursos/objetos/guantel.webp?v=0b49b6bd","hachague":"recursos/objetos/hachague.webp?v=efda8211","hoja":"recursos/objetos/hoja.webp?v=7c2ca758","hojamana":"recursos/objetos/hojamana.webp?v=854a9bd6","lagrima":"recursos/objetos/lagrima.webp?v=cf1e22b9","mandoble":"recursos/objetos/mandoble.webp?v=6c1c2f2c","manto":"recursos/objetos/manto.webp?v=ee584098","mareamnt":"recursos/objetos/mareamnt.webp?v=901f54de","martir":"recursos/objetos/martir.webp?v=25a04303","muralla":"recursos/objetos/muralla.webp?v=06466b25","ocaso":"recursos/objetos/ocaso.webp?v=49a3c65b","ojo":"recursos/objetos/ojo.webp?v=369d9c70","penitente":"recursos/objetos/penitente.webp?v=a1fbfe57","precision":"recursos/objetos/precision.webp?v=ce5df303","pua":"recursos/objetos/pua.webp?v=ae326f6d","rompecor":"recursos/objetos/rompecor.webp?v=b8db97b6","runica":"recursos/objetos/runica.webp?v=0d032ffb","sabio":"recursos/objetos/sabio.webp?v=4f68d080","savia":"recursos/objetos/savia.webp?v=d6c564a5","talisman":"recursos/objetos/talisman.webp?v=e64f4726","tambor":"recursos/objetos/tambor.webp?v=e31d1a2e","tormenta":"recursos/objetos/tormenta.webp?v=1e176cec","troll":"recursos/objetos/troll.webp?v=33ef3e12","vampira":"recursos/objetos/vampira.webp?v=7e9d5585","vara":"recursos/objetos/vara.webp?v=d882211f","velo":"recursos/objetos/velo.webp?v=b9e86a0c","vendaval":"recursos/objetos/vendaval.webp?v=4583a1af"};
 // imágenes del menú principal (assets/menu/*.webp)
-const MENU_IMG={"arena":"recursos/menu/arena.webp?v=0077d494","historia":"recursos/menu/historia.webp?v=ce8c99c2"};
+const MENU_IMG={"arena":"recursos/menu/arena.webp?v=46da9660","fondo":"recursos/menu/fondo.webp?v=19630fe2","historia":"recursos/menu/historia.webp?v=634c3a4f"};
 const ITEM_PIC={};for(const k in ITEM_IMG){const im=new Image();im.src=ITEM_IMG[k];ITEM_PIC[k]=im}
 function itemBox(it,cls,style){const I=ITEMS[it],src=ITEM_IMG[it];
   return `<span class="item${cls?' '+cls:''}${I.full?' full':''}${src?' pic':''}" style="${src?'':'background:'+I.col+';'}${style||''}">${src?`<img src="${src}" alt="${I.n}" draggable="false">`:I.g}</span>`}
@@ -2768,7 +2768,7 @@ window.addEventListener('resize',()=>{if(!$('#storyOv').hidden)renderMap(false)}
 $('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};
 function showBest(){let b=null;try{b=localStorage.getItem('crisol_best')}catch(e){}$('#bestTxt').textContent=b?`8 jugadores · tu mejor puesto: ${ord(b)}`:'8 jugadores · el último en pie gana';
   // menú principal: imágenes de las cartas, progreso de la Historia y del álbum
-  $('#mpImgHist').style.backgroundImage=`url(${MENU_IMG.historia})`;$('#mpImgArena').style.backgroundImage=`url(${MENU_IMG.arena})`;$('#startOv').querySelector('.mpFondo').style.backgroundImage=`url(${MENU_IMG.arena})`;
+  $('#mpImgHist').style.backgroundImage=`url(${MENU_IMG.historia})`;$('#mpImgArena').style.backgroundImage=`url(${MENU_IMG.arena})`;$('#startOv').querySelector('.mpFondo').style.backgroundImage=`url(${MENU_IMG.fondo||MENU_IMG.arena})`;
   const h=histLoad(),tot=NIVELES.length;$('#mpHistSub').textContent=h.hechos.length?`${h.hechos.length}/${tot} niveles superados`:'Mundos con jefes · tu mazo de campeones';
   $('#mpAlbumSub').textContent=`${ALBUM.filter(id=>h.col.includes(id)).length}/${ALBUM.length} campeones`}
 
