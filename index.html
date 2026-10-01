@@ -1,6 +1,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Arena del Crisol</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c1216">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crisol">
+<link rel="apple-touch-icon" href="icono-180.png">
+<link rel="icon" href="icono-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
@@ -451,11 +459,54 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .mapa.conImg .mnode.locked{opacity:.85;font-size:15px;background:radial-gradient(circle at 35% 30%,#4a5560,#20282e);filter:saturate(.6)}
 .mapa.conImg .mnode small{top:46px;font-size:11px;background:rgba(0,0,0,.6)}
 .mapa.conImg .mprem{width:28px;height:28px;right:-16px;top:-12px}
+/* ===== menú de inicio, perfil, pausa ===== */
+.perfil{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 16px}
+.perfil img{width:52px;height:52px;object-fit:contain}
+.perfil div{display:flex;flex-direction:column;flex:1;min-width:0}.perfil b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold-hi)}
+.menuExtra{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.menuExtra .btn{justify-content:center;flex:1 1 150px}
+.pausaBtns{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.menuBtn{padding:6px 8px;color:var(--text)}
+#perfilOv .avpick button img{width:60px;height:60px}
+/* ===== mazo: rasgos del mazo y de cada campeón ===== */
+#deckTraits{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.dtr{display:inline-flex;align-items:baseline;gap:4px;font-size:13px;font-weight:600;padding:2px 8px;border-radius:6px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 22%,transparent)}
+.dtr b{font-size:15px}.dtr small{color:var(--muted);font-weight:500}
+.dtr.lleno{box-shadow:0 0 0 1px var(--gold-hi);background:color-mix(in srgb,var(--c) 40%,transparent)}
+#deckGrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.dk .tps{display:flex;flex-wrap:wrap;justify-content:center;gap:2px}
+.dk .tp b{display:inline}.dk .tp i{display:none}.dk .tp{font-size:9px;line-height:13px;padding:0 4px}
+.dk.tope{opacity:.22}
+/* ===== álbum ===== */
+.album #albumGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;max-height:72vh;overflow:auto;margin-top:12px;padding:2px}
+.alc{position:relative;background:linear-gradient(180deg,#1d2b34,#131c22);border:1px solid var(--line);border-top:3px solid var(--cc);border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.alc:hover{border-color:var(--gold-hi)}
+.aln{position:absolute;left:7px;top:5px;font-size:11px;color:var(--muted);font-weight:700}
+.alimg{width:88px;height:96px;display:grid;place-items:end center}
+.alimg img{max-width:100%;max-height:100%;object-fit:contain}
+.alc.bloq .alimg img{filter:brightness(0);opacity:.75}
+.alc b{font-family:var(--display);font-weight:400;font-size:16px;color:var(--gold-hi)}
+.alc.bloq b{color:var(--muted)}
+.alc small{font-size:11px;color:var(--muted)}
+.ficha{position:relative;max-width:820px}
+.ficha .ix{position:absolute;right:12px;top:8px;background:none;border:0;color:var(--muted);font-size:26px}
+.fiWrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px}
+.fiEscena{display:flex;flex-direction:column;align-items:center;gap:8px}
+#fiCv{width:300px;height:300px;border-radius:12px;background:radial-gradient(circle at 50% 70%,#22323c,#0d1418 75%)}
+.fiModos{margin:0;flex-wrap:wrap}.fiModos button{padding:5px 9px;font-size:13px}
+.fiDatos h2{margin:2px 0 6px}
+.fiHist{font-style:italic;color:#c9d6dd;margin:8px 0}
+.fiTraits p{margin:4px 0;font-size:14px}
+.fiStats{border-collapse:collapse;margin:8px 0;font-size:14px}.fiStats th{text-align:left;color:var(--muted);font-weight:600;padding-right:14px}.fiStats td{padding:2px 12px;text-align:right;font-variant-numeric:tabular-nums}
+.fiNivel{color:var(--gold-hi);font-size:14px}
+.fiDatos .tps{display:inline-flex;gap:4px;margin-left:6px}.fiDatos .tp b{display:inline}.fiDatos .tp i{display:none}
+@media (max-width:760px){.fiWrap{grid-template-columns:1fr}.fiEscena canvas{width:240px!important;height:240px!important}}
 
 </style>
 
 <div id="app">
   <header id="top">
+    <button id="bPausa" class="iconbtn menuBtn" title="Menú (Esc)" aria-label="Menú"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" stroke-width="2"/></svg></button>
     <div class="brand">Arena del Crisol</div>
     <div class="stage"><span class="lbl">Ronda</span><span id="stageLbl">1-1</span><div id="pips"></div></div>
     <div class="stat hp"><span class="lbl">Vida</span><b id="hpv">100</b></div>
@@ -512,19 +563,11 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 </div>
 
 <div class="overlay" id="startOv">
-  <div class="modal">
-    <div class="lbl" style="margin-bottom:8px">Autobattler táctico · 8 jugadores</div>
+  <div class="modal inicio">
+    <div class="lbl" style="margin-bottom:8px">Autobattler táctico</div>
     <h1>Arena del Crisol</h1>
     <p class="sub">Recluta campeones, combínalos y sé el último en pie.</p>
-    <ul class="rules">
-      <li>Compra campeones en la tienda con oro. <b>Tres copias iguales</b> se fusionan en una de 2★, y tres de 2★ en una de 3★.</li>
-      <li>Tu <b>nivel</b> marca cuántos campeones caben en el tablero. Arrastra del banquillo a las casillas de tu lado.</li>
-      <li>Ganas 1 de <b>interés</b> por cada 10 de oro guardado (máx. 5) y oro extra por rachas de victorias o derrotas.</li>
-      <li>Los rasgos compartidos activan <b>sinergias</b>. Los combates son automáticos: prepara bien tu formación.</li>
-      <li>Atajos: <kbd>D</kbd> refrescar · <kbd>F</kbd> subir nivel · <kbd>E</kbd> vender la unidad bajo el cursor · <kbd>Espacio</kbd> luchar.</li>
-    </ul>
-    <div class="lbl" style="margin-bottom:6px">Tu avatar</div>
-    <div class="avpick" id="avPick"></div>
+    <div class="perfil"><img id="perfilAv" alt=""><div><span class="lbl">Tu perfil</span><b id="perfilNom">—</b></div><button class="btn" id="bPerfil">Cambiar</button></div>
     <div class="modes">
       <button class="big" id="bStory">Modo Historia<small>Niveles con jefe · tu mazo de campeones</small></button>
     </div>
@@ -533,7 +576,50 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
       <button data-d="facil" aria-pressed="false">Fácil</button><button data-d="normal" aria-pressed="true">Normal</button><button data-d="dificil" aria-pressed="false">Difícil</button>
     </div>
     <div class="row"><button class="big alt" id="bStart">Arena libre</button><span class="best" id="bestTxt"></span></div>
+    <div class="menuExtra"><button class="btn" id="bAlbum">Álbum de campeones</button><button class="btn" id="bReglas">Cómo se juega</button><button class="btn" id="bInstalar" hidden>Instalar en el móvil</button></div>
   </div>
+</div>
+
+<div class="overlay" id="reglasOv" hidden>
+  <div class="modal">
+    <h2>Cómo se juega</h2>
+    <ul class="rules">
+      <li>Compra campeones en la tienda con oro. <b>Tres copias iguales</b> se fusionan en una de 2★, y tres de 2★ en una de 3★.</li>
+      <li>Tu <b>nivel</b> marca cuántos campeones caben en el tablero. Arrastra del banquillo a las casillas de tu lado.</li>
+      <li>Ganas 1 de <b>interés</b> por cada 10 de oro guardado (máx. 5) y oro extra por rachas de victorias o derrotas.</li>
+      <li>Los rasgos compartidos activan <b>sinergias</b>. Los combates son automáticos: prepara bien tu formación.</li>
+      <li>Atajos: <kbd>D</kbd> refrescar · <kbd>F</kbd> subir nivel · <kbd>E</kbd> vender la unidad bajo el cursor · <kbd>Espacio</kbd> luchar.</li>
+    </ul>
+    <button class="big" id="bReglasOk">Entendido</button>
+  </div>
+</div>
+
+<div class="overlay" id="perfilOv" hidden>
+  <div class="modal">
+    <h2>Tu perfil</h2>
+    <p class="sub"></p>
+    <div class="avpick" id="avPick"></div>
+    <button class="big" id="bPerfilOk">Listo</button>
+  </div>
+</div>
+
+<div class="overlay" id="pausaOv" hidden>
+  <div class="modal" style="max-width:420px;text-align:center">
+    <h2>Partida en pausa</h2>
+    <p class="sub" id="pausaSub"></p>
+    <div class="pausaBtns"><button class="big" id="bPausaSeguir">Continuar</button><button class="big alt" id="bPausaSalir">Salir al menú</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="albumOv" hidden>
+  <div class="modal wide album">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">Álbum <span id="albumCount" class="best"></span></h2><button class="big" id="bAlbumOk">Cerrar</button></div>
+    <div id="albumGrid"></div>
+  </div>
+</div>
+
+<div class="overlay" id="fichaOv" hidden>
+  <div class="modal wide ficha"><button class="ix" id="bFichaX" aria-label="Cerrar">×</button><div id="fichaBody"></div></div>
 </div>
 
 <div class="overlay" id="carOv" hidden>
@@ -563,7 +649,8 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 <div class="overlay" id="deckOv" hidden>
   <div class="modal wide">
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">Tu mazo <span id="deckCount" class="best"></span></h2><button class="big" id="bDeckOk">Listo</button></div>
-    <p class="sub" style="margin:6px 0 8px;font-size:14px">La tienda solo ofrece los campeones de tu mazo. Toca un campeón para quitarlo o añadirlo. <span id="deckWarn" style="color:#ffb86b"></span></p>
+    <p class="sub" style="margin:6px 0 8px;font-size:14px">La tienda solo ofrece los campeones de tu mazo. Toca un campeón para quitarlo o añadirlo. De cada sinergia caben como mucho tantos campeones como su último umbral. <span id="deckWarn" style="color:#ffb86b"></span></p>
+    <div id="deckTraits"></div>
     <div id="deckGrid"></div>
   </div>
 </div>
@@ -592,7 +679,7 @@ const STAR_COL=['#c9955b','#d6e0e4','#ffd24a'];
 const TRAITS={
  forja:{n:'Forja',kind:'Origen',col:'#e2703a',tiers:[2,4,6],vals:[20,45,80],d:v=>`Unidades de Forja: +${v} de armadura y resistencia mágica.`},
  marea:{n:'Marea',kind:'Origen',col:'#38a9cc',tiers:[2,4],vals:[4,10],d:v=>`Unidades de Marea: regeneran ${v} de maná por segundo.`},
- umbra:{n:'Umbra',kind:'Origen',col:'#8f70dc',tiers:[2,4],vals:[20,50],d:v=>`Unidades de Umbra: +${v}% de daño infligido.`},
+ umbra:{n:'Siniestro',kind:'Origen',col:'#8f70dc',tiers:[2,4],vals:[20,50],d:v=>`Unidades siniestras: +${v}% de daño infligido.`},
  bosque:{n:'Bosque',kind:'Origen',col:'#62b04c',tiers:[2,4],vals:[2,5],d:v=>`Unidades de Bosque: regeneran un ${v}% de su vida máxima por segundo.`},
  astral:{n:'Astral',kind:'Origen',col:'#e3c455',tiers:[2,4],vals:[15,35],d:v=>`Todo el equipo: +${v}% de velocidad de ataque.`},
  tirador:{n:'Tirador',kind:'Clase',col:'#d7a15a',tiers:[2,4],vals:[30,75],d:v=>`Tiradores: +${v}% de velocidad de ataque.`},
@@ -780,6 +867,8 @@ const AI_NAMES=[['Hidra','#e07a5f'],['Corvo','#8d99ae'],['Lince','#f2cc8f'],['Br
 const DIFF={facil:{lvlOff:-1,reserve:40,roll:3,skip:.3,scout:0},normal:{lvlOff:0,reserve:30,roll:6,skip:.05,scout:.35},dificil:{lvlOff:0,reserve:18,roll:14,skip:0,scout:.7}};
 
 // ================= HELPERS =================
+// tras(): setTimeout ligado a la partida actual; si se sale al menú (S cambia), no se ejecuta
+function tras(fn,ms){const g=S;return setTimeout(()=>{if(S&&S===g)fn()},ms)}
 const $=s=>document.querySelector(s);
 const rnd=Math.random, pick=a=>a[Math.floor(rnd()*a.length)];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -801,7 +890,7 @@ function newGame(diff,historia){
   (historia?historia.mazo:ARENA_IDS).forEach(id=>S.pool[id]=POOL_SIZE[CH[id].cost-1]);
   S.players.push(newPlayer('Tú',true,'#53c476'));
   if(!historia)AI_NAMES.forEach(([n,c])=>S.players.push(newPlayer(n,false,c)));
-  S.players[0].av=myAv;const rest=AVK.filter(k=>k!==myAv);S.players.slice(1).forEach((p,i)=>p.av=rest[i%rest.length]);
+  S.players[0].av=myAv||'zorro';const rest=AVK.filter(k=>k!==myAv);S.players.slice(1).forEach((p,i)=>p.av=rest[i%rest.length]);
 }
 const H=()=>S.players[0];
 function allUnits(p){const o=[];p.board.forEach((u,i)=>u&&o.push({u,where:'board',i}));p.bench.forEach((u,i)=>u&&o.push({u,where:'bench',i}));return o}
@@ -1350,11 +1439,11 @@ function loot(p,kills,k){
 function resolveCombat(){
   const cb=S.combat,hu=H();let title='',sub='',cls='';
   if(S.mode==='historia'){
-    if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner(cb.winner===1?'Derrota':'Empate','Tu equipo ha caído','lose');updateHUD();setTimeout(()=>storyLost(),2100);return}
+    if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner(cb.winner===1?'Derrota':'Empate','Tu equipo ha caído','lose');updateHUD();tras(()=>storyLost(),2100);return}
     const L=storyLoot(hu);
     title='Victoria';cls='win';sub=L.got.length||L.g?('Botín: '+[...L.got.map(i=>ITEMS[i].n),L.g?`+${L.g} de oro`:''].filter(Boolean).join(', ')):'';
     S.phase='result';renderDmg();S.avRes={win:true,t:performance.now()/1000};sfx('win');banner(title,sub,cls);updateHUD();
-    setTimeout(()=>storyNext(),2100);return;
+    tras(()=>storyNext(),2100);return;
   }
   if(S.type==='pve'){
     const kills=cb.f.filter(f=>f.team===1&&!f.alive).length;
@@ -1380,7 +1469,7 @@ function resolveCombat(){
   for(const p of dying){p.alive=false;p.place=aliveN;aliveN--;releaseUnits(p);if(!p.human)log(`${p.name} queda eliminado (${ord(p.place)})`)}
   S.phase='result';renderDmg();S.avRes={win:cls==='win',t:performance.now()/1000};sfx(cls==='win'?'win':'lose');
   banner(title,sub,cls);updateHUD();
-  setTimeout(()=>{
+  tras(()=>{
     if(!hu.alive)return gameOver(hu.place);
     if(S.players.filter(p=>p.alive).length===1){hu.place=1;return gameOver(1)}
     nextRound();
@@ -1409,7 +1498,7 @@ function openCarousel(){
 function carSpots(){const s=M.size,cx=M.W/2,cy=world(0,3).y*s+s*.6,rx=Math.min(M.W*.36,s*4.2),ry=s*2.3;
   return (S.carOpts||[]).map((o,i)=>{const a=Math.PI/2+i*Math.PI*2/5;return {i,x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry}})}
 function carouselAt(x,y){let best=-1,bd=(M.size*1.1)**2;for(const p of carSpots()){const d=(x-p.x)**2+(y-(p.y-M.size*.5))**2;if(d<bd){bd=d;best=p.i}}return best}
-function pickCarousel(i){if(S.carPick||i<0)return;S.carPick={i,t:performance.now()/1000};sfx('buy');setTimeout(()=>chooseCarousel(i),650)}
+function pickCarousel(i){if(S.carPick||i<0)return;S.carPick={i,t:performance.now()/1000};sfx('buy');tras(()=>chooseCarousel(i),650)}
 function chooseCarousel(i){
   const o=S.carOpts[i],hu=H(),C=CH[o.id];
   const res=giveUnit(hu,o.id);hu.items.push(o.item); // el objeto va al inventario, no al campeón
@@ -2547,11 +2636,12 @@ $('#bFight').onclick=()=>startCombat();
 ['sp1','sp2','sp4'].forEach(id=>{$('#'+id).onclick=()=>{S&&(S.speed=+id.slice(2));['sp1','sp2','sp4'].forEach(j=>$('#'+j).setAttribute('aria-pressed',j===id))}});
 window.addEventListener('keydown',e=>{
   if(!S||!$('#startOv').hidden)return;
+  if(!$('#pausaOv').hidden&&e.key!=='Escape')return;
   if(e.key==='d'||e.key==='D')$('#bRoll').click();
   else if(e.key==='f'||e.key==='F')$('#bXP').click();
   else if(e.key===' '){e.preventDefault();startCombat()}
   else if((e.key==='e'||e.key==='E')&&S.phase==='planning'&&lastCanvas){const loc=locFromHit(hitAt(...lastCanvas));if(loc&&H()[loc.where][loc.i]){const v=sellAt(H(),loc.where,loc.i);toast(`Vendido por ${v} de oro`);S.sel=null;hideInfo();updateHUD()}}
-  else if(e.key==='Escape'){S.sel=null;S.selF=null;hideInfo()}
+  else if(e.key==='Escape'){if(!$('#pausaOv').hidden){$('#bPausaSeguir').click();return}if(S.sel||S.selF||!$('#info').hidden){S.sel=null;S.selF=null;hideInfo()}else abrirPausa()}
 });
 // paneles laterales en móvil (sinergias / jugadores) y pantalla completa
 function drawer(which){const b=document.body,open=which&&!b.classList.contains(which);b.classList.remove('showL','showP');if(open)b.classList.add(which);$('#scrim').hidden=!open}
@@ -2559,14 +2649,31 @@ $('#bShopTab').onclick=()=>document.body.classList.toggle('ver-tienda');
 $('#bTraits').onclick=()=>drawer('showL');$('#bPlayers').onclick=()=>drawer('showP');$('#scrim').onclick=()=>drawer(null);
 if(document.fullscreenEnabled){const bf=$('#bFull');bf.hidden=false;bf.onclick=()=>{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else document.documentElement.requestFullscreen().catch(()=>{})};
   document.addEventListener('fullscreenchange',()=>setTimeout(layout,60))}
-let diff='normal',myAv='zorro';
-function renderAvPick(){const box=$('#avPick');box.innerHTML='';AVK.forEach(k=>{const b=document.createElement('button');b.setAttribute('aria-pressed',k===myAv);b.innerHTML=`<img src="${avatarImg(k,'#53c476')}" alt="">${AVN[k]}`;b.onclick=()=>{myAv=k;renderAvPick()};box.appendChild(b)})}
+let diff='normal',myAv=(()=>{try{const a=localStorage.getItem('crisol_avatar');return AVK.includes(a)?a:null}catch(e){return null}})();
+function renderAvPick(){const box=$('#avPick');box.innerHTML='';AVK.forEach(k=>{const b=document.createElement('button');b.setAttribute('aria-pressed',k===myAv);b.innerHTML=`<img src="${avatarImg(k,'#53c476')}" alt="">${AVN[k]}`;b.onclick=()=>{myAv=k;try{localStorage.setItem('crisol_avatar',k)}catch(e){}renderAvPick();renderPerfil()};box.appendChild(b)})}
+// perfil: el avatar se elige una vez (la primera visita) y se cambia desde «Perfil»
+function renderPerfil(){if(!myAv)return;$('#perfilAv').src=avatarImg(myAv,'#53c476');$('#perfilNom').textContent=AVN[myAv]}
+function abrirPerfil(primera){renderAvPick();$('#perfilOv').querySelector('.sub').textContent=primera?'Elige tu personaje: te acompañará en el mapa y en las partidas. Podrás cambiarlo desde «Perfil».':'Tu personaje aparece en el mapa del mundo y junto al tablero.';$('#perfilOv').hidden=false}
+$('#bPerfil').onclick=()=>abrirPerfil(false);$('#bPerfilOk').onclick=()=>{if(!myAv){myAv='zorro';try{localStorage.setItem('crisol_avatar',myAv)}catch(e){}}$('#perfilOv').hidden=true;renderPerfil()};
+// app instalable: el service worker (sw.js) y el botón «Instalar en el móvil»
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+let pedirInstalar=null;const yaInstalada=()=>matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pedirInstalar=e;$('#bInstalar').hidden=false});
+if(!yaInstalada()&&/iPhone|iPad|iPod/.test(navigator.userAgent))$('#bInstalar').hidden=false;
+$('#bInstalar').onclick=()=>{if(pedirInstalar){pedirInstalar.prompt();pedirInstalar.userChoice.finally(()=>{pedirInstalar=null;$('#bInstalar').hidden=true})}
+  else alert('Para instalarla en el iPhone: pulsa el botón Compartir de Safari y elige «Añadir a pantalla de inicio».')};
+window.addEventListener('appinstalled',()=>{$('#bInstalar').hidden=true});
+$('#bReglas').onclick=()=>{$('#reglasOv').hidden=false};$('#bReglasOk').onclick=()=>{$('#reglasOv').hidden=true};
+// menú durante la partida: pausa el combate; salir abandona la partida (en Historia vuelve al mapa)
+function abrirPausa(){if(!S||S.phase==='over')return;S.pausa=true;const h=S.mode==='historia';$('#pausaSub').textContent=h?'Si sales, pierdes este intento del nivel y vuelves al mapa.':'Si sales, la partida se pierde.';$('#bPausaSalir').textContent=h?'Volver al mapa':'Salir al menú';$('#pausaOv').hidden=false}
+function salirPartida(){const h=S&&S.mode==='historia';$('#pausaOv').hidden=true;['#carOv','#rewardOv','#endOv'].forEach(s=>$(s).hidden=true);S=null;hideInfo();document.body.classList.remove('en-combate','ver-tienda','historia');if(h)openStory();else backToMenu()}
+$('#bPausa').onclick=abrirPausa;$('#bPausaSeguir').onclick=()=>{$('#pausaOv').hidden=true;if(S)S.pausa=false};$('#bPausaSalir').onclick=salirPartida;
 $('#bMus').onclick=()=>{audioInit();setSound('m',!SND.musicOn)};$('#bSfx').onclick=()=>{audioInit();setSound('s',!SND.sfxOn)};
 window.addEventListener('pointerdown',()=>{if(SND.ac&&SND.ac.state==='suspended')SND.ac.resume().catch(()=>{})});
 document.querySelectorAll('#diffSeg button').forEach(b=>b.onclick=()=>{diff=b.dataset.d;document.querySelectorAll('#diffSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
 function begin(){audioInit();document.body.classList.remove('historia');newGame(diff);dmgCb=null;renderDmg();$('#startOv').hidden=true;$('#endOv').hidden=true;layout();beginRound()}
 $('#bStart').onclick=begin;
-function backToMenu(){$('#endOv').hidden=true;$('#storyOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();showBest()}
+function backToMenu(){$('#endOv').hidden=true;$('#storyOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();document.body.classList.remove('en-combate','ver-tienda','historia');showBest();renderPerfil()}
 $('#bAgain').onclick=backToMenu;
 // modo Historia (15-historia.js)
 $('#bStory').onclick=()=>{audioInit();openStory()};
@@ -2767,8 +2874,21 @@ const HIST_KEY='crisol_historia_v1',MAZO_N=20;
 function histLoad(){let h=null;try{h=JSON.parse(localStorage.getItem(HIST_KEY))}catch(e){}
   if(!h||!Array.isArray(h.col))h={col:ARENA_IDS.filter(id=>CH[id].cost<=4),hechos:[],mazo:null};
   h.col=h.col.filter(id=>CH[id]);h.hechos=h.hechos||[];
-  if(!Array.isArray(h.mazo)||h.mazo.some(id=>!h.col.includes(id)))h.mazo=h.col.slice(0,MAZO_N);
+  if(!Array.isArray(h.mazo)||h.mazo.some(id=>!h.col.includes(id)))h.mazo=mazoValido(h.col).slice(0,MAZO_N);
+  else if(excesos(h.mazo).length)h.mazo=mazoValido(h.mazo); // mazos guardados antes de los límites por rasgo
   return h}
+// ---- límites del mazo: de cada rasgo, como mucho tantos campeones como su último umbral (Forja y Monstruo 6, el resto 4) ----
+const traitMax=t=>TRAITS[t].tiers[TRAITS[t].tiers.length-1];
+function traitCuenta(ids){const c={};ids.forEach(id=>CH[id].traits.forEach(t=>c[t]=(c[t]||0)+1));return c}
+function excesos(ids){const c=traitCuenta(ids);return Object.keys(c).filter(t=>c[t]>traitMax(t))}
+// quita campeones hasta cumplir los límites: primero los que más rasgos pasados tienen y, a igualdad, los más baratos
+function mazoValido(ids){let m=ids.slice();
+  for(let g=0;g<60;g++){const ex=excesos(m);if(!ex.length)break;const n=id=>CH[id].traits.filter(t=>ex.includes(t)).length;
+    const q=m.filter(id=>n(id)>0).sort((a,b)=>n(b)-n(a)||CH[a].cost-CH[b].cost)[0];m=m.filter(x=>x!==q)}
+  return m}
+// tamaño que hay que alcanzar para jugar: 20, o menos si la colección no da para 20 respetando los límites
+function mazoObjetivo(){return Math.min(MAZO_N,mazoValido(HIST.col).length)}
+function mazoOk(){return HIST.mazo.length>=mazoObjetivo()&&HIST.mazo.length<=MAZO_N&&!excesos(HIST.mazo).length}
 function histSave(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h))}catch(e){}}
 let HIST=histLoad();
 
@@ -2813,7 +2933,7 @@ function storyWin(){
   if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}
   histSave(HIST);S.phase='over';sfx('over');updateHUD();
   const fin=()=>endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>openStory());
-  if(nuevo)setTimeout(()=>showUnlock(L.premio,fin),900);else fin();
+  if(nuevo)tras(()=>showUnlock(L.premio,fin),900);else fin();
 }
 function storyLost(){
   const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();
@@ -2925,29 +3045,143 @@ function moveAvatar(inst){const M=MUNDOS[mapMundo],i=M.niveles.indexOf(mapSel),a
 function renderMapCard(){
   if(mundoDe(mapSel)!==mapMundo){const M=MUNDOS[mapMundo],hay=M.niveles.some(n=>NIVELES[n-1]);
     $('#mapCard').innerHTML=`<div class="mcInfo"><b>Mundo ${M.n} · ${M.nombre}</b><small>${hay?`Supera el nivel ${M.niveles[0]-1} para entrar`:'Próximamente: nuevos niveles y monstruos'}</small></div>`;return}
-  const n=mapSel,L=NIVELES[n-1],hecho=HIST.hechos.includes(n),ok=HIST.mazo.length===Math.min(MAZO_N,HIST.col.length),motivo=puedeJugar(n);
+  const n=mapSel,L=NIVELES[n-1],hecho=HIST.hechos.includes(n),ok=mazoOk(),motivo=puedeJugar(n);
   const premio=L.premio?(HIST.col.includes(L.premio)?`<span class="mpOk">✓ ${CH[L.premio].name} ya está en tu colección</span>`:`<span class="mpNew"><img src="${portrait(L.premio)}" alt="">Jefe: ${CH[L.premio].name} se une a tu colección</span>`):'<span class="mpNo">Sin premio de campeón</span>';
   $('#mapCard').innerHTML=`<div class="mcInfo"><b>Nivel ${n} · ${L.nombre}</b><small>${THEMES[L.tema].n} · 4 fases${hecho?' · superado':''}</small>${premio}</div>
     <button class="big" id="bPlay"${ok&&!motivo?'':' disabled'}>${hecho?'Repetir':'Jugar'}</button>`;
   $('#bPlay').onclick=playSel;
   $('#bDeck').textContent=`Mazo ${HIST.mazo.length}/${MAZO_N}`;$('#bDeck').classList.toggle('warn',!ok);
 }
-function playSel(){const ok=HIST.mazo.length===Math.min(MAZO_N,HIST.col.length);if(!ok){toast('Completa tu mazo antes de jugar');openDeck();return}const m=puedeJugar(mapSel);if(m){toast(m);return}S=null;startStory(mapSel)}
+function playSel(){const ok=mazoOk();if(!ok){toast('Completa tu mazo antes de jugar');openDeck();return}const m=puedeJugar(mapSel);if(m){toast(m);return}S=null;startStory(mapSel)}
 function openDeck(){renderDeck();$('#deckOv').hidden=false}
 function avatarImgBig(kind,col){const S0=SPRITE_SRC[avSpr(kind)];if(S0)return S0.src;const k='big'+kind+col;if(AVIMG[k])return AVIMG[k];const [c,g]=mkCanvas(96,96);drawAvatar(g,48,90,34,kind,col,0);return AVIMG[k]=c.toDataURL()}
-function renderDeck(){
-  const box=$('#deckGrid');box.innerHTML='';const m=new Set(HIST.mazo);
+function renderDeck(aviso){
+  const box=$('#deckGrid');box.innerHTML='';const m=new Set(HIST.mazo),cnt=traitCuenta(HIST.mazo);
+  // resumen: rasgos del mazo con su cuenta y su máximo
+  $('#deckTraits').innerHTML=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||TRAITS[a].n.localeCompare(TRAITS[b].n)).map(t=>{const T=TRAITS[t],n=cnt[t],mx=traitMax(t);
+    return `<span class="dtr${n>=mx?' lleno':''}" style="--c:${T.col}" title="${T.tiers.map((x,k)=>`(${x}) ${T.d(T.vals[k])}`).join('\n')}"><b>${n}</b>${T.n}<small>/${mx}</small></span>`}).join('');
   const col=HIST.col.slice().sort((a,b)=>CH[a].cost-CH[b].cost||CH[a].name.localeCompare(CH[b].name));
-  for(const id of col){const C=CH[id],on=m.has(id);const b=document.createElement('button');b.className='dk'+(on?' on':'');
-    b.title=`${C.name} · ${C.traits.map(t=>TRAITS[t].n).join(' · ')}`;
-    b.innerHTML=`<div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(id)}" alt=""></div><span>${C.name}</span>`;
-    b.onclick=()=>{if(on){HIST.mazo=HIST.mazo.filter(x=>x!==id)}else if(HIST.mazo.length<MAZO_N){HIST.mazo.push(id)}else{toast(`El mazo ya tiene ${MAZO_N}: quita uno antes`);return}histSave(HIST);renderDeck()};
+  for(const id of col){const C=CH[id],on=m.has(id),tope=!on&&C.traits.find(t=>(cnt[t]||0)>=traitMax(t));const b=document.createElement('button');b.className='dk'+(on?' on':'')+(tope?' tope':'');
+    b.title=`${C.name} · coste ${C.cost} · ${C.traits.map(t=>TRAITS[t].n).join(' · ')}`;
+    b.innerHTML=`<div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(id)}" alt=""></div><span>${C.name}</span><div class="tps">${C.traits.map(traitPill).join('')}</div>`;
+    b.onclick=()=>{if(on){HIST.mazo=HIST.mazo.filter(x=>x!==id)}
+      else if(tope){renderDeck(`Ya tienes ${traitMax(tope)} de ${TRAITS[tope].n} en el mazo: es el máximo.`);return}
+      else if(HIST.mazo.length<MAZO_N){HIST.mazo.push(id)}else{renderDeck(`El mazo ya tiene ${MAZO_N}: quita uno antes.`);return}
+      histSave(HIST);renderDeck()};
     box.appendChild(b)}
-  const n=HIST.mazo.length,ok=n===Math.min(MAZO_N,HIST.col.length);
-  $('#deckCount').textContent=`${n}/${MAZO_N}`+(HIST.col.length>MAZO_N?` · colección: ${HIST.col.length}`:'');
-  $('#deckWarn').textContent=ok?'':`Elige ${Math.min(MAZO_N,HIST.col.length)} campeones para jugar.`;
+  const n=HIST.mazo.length,obj=mazoObjetivo(),ok=mazoOk();
+  $('#deckCount').textContent=`${n}/${obj}`+(HIST.col.length>n?` · colección: ${HIST.col.length}`:'');
+  $('#deckWarn').textContent=aviso||(ok?'':`Elige ${obj} campeones para jugar.`);
   if(mapSel&&!$('#storyOv').hidden)renderMapCard();
 }
+
+// ================= ÁLBUM DE CAMPEONES =================
+// Todos los campeones numerados. Los que aún no tienes en tu colección del modo Historia salen como silueta
+// con el nivel en el que se desbloquean. La ficha muestra al campeón animado (reposo, caminar, ataque y habilidad),
+// sus rasgos, estadísticas por estrellas, la habilidad y una breve historia.
+const HISTORIA_CH={
+ brasa:'Hija de un herrero de la Fragua, aprendió a disparar antes que a forjar. Sus flechas salen al rojo vivo y nunca falla un blanco que arda.',
+ tovo:'El aprendiz más joven de la Fragua. Lleva un escudo que él mismo remachó y un martillo que aún le viene grande, pero nadie pasa por delante de él.',
+ nerea:'Creció escuchando a las mareas. Con su báculo puede convertir una gota en una ola, aunque prefiere usarlo para regar su jardín de corales.',
+ sombrio:'Nadie sabe su verdadero nombre. Aparece donde menos se le espera, golpea dos veces y se desvanece entre las sombras antes de la tercera.',
+ musgo:'Un guardián del bosque tan tranquilo que los pájaros anidan en su pelo. Cuando por fin se enfada, su garrote suena como un árbol al caer.',
+ lira:'Bardo y arquera: compone una canción por cada combate ganado. Dice que el ritmo de la cuerda del arco es la mejor percusión que existe.',
+ coral:'Caballera del Arrecife. Juró proteger las costas y cumple su palabra con una lanza fría como el fondo del mar.',
+ ceniza:'Estudió en la torre prohibida del Umbral y volvió con el pelo blanco y un orbe que susurra. Su magia salta de enemigo en enemigo como un relámpago oscuro.',
+ rama:'Explorador élfico de los bosques profundos. Puede seguir un rastro de hojas durante días y disparar tres flechas antes de que la primera toque el suelo.',
+ yunque:'Forjó su propia armadura en un solo día y su martillo en una noche. Cuando golpea el suelo, toda la Fragua tiembla con él.',
+ vespa:'Rápida como un enjambre y el doble de peligrosa. Elige siempre al enemigo más débil: dice que es «eficiencia».',
+ kalima:'Cazadora de las islas del sur. Sus flechas llevan una cuerda de arpón con la que ha pescado criaturas del tamaño de un barco.',
+ ebano:'Paladín de un templo olvidado del Umbral. Su escudo absorbe la oscuridad y la convierte en un velo que protege a quien está detrás.',
+ fresno:'Druida del bosque antiguo. Cura con la savia de los árboles y habla con ellos; asegura que los robles tienen muy mal humor por las mañanas.',
+ martillo:'Nadie ha visto su cara bajo la máscara. Aplasta primero y pregunta después, y casi nunca pregunta.',
+ nebula:'Un gigante nacido entre las estrellas con cara de niño. Juega con su orbe como si fuera una pelota y, cuando lo estrella, colapsa el espacio a su alrededor.',
+ abisal:'Titán de las fosas marinas. Cuando sale a la superficie, la marea sube con él y su tridente arrastra a todo lo que toca.',
+ eclipse:'Arquera de la sombra que solo deja ver un ojo. Sus flechas violetas oscurecen el cielo como un eclipse.',
+ crisol:'Archimago del fuego y, según él, el mejor que ha existido. Su pelo arde de verdad y sus meteoros dejan cráteres en el campo de batalla.',
+ alba:'Clériga de la luz. Su bastón guarda un pedazo del primer amanecer, y con él cura a todos sus aliados a la vez.',
+ soberana:'La reina de las estrellas. Rara vez baja del cielo, y cuando lo hace, una supernova anuncia su llegada.',
+ titan:'Un héroe tan enorme que su armadura se forjó con el metal de cien escudos. Dicen que nunca ha dado un paso atrás.',
+ espina:'Reina del bosque de zarzas. Sus dagas de espino buscan siempre al enemigo herido, y cada corte la hace más fuerte.',
+ matrona:'La madre de las montañas, cubierta de roca. Pelea con los puños y con su cría en la bolsa, que remata cada golpe con mucho entusiasmo.',
+ lobo:'Dos cabezas, un solo hambre. El alfa de la Guarida muerde dos veces antes de que puedas pestañear.',
+ draco:'El dragón más antiguo del Crisol, guardián de la cumbre. Su aliento funde la piedra y deja a sus enemigos ardiendo.',
+ reygoblin:'Se coronó a sí mismo rey de la caverna y nadie se atrevió a llevarle la contraria. Grita órdenes a su corte mientras reparte golpes de cetro.',
+ reinaarana:'Teje en la oscuridad de las minas un palacio de seda. Atrapa a sus presas en telarañas brillantes y las envenena con elegancia.',
+ dracqueen:'Vampira, reina del espectáculo y señora del castillo carmesí. Entra en escena con su abanico, un beso mortal y una corte de murciélagos.',
+};
+const ALBUM=ARENA_IDS.slice().sort((a,b)=>CH[a].cost-CH[b].cost).concat(CH_IDS.filter(id=>CH[id].story).sort((a,b)=>nivelDe(a)-nivelDe(b)));
+function nivelDe(id){const L=NIVELES.find(l=>l.premio===id);return L?L.n:0}
+// en el álbum, «tienes» un campeón si está en tu colección del modo Historia
+function enAlbum(id){HIST=HIST||histLoad();return HIST.col.includes(id)}
+function openAlbum(){HIST=histLoad();renderAlbum();$('#albumOv').hidden=false}
+function renderAlbum(){
+  const box=$('#albumGrid');box.innerHTML='';let n=0;
+  ALBUM.forEach((id,i)=>{const C=CH[id],ok=enAlbum(id);if(ok)n++;
+    const b=document.createElement('button');b.className='alc'+(ok?'':' bloq');b.style.setProperty('--cc',COST_COL[C.cost-1]);
+    b.innerHTML=`<span class="aln">#${String(i+1).padStart(2,'0')}</span><div class="alimg"><img src="${albumImg(id)}" alt=""></div>
+      <b>${ok?C.name:'???'}</b><small>${ok?C.traits.map(t=>TRAITS[t].n).join(' · '):`Nivel ${nivelDe(id)}`}</small>`;
+    b.onclick=()=>openFicha(id);box.appendChild(b)});
+  $('#albumCount').textContent=`${n}/${ALBUM.length} descubiertos`;
+}
+function albumImg(id){const S0=SPRITE_SRC[id];return S0?S0.src:portrait(id)}
+// ---- ficha ----
+let fichaAnim=null;
+function openFicha(id){
+  const C=CH[id],ok=enAlbum(id),i=ALBUM.indexOf(id)+1,nv=nivelDe(id);
+  const fs=[1,2,3].map(s=>makeFighter({uid:0,id,star:s,items:[]},0,0,4,{}));
+  const fila=(t,f)=>`<tr><th>${t}</th>${fs.map(f).map(v=>`<td>${v}</td>`).join('')}</tr>`;
+  $('#fichaBody').innerHTML=`<div class="fiWrap">
+    <div class="fiEscena"><canvas id="fiCv" width="600" height="600"></canvas>
+      ${ok?`<div class="seg fiModos" role="group">${[['auto','Todo'],['reposo','Reposo'],['caminar','Caminar'],['ataque','Ataque'],['habilidad','Habilidad']].map(([k,t])=>`<button data-m="${k}" aria-pressed="${k==='auto'}">${t}</button>`).join('')}</div>`:''}
+    </div>
+    <div class="fiDatos">
+      <div class="lbl">#${String(i).padStart(2,'0')} · ${ok?`Coste ${C.cost}`:'Sin descubrir'}</div>
+      <h2>${ok?C.name:'???'}</h2>
+      ${ok?`<div class="ulSub"><span class="icost"><span class="coin"></span>${C.cost}</span>${roleTag(C.role)}<div class="tps">${C.traits.map(traitPill).join('')}</div></div>
+      <p class="fiHist">${HISTORIA_CH[id]||''}</p>
+      <div class="fiTraits">${C.traits.map(t=>{const T=TRAITS[t];return `<p><b style="color:${T.col}">${T.n}</b> (${T.tiers.join(' / ')}): ${T.d(T.vals.join(' / '))}</p>`}).join('')}</div>
+      <table class="fiStats"><tr><th></th><td>★</td><td>★★</td><td>★★★</td></tr>
+        ${fila('Vida',f=>Math.round(f.maxHp))}${fila('Daño',f=>Math.round(f.ad))}</table>
+      <div class="sgrid"><div><span>Vel. ataque</span>${C.as.toFixed(2)}</div><div><span>Alcance</span>${C.range}</div><div><span>Armadura</span>${C.ar}</div><div><span>Res. mágica</span>${C.mr}</div><div><span>Maná</span>${C.start}/${C.mana}</div><div><span>Crítico</span>5%</div></div>
+      <div class="abil"><b>${C.ab.n}</b><br>${abilDesc(C.ab,1)}<br><small>★★: ${abilDesc(C.ab,2)}</small><br><small>★★★: ${abilDesc(C.ab,3)}</small></div>
+      ${nv?`<p class="fiNivel">Se consigue al derrotar al jefe del nivel ${nv} del modo Historia.</p>`:''}`
+      :`<p class="fiHist">Un campeón todavía por descubrir.</p><p class="fiNivel">Se desbloquea al superar el <b>nivel ${nv}</b> del modo Historia.</p>`}
+    </div></div>`;
+  $('#fichaOv').hidden=false;
+  const st={id,ok,modo:'auto',t0:performance.now()};
+  document.querySelectorAll('.fiModos button').forEach(b=>b.onclick=()=>{st.modo=b.dataset.m;st.t0=performance.now();document.querySelectorAll('.fiModos button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  cancelAnimationFrame(fichaAnim);const loop=now=>{if($('#fichaOv').hidden)return;dibujarFicha(st,now);fichaAnim=requestAnimationFrame(loop)};fichaAnim=requestAnimationFrame(loop);
+}
+// elige la pose según el modo y el tiempo; «auto» encadena reposo → caminar → ataque → reposo → habilidad
+function poseFicha(sp,modo,t){
+  const Q=sp.seq||{},qa=Q.ataque,qc=Q.caminar;
+  if(modo==='auto'){const L=[['reposo',1.6],['caminar',1.8],['ataque',1.1],['reposo',1.2],['habilidad',1]],tot=L.reduce((a,x)=>a+x[1],0);let r=t%tot;
+    for(const [m,d] of L){if(r<d)return poseFicha(sp,m,r);r-=d}}
+  if(modo==='caminar')return qc?{p:qc[Math.floor(t*7)%qc.length],dy:-Math.abs(Math.sin(t*7*Math.PI/2))*4}:{p:sp.idle,dy:-Math.abs(Math.sin(t*8))*6};
+  if(modo==='ataque'){const k=t%1.1;if(qa)return {p:qa[Math.min(3,Math.floor(k/.22))]};return {p:k<.5&&sp.attack?sp.attack:sp.idle}}
+  if(modo==='habilidad'){const k=t%1.4;return {p:k<.9&&sp.cast?sp.cast:sp.idle,dy:k<.9?-Math.sin(k/.9*Math.PI)*8:0,brillo:k<.9?Math.sin(k/.9*Math.PI):0}}
+  return {p:sp.idle,respira:Math.sin(t*2.6)*.015};
+}
+const siluetaFicha={};
+function dibujarFicha(st,now){
+  const cv=$('#fiCv');if(!cv)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height,sp=SPR[st.id];
+  g.clearRect(0,0,W,H);
+  const gr=g.createRadialGradient(W/2,H*.62,10,W/2,H*.62,W*.55);gr.addColorStop(0,st.ok?'rgba(233,180,76,.22)':'rgba(140,160,180,.12)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(W/2,H*.9,W*.22,H*.045,0,0,7);g.fill();
+  if(!sp){const im=new Image();im.src=portrait(st.id);g.drawImage(im,W/2-60,H/2-60,120,120);return}
+  const t=(now-st.t0)/1000,P=st.ok?poseFicha(sp,st.modo,t):{p:sp.idle,respira:Math.sin(t*2.6)*.015},p=P.p,esc=(CH[st.id].escala||1)>1.2?.88:1,k=H*.72*esc/sp.idle.h,pw=p.w*k,ph=p.h*k;
+  g.save();g.translate(W/2,H*.9+(P.dy||0));if(P.respira)g.scale(1-P.respira*.6,1+P.respira);
+  if(P.brillo){g.globalAlpha=P.brillo*.5;const b=g.createRadialGradient(0,-ph*.5,4,0,-ph*.5,ph*.6);b.addColorStop(0,'#fff3c0');b.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=b;g.fillRect(-W/2,-H,W,H);g.globalAlpha=1}
+  if(st.ok)g.drawImage(p.img,-pw*p.ax,-ph,pw,ph);
+  else{ // silueta oscura (sin ctx.filter, que Safari no tiene)
+    const o=siluetaFicha.c||(siluetaFicha.c=document.createElement('canvas'));o.width=Math.ceil(pw);o.height=Math.ceil(ph);const q=o.getContext('2d');
+    q.drawImage(p.img,0,0,pw,ph);q.globalCompositeOperation='source-in';q.fillStyle='#07090c';q.fillRect(0,0,o.width,o.height);
+    g.globalAlpha=.9;g.drawImage(o,-pw*p.ax,-ph)}
+  g.restore();
+}
+$('#bAlbum').onclick=()=>{audioInit();openAlbum()};$('#bAlbumOk').onclick=()=>{$('#albumOv').hidden=true};
+$('#bFichaX').onclick=()=>{$('#fichaOv').hidden=true};$('#fichaOv').onclick=e=>{if(e.target.id==='fichaOv')$('#fichaOv').hidden=true};
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
@@ -2958,14 +3192,14 @@ function frame(now){
   if(S){
     if(S.flashT>0)S.flashT-=dt;
     const cb=S.combat;
-    if(cb&&S.phase==='combat'){
+    if(cb&&S.phase==='combat'&&!S.pausa){
       if(!cb.over){
         if(cb.hitstop>0)cb.hitstop-=dt; // parón breve en críticos, habilidades de jefe y muertes
         else{acc+=dt*S.speed;while(acc>=1/30){cb.step(1/30);acc-=1/30;if(cb.over)break}}
         REND_A=cb.over?0:Math.min(1,acc*30)}
       else{REND_A=0;S.endT+=dt;if(S.endT>(cb.finale?1.7:1.1)&&!S.resolving){S.resolving=true;resolveCombat()}}
     }
-    if(cb)cb.tick(dt*(cb.over&&cb.finale&&S.endT<1?.3:(S.speed||1)));
+    if(cb&&!S.pausa)cb.tick(dt*(cb.over&&cb.finale&&S.endT<1?.3:(S.speed||1)));
     if(cb&&S.phase==='combat'&&(dmgT+=dt)>.3){dmgT=0;renderDmg()}
     if(S.selF&&!$('#info').hidden&&Math.floor(now/250)!==Math.floor((now-dt*1000)/250))showInfo({fighter:S.selF});
   }
@@ -2978,7 +3212,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>layout());
 
 // hot reload support
 function start(data){
-  loadSprites();layout();showBest();renderAvPick();setSound('m',SND.musicOn);setSound('s',SND.sfxOn);
+  loadSprites();layout();showBest();renderAvPick();renderPerfil();if(!myAv)abrirPerfil(true);setSound('m',SND.musicOn);setSound('s',SND.sfxOn);
   if(data&&data.S){S=data.S;$('#startOv').hidden=true;if(S.phase==='combat'||S.phase==='result'){S.phase='planning';S.combat=null}
     S.players[0].lastOpp=null;
     if(S.phase==='planning'){if(S.type==='pve')S.preview=creepTeam(1);else{S.pairs=makePairs();S.opp=S.pairs[0][1]}}
