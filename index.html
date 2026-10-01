@@ -482,8 +482,8 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .alc{position:relative;background:linear-gradient(180deg,#1d2b34,#131c22);border:1px solid var(--line);border-top:3px solid var(--cc);border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .alc:hover{border-color:var(--gold-hi)}
 .aln{position:absolute;left:7px;top:5px;font-size:11px;color:var(--muted);font-weight:700}
-.alimg{width:88px;height:96px;display:grid;place-items:end center}
-.alimg img{max-width:100%;max-height:100%;object-fit:contain}
+.alimg{position:relative;width:96px;height:104px;margin-top:6px}
+.alimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom}
 .alc.bloq .alimg img{filter:brightness(0);opacity:.75}
 .alc b{font-family:var(--display);font-weight:400;font-size:16px;color:var(--gold-hi)}
 .alc.bloq b{color:var(--muted)}
@@ -493,7 +493,6 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .fiWrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px}
 .fiEscena{display:flex;flex-direction:column;align-items:center;gap:8px}
 #fiCv{width:300px;height:300px;border-radius:12px;background:radial-gradient(circle at 50% 70%,#22323c,#0d1418 75%)}
-.fiModos{margin:0;flex-wrap:wrap}.fiModos button{padding:5px 9px;font-size:13px}
 .fiDatos h2{margin:2px 0 6px}
 .fiHist{font-style:italic;color:#c9d6dd;margin:8px 0}
 .fiTraits p{margin:4px 0;font-size:14px}
@@ -501,6 +500,12 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 .fiNivel{color:var(--gold-hi);font-size:14px}
 .fiDatos .tps{display:inline-flex;gap:4px;margin-left:6px}.fiDatos .tp b{display:inline}.fiDatos .tp i{display:none}
 @media (max-width:760px){.fiWrap{grid-template-columns:1fr}.fiEscena canvas{width:240px!important;height:240px!important}}
+/* flechas de la ficha */
+.ficha{padding-inline:46px}
+.fiNav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:56px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--gold-hi);font-size:30px;line-height:1;padding:0}
+.fiNav:hover{border-color:var(--gold-hi);background:rgba(233,180,76,.12)}
+.fiNav.prev{left:6px}.fiNav.next{right:6px}
+@media (max-width:760px){.ficha{padding-inline:14px;padding-bottom:70px}.fiNav{top:auto;bottom:10px;transform:none;width:64px;height:44px}.fiNav.prev{left:calc(50% - 72px)}.fiNav.next{right:calc(50% - 72px)}}
 
 </style>
 
@@ -619,7 +624,7 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 </div>
 
 <div class="overlay" id="fichaOv" hidden>
-  <div class="modal wide ficha"><button class="ix" id="bFichaX" aria-label="Cerrar">×</button><div id="fichaBody"></div></div>
+  <div class="modal wide ficha"><button class="ix" id="bFichaX" aria-label="Cerrar">×</button><button class="fiNav prev" id="bFichaPrev" aria-label="Campeón anterior">‹</button><button class="fiNav next" id="bFichaNext" aria-label="Campeón siguiente">›</button><div id="fichaBody"></div></div>
 </div>
 
 <div class="overlay" id="carOv" hidden>
@@ -3079,7 +3084,7 @@ function renderDeck(aviso){
 
 // ================= ÁLBUM DE CAMPEONES =================
 // Todos los campeones numerados. Los que aún no tienes en tu colección del modo Historia salen como silueta
-// con el nivel en el que se desbloquean. La ficha muestra al campeón animado (reposo, caminar, ataque y habilidad),
+// con el nivel en el que se desbloquean. La ficha muestra al campeón en reposo (con flechas para pasar al anterior o al siguiente),
 // sus rasgos, estadísticas por estrellas, la habilidad y una breve historia.
 const HISTORIA_CH={
  brasa:'Hija de un herrero de la Fragua, aprendió a disparar antes que a forjar. Sus flechas salen al rojo vivo y nunca falla un blanco que arda.',
@@ -3128,14 +3133,15 @@ function renderAlbum(){
 }
 function albumImg(id){const S0=SPRITE_SRC[id];return S0?S0.src:portrait(id)}
 // ---- ficha ----
-let fichaAnim=null;
+let fichaAnim=null,fichaId=null;
+// flechas de la ficha: campeón anterior / siguiente del álbum
+function fichaPaso(d){const i=ALBUM.indexOf(fichaId);if(i<0)return;openFicha(ALBUM[(i+d+ALBUM.length)%ALBUM.length])}
 function openFicha(id){
   const C=CH[id],ok=enAlbum(id),i=ALBUM.indexOf(id)+1,nv=nivelDe(id);
   const fs=[1,2,3].map(s=>makeFighter({uid:0,id,star:s,items:[]},0,0,4,{}));
   const fila=(t,f)=>`<tr><th>${t}</th>${fs.map(f).map(v=>`<td>${v}</td>`).join('')}</tr>`;
   $('#fichaBody').innerHTML=`<div class="fiWrap">
     <div class="fiEscena"><canvas id="fiCv" width="600" height="600"></canvas>
-      ${ok?`<div class="seg fiModos" role="group">${[['auto','Todo'],['reposo','Reposo'],['caminar','Caminar'],['ataque','Ataque'],['habilidad','Habilidad']].map(([k,t])=>`<button data-m="${k}" aria-pressed="${k==='auto'}">${t}</button>`).join('')}</div>`:''}
     </div>
     <div class="fiDatos">
       <div class="lbl">#${String(i).padStart(2,'0')} · ${ok?`Coste ${C.cost}`:'Sin descubrir'}</div>
@@ -3151,19 +3157,8 @@ function openFicha(id){
       :`<p class="fiHist">Un campeón todavía por descubrir.</p><p class="fiNivel">Se desbloquea al superar el <b>nivel ${nv}</b> del modo Historia.</p>`}
     </div></div>`;
   $('#fichaOv').hidden=false;
-  const st={id,ok,modo:'auto',t0:performance.now()};
-  document.querySelectorAll('.fiModos button').forEach(b=>b.onclick=()=>{st.modo=b.dataset.m;st.t0=performance.now();document.querySelectorAll('.fiModos button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  const st={id,ok,t0:performance.now()};fichaId=id;
   cancelAnimationFrame(fichaAnim);const loop=now=>{if($('#fichaOv').hidden)return;dibujarFicha(st,now);fichaAnim=requestAnimationFrame(loop)};fichaAnim=requestAnimationFrame(loop);
-}
-// elige la pose según el modo y el tiempo; «auto» encadena reposo → caminar → ataque → reposo → habilidad
-function poseFicha(sp,modo,t){
-  const Q=sp.seq||{},qa=Q.ataque,qc=Q.caminar;
-  if(modo==='auto'){const L=[['reposo',1.6],['caminar',1.8],['ataque',1.1],['reposo',1.2],['habilidad',1]],tot=L.reduce((a,x)=>a+x[1],0);let r=t%tot;
-    for(const [m,d] of L){if(r<d)return poseFicha(sp,m,r);r-=d}}
-  if(modo==='caminar')return qc?{p:qc[Math.floor(t*7)%qc.length],dy:-Math.abs(Math.sin(t*7*Math.PI/2))*4}:{p:sp.idle,dy:-Math.abs(Math.sin(t*8))*6};
-  if(modo==='ataque'){const k=t%1.1;if(qa)return {p:qa[Math.min(3,Math.floor(k/.22))]};return {p:k<.5&&sp.attack?sp.attack:sp.idle}}
-  if(modo==='habilidad'){const k=t%1.4;return {p:k<.9&&sp.cast?sp.cast:sp.idle,dy:k<.9?-Math.sin(k/.9*Math.PI)*8:0,brillo:k<.9?Math.sin(k/.9*Math.PI):0}}
-  return {p:sp.idle,respira:Math.sin(t*2.6)*.015};
 }
 const siluetaFicha={};
 function dibujarFicha(st,now){
@@ -3172,7 +3167,7 @@ function dibujarFicha(st,now){
   const gr=g.createRadialGradient(W/2,H*.62,10,W/2,H*.62,W*.55);gr.addColorStop(0,st.ok?'rgba(233,180,76,.22)':'rgba(140,160,180,.12)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);
   g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(W/2,H*.9,W*.22,H*.045,0,0,7);g.fill();
   if(!sp){const im=new Image();im.src=portrait(st.id);g.drawImage(im,W/2-60,H/2-60,120,120);return}
-  const t=(now-st.t0)/1000,P=st.ok?poseFicha(sp,st.modo,t):{p:sp.idle,respira:Math.sin(t*2.6)*.015},p=P.p,esc=(CH[st.id].escala||1)>1.2?.88:1,k=H*.72*esc/sp.idle.h,pw=p.w*k,ph=p.h*k;
+  const t=(now-st.t0)/1000,P={p:sp.idle,respira:Math.sin(t*2.6)*.015},p=P.p,esc=(CH[st.id].escala||1)>1.2?.88:1,k=H*.72*esc/sp.idle.h,pw=p.w*k,ph=p.h*k;
   g.save();g.translate(W/2,H*.9+(P.dy||0));if(P.respira)g.scale(1-P.respira*.6,1+P.respira);
   if(P.brillo){g.globalAlpha=P.brillo*.5;const b=g.createRadialGradient(0,-ph*.5,4,0,-ph*.5,ph*.6);b.addColorStop(0,'#fff3c0');b.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=b;g.fillRect(-W/2,-H,W,H);g.globalAlpha=1}
   if(st.ok)g.drawImage(p.img,-pw*p.ax,-ph,pw,ph);
@@ -3183,7 +3178,8 @@ function dibujarFicha(st,now){
   g.restore();
 }
 $('#bAlbum').onclick=()=>{audioInit();openAlbum()};$('#bAlbumOk').onclick=()=>{$('#albumOv').hidden=true};
-$('#bFichaX').onclick=()=>{$('#fichaOv').hidden=true};$('#fichaOv').onclick=e=>{if(e.target.id==='fichaOv')$('#fichaOv').hidden=true};
+$('#bFichaX').onclick=()=>{$('#fichaOv').hidden=true};$('#bFichaPrev').onclick=()=>fichaPaso(-1);$('#bFichaNext').onclick=()=>fichaPaso(1);
+window.addEventListener('keydown',e=>{if($('#fichaOv').hidden)return;if(e.key==='ArrowLeft')fichaPaso(-1);else if(e.key==='ArrowRight')fichaPaso(1);else if(e.key==='Escape')$('#fichaOv').hidden=true});$('#fichaOv').onclick=e=>{if(e.target.id==='fichaOv')$('#fichaOv').hidden=true};
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
