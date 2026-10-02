@@ -709,6 +709,11 @@ body.en-combate .goldPill{display:none}
 @media (max-width:760px){.salaLista{grid-template-columns:1fr}}
 #bSalaListo:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.6)}
 
+.salaTiempo{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 10px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.salaTiempo span{margin-right:4px}.salaTiempo b{color:var(--gold-hi)}
+.salaTiempo button{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:4px 12px;color:var(--text);font-weight:600}
+.salaTiempo button[aria-pressed="true"]{background:#5a4318;border-color:var(--gold-hi);color:#fff3d0}
+
 </style>
 
 <div id="app">
@@ -921,6 +926,7 @@ body.en-combate .goldPill{display:none}
     <div class="lbl">Arena libre · con amigos (prueba)</div>
     <h2>Sala de la Arena</h2>
     <div id="salaCodigo" class="salaCod"></div>
+    <div class="salaTiempo" id="salaTiempo"></div>
     <ol class="salaLista" id="salaLista"></ol>
     <p class="dlEstado" id="salaEstado"></p>
     <div class="row" style="justify-content:space-between;margin-top:12px"><button class="big alt" id="bSalaSalir">Salir</button><button class="big" id="bSalaListo">Listo</button></div>
@@ -1687,7 +1693,8 @@ function makePairs(){
   if(rest.length===1){const g=pick(alive.filter(p=>p!==rest[0]));pairs.push([rest[0],{ghost:true,p:g,name:g.name}])}
   hu.lastOpp=opp;return pairs;
 }
-function nextRound(){S.round++;if(S.round>roundsIn(S.stage)){S.stage++;S.round=1}beginRound()}
+function nextRound(){if(S.mode==='multi')return multiHecho(); // con amigos, la siguiente ronda la marca el anfitrión (15d-multi.js)
+  S.round++;if(S.round>roundsIn(S.stage)){S.stage++;S.round=1}beginRound()}
 
 function startCombat(){
   if(!S||S.phase!=='planning')return;
@@ -1782,6 +1789,7 @@ function carSpots(){const s=M.size,cx=M.W/2,cy=world(0,3).y*s+s*.6,rx=Math.min(M
 function carouselAt(x,y){let best=-1,bd=(M.size*1.1)**2;for(const p of carSpots()){const d=(x-p.x)**2+(y-(p.y-M.size*.5))**2;if(d<bd){bd=d;best=p.i}}return best}
 function pickCarousel(i){if(S.carPick||i<0)return;S.carPick={i,t:performance.now()/1000};sfx('buy');tras(()=>chooseCarousel(i),650)}
 function chooseCarousel(i){
+  if(!S.carOpts)return;
   const o=S.carOpts[i],hu=H(),C=CH[o.id];
   const res=giveUnit(hu,o.id);hu.items.push(o.item); // el objeto va al inventario, no al campeón
   const tiers=carTiers();
@@ -3695,12 +3703,15 @@ window.addEventListener('keydown',e=>{
 //   (tablero, vida y nivel), empareja y manda a todos una foto de la ronda (tableros, vidas, parejas y semilla).
 // - Con esa foto, cada dispositivo simula TODOS los combates con azar con semilla (rngSemilla) y uid canónicos por plaza,
 //   así que todos llegan a las mismas vidas y eliminaciones sin más mensajes. El suyo lo ve dibujado (girado si es el equipo 1).
-// Mensajes: hola · sala {jugadores, tuSeat} · listoSala {v} · lleno · inicio {semilla, diff, jugadores, tuSeat}
-//           listo {k, seat, tablero, hp, nivel} · faltan {k, nombres} · ronda {k, semilla, pares, jug} · fin {seat} · aviso {txt} · chao
+// Ritmo: todos juegan las rondas a la vez. El anfitrión manda «fase» (ronda y segundos de preparación); al acabar el tiempo
+// (o antes, si pulsas «Luchar») se lucha. Cuando todos han terminado su combate («hecho»), o a los 80 s, manda la siguiente fase.
+// Mensajes: hola · sala {jugadores, tuSeat, tiempo} · listoSala {v} · lleno · inicio {semilla, diff, jugadores, tuSeat, tiempo}
+//           fase {k, dur} · listo {k, seat, tablero, hp, nivel} · faltan {k, nombres} · ronda {k, semilla, pares, jug} · hecho {k, hp}
+//           fin {seat} · aviso {txt} · ping · chao
 const PEERJS_URL='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
 const SALA_PREFIJO='arena-crisol-sala-',CODIGO_LETRAS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX_JUG=8,T_PREP=45;
 const SEAT_COL=['#53c476','#5aa6f2','#e0a03a','#c86ad0','#e0605b','#62c8b0','#d7c75e','#9fb2bd'];
-const NET={peer:null,host:false,conns:{},conn:null,sala:null,jugando:false,visto:{},vistoHost:0,sinSenal:30000}; // sinSenal: ms sin noticias para dar a alguien por desconectado
+const NET={peer:null,host:false,conns:{},conn:null,sala:null,jugando:false,visto:{},vistoHost:0,sinSenal:30000,tiempo:30}; // tiempo: segundos de preparación por ronda (lo elige el anfitrión) // sinSenal: ms sin noticias para dar a alguien por desconectado
 function cargarPeerJS(){return window.Peer?Promise.resolve():new Promise((ok,mal)=>{const s=document.createElement('script');s.src=PEERJS_URL;s.onload=ok;s.onerror=()=>mal(new Error('PeerJS'));document.head.appendChild(s)})}
 const miNombre=()=>(myAv&&AVN[myAv])||'Jugador';
 function mandar(c,m){try{c&&c.open&&c.send(m)}catch(e){console.warn('sala: no se pudo enviar',e)}}
@@ -3736,6 +3747,7 @@ function atarInvitado(c){
     }else if(seat==null)return;
     else if(m.t==='listoSala'){const j=J&&J.find(x=>x.seat===seat);if(j){j.listo=!!m.v;difundirSala()}}
     else if(m.t==='listo')hostListo(m,seat);
+    else if(m.t==='hecho')hostHecho(m.k,seat,m);
     else if(m.t==='fin')hostCae(seat);
     else if(m.t==='chao')c.close();
   });
@@ -3749,7 +3761,7 @@ setInterval(()=>{if(!NET.peer)return;const ahora=Date.now();
   if(NET.host){enviar({t:'ping'});for(const s of Object.keys(NET.conns))if(ahora-(NET.visto[s]||ahora)>NET.sinSenal)invitadoFuera(+s)}
   else if(NET.conn&&NET.conn.open){mandar(NET.conn,{t:'ping'});
     if(NET.jugando&&NET.vistoHost&&ahora-NET.vistoHost>NET.sinSenal){try{NET.conn.close()}catch(e){}if(S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('Se ha perdido la conexión con el anfitrión: la partida no puede seguir.')}}},3000);
-function difundirSala(){if(!NET.sala)return;for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'sala',jugadores:NET.sala.jugadores,diff,tuSeat:+seat});renderSala()}
+function difundirSala(){if(!NET.sala)return;for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'sala',jugadores:NET.sala.jugadores,diff,tiempo:NET.tiempo,tuSeat:+seat});renderSala()}
 async function unirseSala(cod){
   cerrarRed();audioInit();abrirSala();NET.sala={codigo:cod,miSeat:null,jugadores:[]};renderSala();salaEstado('Conectando con la sala…');
   try{await cargarPeerJS()}catch(e){return salaEstado('No se pudo cargar la conexión. Revisa tu internet.',true)}
@@ -3763,11 +3775,12 @@ async function unirseSala(cod){
 }
 function invitadoRecibe(m){
   NET.vistoHost=Date.now();if(!m||!m.t||m.t==='ping')return;
-  if(m.t==='sala'){NET.sala.jugadores=m.jugadores;NET.sala.miSeat=m.tuSeat;NET.sala.diff=m.diff;renderSala()}
+  if(m.t==='sala'){NET.sala.jugadores=m.jugadores;NET.sala.miSeat=m.tuSeat;NET.sala.diff=m.diff;NET.sala.tiempo=m.tiempo;renderSala()}
   else if(m.t==='lleno')salaEstado(m.txt||'La sala está llena.',true);
   else if(m.t==='inicio')startMulti(false,m);
   else if(!S||S.mode!=='multi')return;
   else if(m.t==='ronda')aplicarRonda(m);
+  else if(m.t==='fase')aplicarFase(m);
   else if(m.t==='faltan'){if(m.k===rondaK())S.multi.faltan=m.nombres}
   else if(m.t==='aviso')toast(m.txt);
 }
@@ -3780,6 +3793,9 @@ function renderSala(){
     if(!j)return `<li class="bot"><span class="saAv"></span><b>Bot</b><small>${nb}</small></li>`;
     const yo=j.seat===Sa.miSeat;
     return `<li class="${j.listo?'listo':''}"><img class="saAv" src="${avatarImg(j.av,SEAT_COL[j.seat])}" alt=""><b>${j.nombre}${yo?' (tú)':''}</b><small>${j.anfitrion?'Anfitrión':j.listo?'✓ Listo':'Esperando…'}</small></li>`}).join('');
+  const T=host?NET.tiempo:(Sa.tiempo||30);
+  $('#salaTiempo').innerHTML=host?`<span>Tiempo por ronda</span>${[20,30,45].map(t=>`<button data-t="${t}" aria-pressed="${t===T}">${t} s</button>`).join('')}`:`<span>Tiempo por ronda: <b>${T} s</b></span>`;
+  if(host)$('#salaTiempo').querySelectorAll('button').forEach(x=>x.onclick=()=>{NET.tiempo=+x.dataset.t;difundirSala()});
   const b=$('#bSalaListo'),inv=J.filter(j=>!j.anfitrion);
   if(host){const ok=inv.every(j=>j.listo);b.disabled=!ok;b.textContent=inv.length?'Empezar':'Empezar con bots';
     if(inv.length&&!ok)salaEstado(`Faltan por marcar «Listo»: ${inv.filter(j=>!j.listo).map(j=>j.nombre).join(', ')}`);
@@ -3788,8 +3804,8 @@ function renderSala(){
 }
 function botonSala(){
   if(NET.host){const semilla=Math.floor(Math.random()*4294967296),jug=NET.sala.jugadores.map(({seat,nombre,av})=>({seat,nombre,av}));NET.jugando=true;
-    for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'inicio',semilla,diff,jugadores:jug,tuSeat:+seat});
-    startMulti(true,{semilla,diff,jugadores:jug,tuSeat:0})}
+    for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'inicio',semilla,diff,jugadores:jug,tuSeat:+seat,tiempo:NET.tiempo});
+    startMulti(true,{semilla,diff,jugadores:jug,tuSeat:0,tiempo:NET.tiempo})}
   else{const yo=NET.sala.jugadores.find(j=>j.seat===NET.sala.miSeat);if(yo)mandar(NET.conn,{t:'listoSala',v:!yo.listo})}
 }
 
@@ -3798,27 +3814,29 @@ const rondaK=()=>S.stage+'-'+S.round;
 const porSeat=s=>S.players.find(p=>p.seat===s);
 function startMulti(host,m){
   NET.jugando=true;S=null;newGame(m.diff||'normal');S.mode='multi';
-  S.multi={host,semilla:m.semilla,miSeat:m.tuSeat,listos:{},faltan:[],ultRival:{}};
+  S.multi={host,semilla:m.semilla,miSeat:m.tuSeat,listos:{},hechos:{},faltan:[],ultRival:{},tiempo:m.tiempo||30};
   const yo=S.players[0],pl=[yo];let nb=0;
   for(let seat=0;seat<MAX_JUG;seat++){const j=m.jugadores.find(x=>x.seat===seat);let p;
     if(seat===m.tuSeat){p=yo;p.av=j.av||p.av;p.col=SEAT_COL[seat]}
     else if(j){p=newPlayer(j.nombre,false,SEAT_COL[seat]);p.av=j.av;p.amigo=true;p.remoto=true;pl.push(p)}
     else{const [n,c]=AI_NAMES[nb++%AI_NAMES.length];p=newPlayer(n,false,c);p.av=AVK[seat%AVK.length];p.remoto=!host;pl.push(p)}
     p.seat=seat}
-  S.players=pl;
+  S.players=pl;S.multi.finPrep=performance.now()+durRonda(1,1)*1000;S.multi.esperaHechos=host?S.multi.finPrep+80000:0;
   ['#startOv','#salaOv','#arenaOv','#endOv'].forEach(s=>$(s).hidden=true);document.body.classList.remove('historia');dmgCb=null;renderDmg();layout();beginRound();
   toast(`Arena con ${m.jugadores.length} jugador${m.jugadores.length>1?'es':''} y ${MAX_JUG-m.jugadores.length} bots`);
 }
-// cuenta atrás de la preparación: al llegar a cero se lucha solo (para que nadie haga esperar a los demás)
-setInterval(()=>{const r=$('#multiReloj');if(!S||S.mode!=='multi'||S.phase==='over'){r.hidden=true;return}r.hidden=false;
-  const M=S.multi;
-  if(S.phase==='planning'||S.phase==='carousel'){const car=S.phase==='carousel',key=rondaK()+S.phase;
-    if(M.k!==key){M.k=key;M.finPrep=performance.now()+(car?20:T_PREP)*1000}
-    const q=!H().alive&&M.host?0:Math.ceil((M.finPrep-performance.now())/1000); // el anfitrión eliminado sigue llevando la partida, sin esperas
-    r.textContent=`⏱ ${Math.max(0,q)} s`;r.classList.toggle('prisa',q<=10);
-    if(q<=0){if(car){if(!S.carPick)pickCarousel(Math.floor(Math.random()*(S.carOpts||[1]).length))}else startCombat()}}
-  else if(S.phase==='espera'){r.classList.remove('prisa');r.textContent=M.faltan&&M.faltan.length?`Esperando a: ${M.faltan.join(', ')}`:'Esperando a los demás…'}
-  else r.hidden=true},250);
+// segundos de preparación: el carrusel y la fase 1 (monstruos) son más cortos, como en otros autobattlers
+function durRonda(st,r){const t=roundType(st,r);return t==='carousel'?20:st===1?Math.min(20,S.multi.tiempo):S.multi.tiempo}
+// reloj común: al llegar a cero se lucha (o se elige en el carrusel) con lo que haya; el anfitrión fuerza las esperas largas
+setInterval(()=>{const r=$('#multiReloj');if(!S||S.mode!=='multi'||(S.phase==='over'&&!S.multi.host)){r.hidden=true;return}
+  const M=S.multi,now=performance.now(),q=Math.ceil((M.finPrep-now)/1000),fuera=!H().alive;r.hidden=fuera;
+  if(S.phase==='planning'||S.phase==='carousel'){r.textContent=`⏱ ${Math.max(0,q)} s`;r.classList.toggle('prisa',q<=10);
+    if(q<=0||(fuera&&M.host)){if(S.phase==='carousel'){if(!S.carPick&&S.carOpts)pickCarousel(Math.floor(Math.random()*S.carOpts.length))}else startCombat()}}
+  else if(S.phase==='espera'){r.classList.remove('prisa');r.textContent=M.faltan&&M.faltan.length?`Esperando a: ${M.faltan.join(', ')}`:'Esperando a los demás…';
+    if(M.host&&now>M.finPrep+2500)hostComprobar(rondaK(),true)} // quien no ha llegado juega con su último tablero
+  else if(S.phase==='hecho'){r.classList.remove('prisa');r.textContent='Esperando a que terminen los demás combates…'}
+  else r.hidden=true;
+  if(M.host&&M.esperaHechos&&now>M.esperaHechos)hostAvanzar()},250);
 // «Luchar» en una ronda contra jugadores: se manda el tablero al anfitrión y se espera
 function multiListo(){
   const hu=H(),k=rondaK();autofill(hu);hideInfo();S.sel=null;
@@ -3832,11 +3850,12 @@ function hostListo(m,seat){
   if(seat!==0){const p=porSeat(seat);if(p){p.hp=m.hp;p.level=m.nivel}}
   hostComprobar(m.k);
 }
-function hostComprobar(k){
-  const M=S.multi,L=M.listos[k]||{};if(rondaK()!==k||S.phase!=='espera')return; // el anfitrión también tiene que estar en esa ronda y listo
+function hostComprobar(k,forzar){
+  const M=S.multi,L=M.listos[k]||{};if(rondaK()!==k||S.phase!=='espera'||M.rondaEnviada===k)return; // el anfitrión también tiene que estar en esa ronda y listo
   const faltan=S.players.filter(p=>p.alive&&(p.amigo||p.seat===0)&&p.remoto!==false&&!L[p.seat]&&!(p.seat===0&&!H().alive));
   M.faltan=faltan.map(p=>p.seat===0?miNombre():p.name);enviar({t:'faltan',k,nombres:M.faltan});
-  if(faltan.length)return;
+  if(faltan.length&&!forzar)return;
+  M.rondaEnviada=k;
   // parejas: todos los vivos barajados, evitando repetir rival si se puede; si son impares, el último lucha contra un eco
   const vivos=shuffle(S.players.filter(p=>p.alive).map(p=>p.seat)),pares=[];
   while(vivos.length>=2){const a=vivos.shift();let i=vivos.findIndex(s=>s!==M.ultRival[a]);if(i<0)i=0;const b=vivos.splice(i,1)[0];pares.push([a,b,0]);M.ultRival[a]=b;M.ultRival[b]=a}
@@ -3847,10 +3866,29 @@ function hostComprobar(k){
   const m={t:'ronda',k,semilla:Math.floor(Math.random()*4294967296),pares,jug};
   enviar(m);aplicarRonda(m);
 }
-function hostCae(seat){const p=porSeat(seat);if(!p||!p.alive)return;p.alive=false;p.place=S.players.filter(x=>x.alive).length+1;log(`${p.name} queda eliminado (${ord(p.place)})`);updateHUD();if(S.phase==='espera')hostComprobar(rondaK())}
+// fin de ronda: cada jugador avisa al acabar su combate (o al elegir en el carrusel); con todos, el anfitrión pasa a la siguiente
+function multiHecho(){const M=S.multi;if(S.phase!=='result'&&S.phase!=='carousel')return; // avisos atrasados de una ronda ya cerrada
+  const k=rondaK();S.phase='hecho';updateHUD();if(M.host)hostHecho(k,0);else mandar(NET.conn,{t:'hecho',k,hp:H().hp})}
+function hostHecho(k,seat,m){if(!S||S.mode!=='multi')return;const H0=S.multi.hechos[k]=S.multi.hechos[k]||{};H0[seat]=true;
+  if(m&&seat){const p=porSeat(seat);if(p)p.hp=m.hp}hostComprobarHechos(k)}
+function hostComprobarHechos(k){const M=S.multi,H0=M.hechos[k]||{};if(rondaK()!==k)return;
+  const faltan=S.players.filter(p=>p.alive&&(p.amigo||p.seat===0)&&p.remoto!==false&&!H0[p.seat]&&!(p.seat===0&&!H().alive));
+  if(!faltan.length&&(S.phase==='hecho'||!H().alive))hostAvanzar()}
+function hostAvanzar(){const M=S.multi,k=rondaK();if(M.avanzada===k)return;
+  if(S.players.filter(p=>p.alive).length<=1)return;M.avanzada=k;
+  let st=S.stage,r=S.round+1;if(r>roundsIn(st)){st++;r=1}
+  const m={t:'fase',k:st+'-'+r,dur:durRonda(st,r)};enviar(m);aplicarFase(m)}
+// nueva ronda para todos; si este dispositivo iba con retraso, cierra de golpe lo que tuviera a medias
+function aplicarFase(m){if(!S||S.mode!=='multi')return;const M=S.multi;
+  if(S.phase==='carousel'&&S.carOpts)chooseCarousel(S.carPick?S.carPick.i:0);
+  if(S.phase==='combat'&&S.combat){let n=0;while(!S.combat.over&&n<6000){S.combat.step(1/30);n++}if(!S.resolving){S.resolving=true;resolveCombat()}}
+  if(!H().alive&&!M.host)return;
+  const [st,r]=m.k.split('-').map(Number);S.stage=st;S.round=r;M.finPrep=performance.now()+m.dur*1000;M.esperaHechos=M.host?M.finPrep+80000:0;
+  beginRound()}
+function hostCae(seat){const p=porSeat(seat);if(!p||!p.alive)return;p.alive=false;p.place=S.players.filter(x=>x.alive).length+1;log(`${p.name} queda eliminado (${ord(p.place)})`);updateHUD();if(S.phase==='espera')hostComprobar(rondaK());hostComprobarHechos(rondaK())}
 function hostDesconectado(seat){const p=porSeat(seat);if(!p||!p.amigo)return;
   if(p.alive){p.remoto=false;p.amigo=false;p.name+=' (bot)';const t=`${p.name.replace(' (bot)','')} se ha desconectado: sigue un bot por él.`;toast(t);enviar({t:'aviso',txt:t});aiArrange(p)}
-  if(S&&S.phase==='espera')hostComprobar(rondaK())}
+  if(S&&S.phase==='espera')hostComprobar(rondaK());if(S)hostComprobarHechos(rondaK())}
 // ---- todos: la ronda contra jugadores ----
 function aplicarRonda(m){
   if(!S||S.mode!=='multi'||m.k!==rondaK())return;const M=S.multi,hu=H();
