@@ -612,6 +612,78 @@ body.en-combate .goldPill{display:none}
 @keyframes mdPan{from{background-position:50% 100%}to{background-position:50% 0%}}
 @media (prefers-reduced-motion:reduce){.mundoOv.play .mdFondo,.mundoOv.play .mdNuevo{animation:none;opacity:1}.mundoOv.play.conFin .mdFin{display:none}}
 
+/* ===== diario de objetos ===== */
+.mpLado{display:flex;flex-direction:column;gap:14px}.mpLado .mpCarta{flex:1;min-height:118px}
+.mpLado .mpIcoAlbum svg{width:70px;height:70px}
+@media (max-width:760px){.mpLado{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:10px}.mpLado .mpCarta.album{grid-column:auto;min-height:0}.mpLado .mpIcoAlbum svg{width:44px;height:44px}.mpLado .mpTxt b{font-size:19px}.mpLado .mpTxt small{font-size:11.5px}}
+.diBtn{width:30px;height:30px;border-radius:8px;border:1px solid #6b5426;background:linear-gradient(180deg,#3a2d14,#1d160a);color:var(--gold-hi);display:grid;place-items:center;padding:0;flex:none}
+.diBtn:hover{border-color:var(--gold-hi);box-shadow:0 0 10px rgba(255,190,90,.35)}
+.diario{max-width:900px;background:linear-gradient(180deg,#1b1610,#12100c);border:1px solid #6b5426;box-shadow:0 20px 50px rgba(0,0,0,.6),inset 0 0 0 4px rgba(233,180,76,.06)}
+.diario h2{font-family:var(--display);font-weight:400;color:var(--gold-hi)}
+.diTabs{display:flex;gap:6px;margin:12px 0 10px;flex-wrap:wrap}
+.diTabs button{background:#231c12;border:1px solid #4a3a1c;color:#d7c7a4;border-radius:20px;padding:6px 14px;font-weight:600}
+.diTabs button[aria-pressed="true"]{background:#5a4318;border-color:var(--gold-hi);color:#fff3d0}
+#diarioBody{max-height:66vh;overflow:auto;padding-right:4px}
+.diAyuda{color:#bfae8a;font-size:14px;margin:4px 0 10px;font-style:italic}
+.diSec{font-family:var(--display);font-weight:400;color:#e9c67a;font-size:18px;margin:14px 0 8px;border-bottom:1px solid #3a2e18;padding-bottom:4px}
+.diTablaW{overflow:auto}
+.diTabla{border-collapse:separate;border-spacing:3px;margin:0 auto}
+.diTabla th,.diTabla td{padding:0}
+.diTabla button{background:#201a11;border:1px solid #3a2e18;border-radius:8px;padding:3px;display:grid;place-items:center}
+.diTabla th button{background:#3a2d14;border-color:#8a6a2e}
+.diTabla button:hover{border-color:var(--gold-hi);transform:scale(1.12)}
+.diTabla .item{width:40px;height:40px}
+.diLista{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.diObj{display:flex;align-items:center;gap:10px;text-align:left;background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:8px;color:var(--text)}
+.diObj:hover{border-color:var(--gold-hi)}
+.diObj span{display:flex;flex-direction:column;min-width:0}.diObj b{color:#f3dfae;font-size:15px}.diObj small{color:#bfae8a;font-size:12px}.diObj i{color:#8fb7c9;font-size:11.5px;font-style:normal}
+.diRec{display:flex;align-items:center;gap:2px}.diRec em,.objReceta em,.objCombos em{font-style:normal;color:#bfae8a;font-weight:700}
+.diInv{display:flex;flex-wrap:wrap;gap:6px}.diInv button{background:none;border:0;padding:0}
+.diEquipo{display:flex;flex-direction:column;gap:8px}
+.diCamp{display:flex;align-items:center;gap:10px;background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:8px}
+.diCamp .cg{width:48px;height:48px;flex:none}
+.diCampTx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}.diCampTx b{color:#f3dfae}.diLleva{display:flex;gap:3px;align-items:center}.diLleva small{color:#8a7a5a;font-size:11px}
+.diSugs{display:flex;gap:6px}
+.diSug{display:flex;flex-direction:column;align-items:center;gap:2px;background:#16120c;border:1px solid #3a2e18;border-radius:8px;padding:4px 5px;min-width:56px}
+.diSug small{font-size:10.5px;color:#bfae8a;white-space:nowrap}
+.diSug.listo{border-color:#5fc46f;box-shadow:0 0 10px rgba(95,196,111,.3)}.diSug.listo small{color:#8be29f;font-weight:700}
+.diSug.tiene{opacity:.55}
+.diSug:hover{border-color:var(--gold-hi)}
+.objFicha{background:linear-gradient(180deg,#1b1610,#12100c);border:1px solid #6b5426}
+.objWrap{grid-template-columns:240px minmax(0,1fr)}
+.objEscena{display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:10px}
+.objGrande{width:200px;height:200px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,200,110,.28),rgba(0,0,0,0) 65%);animation:objFlota 3.4s ease-in-out infinite}
+.objGrande .item{box-shadow:0 0 30px rgba(255,200,110,.35)}
+@keyframes objFlota{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.objReceta{display:flex;align-items:center;gap:6px}.objReceta button{background:none;border:0;padding:0}
+.objStats{color:#f3dfae;font-weight:600;margin:6px 0}.objPas{color:#dfe6ea;margin:6px 0}.objPara{color:#8fb7c9;margin:10px 0 6px}
+.objCh{display:flex;flex-wrap:wrap;gap:4px}.objCh img{width:34px;height:34px;border-radius:50%;border:2px solid;background:#1d2a33;object-fit:cover}
+.objCombos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:5px}
+.objCombos button{display:flex;align-items:center;gap:5px;background:#1f1a12;border:1px solid #3a2e18;border-radius:8px;padding:4px 6px;color:#f3dfae;text-align:left;font-size:13px}
+.objCombos button:hover{border-color:var(--gold-hi)}
+@media (max-width:760px){
+  .diario{padding:12px}#diarioBody{max-height:calc(100dvh - 170px)}
+  .diTabla{border-spacing:2px}.diTabla button{padding:1px;border-radius:6px}.diTabla .item{width:30px;height:30px}
+  .diLista{grid-template-columns:1fr}
+  .diCamp{flex-wrap:wrap}.diSugs{width:100%;justify-content:flex-start}
+  .objWrap{grid-template-columns:1fr}.objGrande{width:130px;height:130px}.objGrande .item{width:96px!important;height:96px!important}
+  .objFicha .fiNav{height:130px}
+}
+.diObj .diRec{flex-direction:row;flex:none}
+.diMini{display:flex;gap:2px}
+.diario{box-sizing:border-box}
+@media (max-width:760px){
+  #diarioOv{padding:8px}
+  .diario{max-height:calc(100dvh - 16px);display:flex;flex-direction:column}
+  .diario h2{font-size:22px}#bDiarioOk{padding:8px 14px;font-size:15px}
+  .diTabs{margin:8px 0}.diTabs button{padding:5px 10px;font-size:13px}
+  #diarioBody{max-height:none;flex:1;min-height:0}
+  .diTabla .item{width:29px;height:29px}
+}
+.diario{min-width:0}.diTablaW{max-width:100%}
+@media (max-width:760px){.diTabla .item{width:26px;height:26px}.diTabla button{padding:1px}.diTabla{border-spacing:2px}}
+@media (max-width:760px){.diTabla button{width:33px;height:33px;box-sizing:border-box}.diTabla .item{width:28px;height:28px;margin:0}}
+
 </style>
 
 <div id="app">
@@ -654,7 +726,7 @@ body.en-combate .goldPill{display:none}
 
   <aside id="players"><h3>Jugadores</h3><ol id="plist"></ol><div id="log"></div></aside>
 
-  <div id="itemsBar"><span class="lbl">Objetos</span><div id="inv"></div><span class="hint" id="invHint">Arrastra un objeto sobre un campeón (máx. 3)</span></div>
+  <div id="itemsBar"><button class="diBtn" id="bDiario" title="Diario de objetos: combinaciones y qué le conviene a cada campeón" aria-label="Diario de objetos"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7l-9.6 9.6-1.6-1.6L7.6 21 6.2 19.6l1.4-1.4-2.8-2.8-1.4 1.4L2 15.4l3.2-3.2-1.6-1.6z" fill="currentColor"/></svg></button><span class="lbl">Objetos</span><div id="inv"></div><span class="hint" id="invHint">Arrastra un objeto sobre un campeón (máx. 3)</span></div>
 
   <footer id="shop">
     <div class="goldPill" title="Tu oro"><span class="coin"></span><b id="goldv">0</b><small id="intv"></small></div>
@@ -682,7 +754,10 @@ body.en-combate .goldPill{display:none}
   <div class="mpModos">
     <button class="mpCarta grande" id="bStory"><div class="mpImg" id="mpImgHist"></div><div class="mpTxt"><b>Modo Historia</b><small id="mpHistSub">Mundos con jefes · tu mazo de campeones</small></div></button>
     <button class="mpCarta grande" id="bArena"><div class="mpImg" id="mpImgArena"></div><div class="mpTxt"><b>Arena libre</b><small id="bestTxt">8 jugadores · el último en pie gana</small></div></button>
-    <button class="mpCarta album" id="bAlbum"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="34" height="46" rx="5" fill="#2a2110" stroke="#e9b44c" stroke-width="3" transform="rotate(-8 27 31)"/><rect x="20" y="8" width="34" height="46" rx="5" fill="#3a2d14" stroke="#ffd98a" stroke-width="3"/><path d="M37 18l3.4 7 7.6 1.1-5.5 5.4 1.3 7.6L37 35.5l-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#ffd98a"/></svg></div><div class="mpTxt"><b>Álbum</b><small id="mpAlbumSub">Tus campeones</small></div></button>
+    <div class="mpLado">
+      <button class="mpCarta album" id="bAlbum"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="34" height="46" rx="5" fill="#2a2110" stroke="#e9b44c" stroke-width="3" transform="rotate(-8 27 31)"/><rect x="20" y="8" width="34" height="46" rx="5" fill="#3a2d14" stroke="#ffd98a" stroke-width="3"/><path d="M37 18l3.4 7 7.6 1.1-5.5 5.4 1.3 7.6L37 35.5l-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#ffd98a"/></svg></div><div class="mpTxt"><b>Álbum</b><small id="mpAlbumSub">Tus campeones</small></div></button>
+      <button class="mpCarta album" id="bObjetos"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 14c8-4 16-4 24 1v38c-8-5-16-5-24-1z" fill="#2a2110" stroke="#e9b44c" stroke-width="3" stroke-linejoin="round"/><path d="M56 14c-8-4-16-4-24 1v38c8-5 16-5 24-1z" fill="#3a2d14" stroke="#ffd98a" stroke-width="3" stroke-linejoin="round"/><path d="M44 21l4 4-9 9-2 5-3-3 5-2z" fill="#ffd98a"/><circle cx="20" cy="31" r="6" fill="#6fd0ff" stroke="#e9b44c" stroke-width="2"/></svg></div><div class="mpTxt"><b>Objetos</b><small>Diario y combinaciones</small></div></button>
+    </div>
   </div>
 </div>
 
@@ -801,6 +876,18 @@ body.en-combate .goldPill{display:none}
     <div id="rgMazo"></div>
     <div class="row" style="justify-content:center;margin-top:12px"><button class="big alt" id="bRgNo">Volver</button><button class="big" id="bRgSi">Jugar</button></div>
   </div>
+</div>
+
+<div class="overlay" id="diarioOv" hidden>
+  <div class="modal wide diario">
+    <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Diario de objetos</h2><button class="big" id="bDiarioOk">Cerrar</button></div>
+    <div class="diTabs" id="diTabs"><button data-t="partida">Tu partida</button><button data-t="tabla">Combinaciones</button><button data-t="lista">Todos los objetos</button></div>
+    <div id="diarioBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="objOv" hidden>
+  <div class="modal wide ficha objFicha"><button class="ix" id="bObjX" aria-label="Cerrar">×</button><button class="fiNav prev" id="bObjPrev" aria-label="Objeto anterior">‹</button><button class="fiNav next" id="bObjNext" aria-label="Objeto siguiente">›</button><div id="objBody"></div></div>
 </div>
 
 <div id="ghost" hidden></div>
@@ -2831,7 +2918,7 @@ $('#bFight').onclick=()=>startCombat();
 function setSpeed(v){if(S)S.speed=v;try{localStorage.setItem('crisol_vel',v)}catch(e){}['sp1','sp2','sp4'].forEach(j=>$('#'+j).setAttribute('aria-pressed',j==='sp'+v))}
 ['sp1','sp2','sp4'].forEach(id=>{$('#'+id).onclick=()=>setSpeed(+id.slice(2))});setSpeed(velGuardada());
 window.addEventListener('keydown',e=>{
-  if(!S||!$('#startOv').hidden)return;
+  if(!S||!$('#startOv').hidden||!$('#diarioOv').hidden||!$('#objOv').hidden)return;
   if(!$('#pausaOv').hidden&&e.key!=='Escape')return;
   if(e.key==='d'||e.key==='D')$('#bRoll').click();
   else if(e.key==='f'||e.key==='F')$('#bXP').click();
@@ -3415,6 +3502,139 @@ function dibujarFicha(st,now){
 $('#bAlbum').onclick=()=>{audioInit();openAlbum()};$('#bAlbumOk').onclick=()=>{$('#albumOv').hidden=true};
 $('#bFichaX').onclick=()=>{$('#fichaOv').hidden=true};$('#bFichaPrev').onclick=()=>fichaPaso(-1);$('#bFichaNext').onclick=()=>fichaPaso(1);
 window.addEventListener('keydown',e=>{if($('#fichaOv').hidden)return;if(e.key==='ArrowLeft')fichaPaso(-1);else if(e.key==='ArrowRight')fichaPaso(1);else if(e.key==='Escape')$('#fichaOv').hidden=true});$('#fichaOv').onclick=e=>{if(e.target.id==='fichaOv')$('#fichaOv').hidden=true};
+
+// ================= DIARIO DE OBJETOS =================
+// Enciclopedia de objetos: tabla de combinaciones (componente × componente), lista de todos los objetos y, dentro de una
+// partida, «Tu partida»: qué puedes fabricar con tu inventario y qué objetos le convienen a cada campeón de tu tablero.
+// Cada objeto tiene ficha propia (receta, estadísticas, pasiva, para quién es y una nota del forjador).
+const COMPS=ITEM_IDS,COMPLETOS=Object.keys(ITEMS).filter(k=>ITEMS[k].full),DIARIO=COMPS.concat(COMPLETOS);
+// para quién es cada objeto completo (por orden de preferencia); los componentes usan ITEM_ROLES (04-ia.js)
+const IDEAL_OBJ={mandoble:['ranged','assassin'],runica:['ranged'],filoarc:['assassin','mage'],hojamana:['ranged','mage'],rompecor:['ranged','assassin'],
+ vampira:['assassin','ranged'],hachague:['assassin'],ocaso:['assassin'],vendaval:['ranged'],batuta:['ranged','mage'],cristal:['ranged','mage'],
+ corazavi:['tank'],brisa:['ranged'],tambor:['tank'],certero:['ranged'],ancestral:['mage'],sabio:['mage'],egida:['mage','tank'],velo:['mage'],
+ savia:['tank','mage'],precision:['mage'],caliz:['mage','tank'],penitente:['tank'],mareamnt:['mage'],fuente:['tank','mage'],espejo:['ranged','mage'],
+ pua:['tank'],bastionob:['tank'],muralla:['tank'],guantel:['tank','assassin'],tormenta:['tank'],troll:['tank'],duelista:['assassin','tank'],
+ gigante:['tank'],martir:['tank','assassin'],ojo:['assassin','ranged']};
+const ROL_PL={tank:'tanques',ranged:'tiradores',assassin:'asesinos',mage:'magos'};
+const NOTAS_OBJ={
+ hoja:'La primera hoja que forja todo aprendiz. Corta poco, pero es el principio de casi todo.',
+ arco:'Un arco corto de tejo. Más que fuerza, da ritmo.',
+ vara:'Rama de un árbol tocado por un rayo. Guarda un zumbido que solo oyen los magos.',
+ lagrima:'Una gota del Crisol que nunca se evapora. Acerca la primera habilidad.',
+ cota:'Anillas de hierro remachadas a mano, una a una, en la vieja fragua.',
+ manto:'Tela tejida con hilos de niebla: la magia resbala sobre ella.',
+ gema:'Late como un corazón. Quien la lleva aguanta un golpe más.',
+ talisman:'Una moneda de la suerte con un agujero en el centro. Nadie sabe quién la acuñó.',
+ mandoble:'Demasiado grande para cualquiera, salvo para quien ya llevaba dos hojas.',
+ runica:'Las runas del filo despiertan con cada tajo y muerden con magia.',
+ filoarc:'Una espada que bebe tanto de los golpes como de los hechizos.',
+ hojamana:'Cada golpe arranca una chispa de maná al aire.',
+ rompecor:'Pensada para abrir armaduras como si fueran latas.',
+ vampira:'La hoja tiene sed, y comparte lo que bebe con quien la empuña.',
+ hachague:'No apunta: barre. Quien esté al lado del objetivo también lo nota.',
+ ocaso:'Brilla más cuanto más débil está su presa.',
+ vendaval:'La cuerda vibra cada vez más deprisa, hasta sonar como el viento.',
+ batuta:'Uno, dos… y al tercer compás, el trueno.',
+ cristal:'Tras cada hechizo, el arco se vuelve ligero como el vidrio.',
+ corazavi:'Cuanto más le golpean, más deprisa responde.',
+ brisa:'Un filo tan fino que deshace las protecciones mágicas.',
+ tambor:'Su redoble acelera el paso de todos los que lo oyen cerca.',
+ certero:'Una mira tallada en un talismán: una casilla más lejos, sin fallar.',
+ ancestral:'El báculo crece en poder mientras dura el combate.',
+ sabio:'El orbe devuelve parte del maná de cada hechizo.',
+ egida:'Al conjurar, la égida se despliega como un escudo de luz.',
+ velo:'Los dos primeros hechizos enemigos se pierden en su velo.',
+ savia:'Cada hechizo hace correr la savia y cierra heridas.',
+ precision:'Una gema que enseña a los hechizos a buscar el punto débil.',
+ caliz:'Quien bebe del cáliz despierta antes, y sus vecinos también.',
+ penitente:'Convierte el dolor de cada golpe en maná.',
+ mareamnt:'Como la marea, el maná sube sin descanso.',
+ fuente:'Cuando todo parece perdido, la fuente brota una vez.',
+ espejo:'Cada golpe certero refleja un destello de maná.',
+ pua:'Quien golpea a su portador acaba con las manos llenas de púas.',
+ bastionob:'Un escudo que protege también a los que están al lado.',
+ muralla:'Empieza cada combate detrás de una muralla de piedra viva.',
+ guantel:'Tan ligero que deja tiempo para apartarse del golpe.',
+ tormenta:'Rayos pequeños pero constantes para quien se acerque demasiado.',
+ troll:'Una piel que se cierra sola, segundo a segundo.',
+ duelista:'Detrás de la máscara, una mirada que deja aturdido al rival.',
+ gigante:'Late tan fuerte que se niega a parar la primera vez.',
+ martir:'Se rompe para salvar a su portador cuando más lo necesita.',
+ ojo:'Ve el punto débil de cualquiera, y lo hace doler el doble.'};
+const rolesObj=id=>ITEMS[id].full?IDEAL_OBJ[id]:ITEM_ROLES[id].slice(0,2);
+// cuánto le conviene un objeto completo a un campeón: según su rol (primer rol ideal 2, segundo 1)
+function afinidad(id,ch){const r=IDEAL_OBJ[id].indexOf(CH[ch].role);return r<0?0:2-r}
+function mejoresPara(ch,n){return COMPLETOS.filter(id=>afinidad(id,ch)>0).sort((a,b)=>afinidad(b,ch)-afinidad(a,ch)||IDEAL_OBJ[a].length-IDEAL_OBJ[b].length).slice(0,n)}
+const pasivaDe=id=>{const I=ITEMS[id],k=Object.keys(I.p)[0];return PASIVAS[k](I.p[k])};
+const enPartida=()=>!!(S&&S.players&&S.players.length&&$('#startOv').hidden);
+// campeones que se pueden ver: en partida, los de la partida; fuera, los de la Arena y tus monstruos del modo Historia
+function campeonesVisibles(){if(enPartida())return Object.keys(S.pool);HIST=HIST||histLoad();return ARENA_IDS.concat(CH_IDS.filter(id=>CH[id].story&&HIST.col.includes(id)))}
+
+let diarioTab='tabla';
+function openDiario(tab){diarioTab=tab||(enPartida()?'partida':'tabla');$('#diTabs [data-t="partida"]').hidden=!enPartida();renderDiario();$('#diarioOv').hidden=false}
+function renderDiario(){
+  document.querySelectorAll('#diTabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===diarioTab));
+  const box=$('#diarioBody');
+  if(diarioTab==='tabla'){
+    box.innerHTML=`<p class="diAyuda">Dos componentes en el mismo campeón se funden en un objeto completo. Toca cualquier objeto para ver su ficha.</p>
+      <div class="diTablaW"><table class="diTabla"><tr><th></th>${COMPS.map(c=>`<th><button data-o="${c}">${itemBox(c)}</button></th>`).join('')}</tr>
+      ${COMPS.map(a=>`<tr><th><button data-o="${a}">${itemBox(a)}</button></th>${COMPS.map(b=>{const id=RECIPE[a+'+'+b];return `<td><button data-o="${id}" title="${ITEMS[id].n}">${itemBox(id)}</button></td>`}).join('')}</tr>`).join('')}</table></div>`;
+  }else if(diarioTab==='lista'){
+    const tarj=id=>{const I=ITEMS[id];return `<button class="diObj" data-o="${id}">${itemBox(id,'','width:46px;height:46px')}<span><b>${I.n}</b><small>${I.full?`${ITEMS[I.r[0]].n} + ${ITEMS[I.r[1]].n}`:I.d}</small><i>Para ${rolesObj(id).map(r=>ROL_PL[r]).join(' y ')}</i></span></button>`};
+    box.innerHTML=`<h4 class="diSec">Componentes</h4><div class="diLista">${COMPS.map(tarj).join('')}</div><h4 class="diSec">Objetos completos</h4><div class="diLista">${COMPLETOS.map(tarj).join('')}</div>`;
+  }else box.innerHTML=htmlPartida();
+  box.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openObjeto(b.dataset.o));
+}
+// «Tu partida»: lo que puedes fabricar ya y los objetos que convienen a cada campeón de tu tablero
+function htmlPartida(){
+  const hu=H(),inv=hu.items.filter(i=>!ITEMS[i].full),us=hu.board.filter(Boolean);
+  const cuenta=a=>{const c={};a.forEach(x=>c[x]=(c[x]||0)+1);return c};
+  const hay=(pool,r)=>{const c=cuenta(pool);return r.every(x=>(c[x]=(c[x]||0)-1)>=0)};
+  const posibles=[...new Set(COMPLETOS.filter(id=>hay(inv,ITEMS[id].r)))];
+  const rec=id=>`<span class="diRec">${itemBox(ITEMS[id].r[0],'','width:26px;height:26px')}<em>+</em>${itemBox(ITEMS[id].r[1],'','width:26px;height:26px')}<em>=</em></span>`;
+  let h=`<h4 class="diSec">Tus componentes</h4>`+(inv.length?`<div class="diInv">${inv.map(i=>`<button data-o="${i}">${itemBox(i,'','width:40px;height:40px')}</button>`).join('')}</div>`:`<p class="diAyuda">No tienes componentes sueltos. Caen al vencer monstruos y en el carrusel.</p>`);
+  if(posibles.length)h+=`<h4 class="diSec">Puedes fabricar ya</h4><div class="diLista">${posibles.map(id=>`<button class="diObj" data-o="${id}">${rec(id)}${itemBox(id,'','width:40px;height:40px')}<span><b>${ITEMS[id].n}</b><i>Para ${IDEAL_OBJ[id].map(r=>ROL_PL[r]).join(' y ')}</i></span></button>`).join('')}</div>`;
+  h+=`<h4 class="diSec">Para tu equipo</h4>`;
+  if(!us.length)return h+`<p class="diAyuda">Coloca campeones en el tablero para ver qué objetos les convienen.</p>`;
+  const vistos=new Set();
+  h+=`<div class="diEquipo">`+us.filter(u=>!vistos.has(u.id)&&vistos.add(u.id)).map(u=>{const C=CH[u.id],suelto=u.items.filter(x=>!ITEMS[x].full),hechos=u.items.filter(x=>ITEMS[x].full);
+    const ops=mejoresPara(u.id,3).map(id=>{const listo=u.items.length<3&&hay(inv.concat(suelto),ITEMS[id].r)&&(!suelto.length||ITEMS[id].r.includes(suelto[0]));
+      const tiene=hechos.includes(id);
+      return `<button class="diSug${listo?' listo':''}${tiene?' tiene':''}" data-o="${id}" title="${ITEMS[id].n}">${itemBox(id,'','width:38px;height:38px')}<small>${tiene?'Lo lleva':listo?'¡Puedes!':`<span class="diMini">${ITEMS[id].r.map(x=>itemBox(x,'','width:15px;height:15px')).join('')}</span>`}</small></button>`}).join('');
+    return `<div class="diCamp"><div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(u.id)}" alt=""></div>
+      <div class="diCampTx"><b>${C.name} ${'★'.repeat(u.star)}</b>${roleTag(C.role)}<div class="diLleva">${u.items.length?u.items.map(x=>itemBox(x,'','width:20px;height:20px')).join(''):'<small>Sin objetos</small>'}</div></div>
+      <div class="diSugs">${ops}</div></div>`}).join('')+`</div>`;
+  return h;
+}
+// ---- ficha de un objeto ----
+let objId=null;
+function objPaso(d){const i=DIARIO.indexOf(objId);openObjeto(DIARIO[(i+d+DIARIO.length)%DIARIO.length])}
+function openObjeto(id){
+  objId=id;const I=ITEMS[id],roles=rolesObj(id),i=DIARIO.indexOf(id)+1;
+  const chs=campeonesVisibles().filter(c=>roles.includes(CH[c].role)).sort((a,b)=>roles.indexOf(CH[a].role)-roles.indexOf(CH[b].role)||CH[a].cost-CH[b].cost);
+  $('#objBody').innerHTML=`<div class="fiWrap objWrap">
+    <div class="objEscena"><div class="objGrande">${itemBox(id,'','width:132px;height:132px')}</div>
+      ${I.full?`<div class="objReceta"><button data-o="${I.r[0]}">${itemBox(I.r[0],'','width:44px;height:44px')}</button><em>+</em><button data-o="${I.r[1]}">${itemBox(I.r[1],'','width:44px;height:44px')}</button></div>`:''}</div>
+    <div class="fiDatos">
+      <div class="lbl">#${String(i).padStart(2,'0')} · ${I.full?'Objeto completo':'Componente'}</div>
+      <h2>${I.n}</h2>
+      <p class="fiHist">${NOTAS_OBJ[id]||''}</p>
+      <p class="objStats">${I.full?statText(I.s):I.d}</p>
+      ${I.full?`<p class="objPas"><b>Pasiva:</b> ${pasivaDe(id)}</p>`:''}
+      <p class="objPara"><b>Ideal para</b> ${roles.map(r=>ROL_PL[r]).join(' y ')}</p>
+      <div class="objCh">${chs.slice(0,12).map(c=>`<img src="${portrait(c)}" alt="${CH[c].name}" title="${CH[c].name}" style="border-color:${COST_COL[CH[c].cost-1]}">`).join('')}</div>
+      ${I.full?'':`<h4 class="diSec">Se combina en</h4><div class="objCombos">${COMPS.map(c=>{const r=RECIPE[id+'+'+c];return `<button data-o="${r}" title="${ITEMS[r].n}">${itemBox(c,'','width:24px;height:24px')}<em>→</em>${itemBox(r,'','width:30px;height:30px')}<span>${ITEMS[r].n}</span></button>`}).join('')}</div>`}
+    </div></div>`;
+  $('#objBody').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>openObjeto(b.dataset.o));
+  $('#objOv').hidden=false;
+}
+document.querySelectorAll('#diTabs button').forEach(b=>b.onclick=()=>{diarioTab=b.dataset.t;renderDiario()});
+$('#bObjetos').onclick=()=>{audioInit();openDiario('tabla')};$('#bDiario').onclick=()=>openDiario();$('#bDiarioOk').onclick=()=>{$('#diarioOv').hidden=true};
+$('#bObjX').onclick=()=>{$('#objOv').hidden=true};$('#bObjPrev').onclick=()=>objPaso(-1);$('#bObjNext').onclick=()=>objPaso(1);
+$('#objOv').onclick=e=>{if(e.target.id==='objOv')$('#objOv').hidden=true};
+window.addEventListener('keydown',e=>{
+  if(!$('#objOv').hidden){if(e.key==='ArrowLeft')objPaso(-1);else if(e.key==='ArrowRight')objPaso(1);else if(e.key==='Escape')$('#objOv').hidden=true;return}
+  if(!$('#diarioOv').hidden&&e.key==='Escape')$('#diarioOv').hidden=true});
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
