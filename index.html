@@ -3522,6 +3522,11 @@ const REGLAS={
  24:{maxCoste:2,t:'Solo campeones de coste 1 y 2',motivo:'La veta es tan honda y estrecha que solo pueden bajar los campeones más jóvenes y ligeros. Los veteranos vigilan la salida.'},
  27:{sinRasgo:'astral',t:'Sin campeones Astrales',motivo:'En la cripta no entra ni un rayo de luz. Los Astrales pierden su brillo en la oscuridad y se niegan a bajar.'}};
 Object.entries(REGLAS).forEach(([n,r])=>{if(NIVELES[n-1])NIVELES[n-1].regla=r});
+// Ajuste de fuerza por nivel (multiplica la k de todos sus combates), calibrado con los aumentos activos y la curva
+// en dientes de sierra de docs/modo-historia.md («Dificultad»).
+const AJUSTE_K={1:1.118,2:1.165,3:1.151,4:1.041,5:1.153,6:1.19,7:1.081,8:1.13,9:1.17,10:1.17,11:1.117,12:1.115,14:1.117,15:1.168,
+ 16:1.051,17:1.082,18:1.07,19:1.08,20:1.123,21:1.073,22:0.994,23:1.101,24:1.03,25:1.106,26:1.031,27:1.136,29:1.018,30:1.044};
+Object.entries(AJUSTE_K).forEach(([n,m])=>{const L=NIVELES[n-1];if(L)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
 function reglaOk(L,id){const R=L&&L.regla;if(!R)return true;if(R.sinRasgo&&CH[id].traits.includes(R.sinRasgo))return false;if(R.maxCoste&&CH[id].cost>R.maxCoste)return false;if(R.minCoste&&CH[id].cost<R.minCoste)return false;return true}
 // mazo con el que se juega un nivel: tu mazo sin los campeones que la regla prohíbe, completado (hasta 20) con otros de tu colección
 // que sí la cumplen, de más caro a más barato y sin pasar los límites por rasgo
@@ -4828,6 +4833,7 @@ $('#bTnRendirse').onclick=()=>{if(TN&&!TN.fin){TN.fin=true;tnFinal(false)}};
 // ================= AUMENTOS =================
 // A mitad de cada fase de la Historia (ronda 4; 3 en supervivencia) y en las rondas 2-2, 3-2 y 4-2 de la Arena eliges
 // 1 de 3 aumentos. Cuanto más cambia la partida, menos probable es (peso). Los bots reciben uno sencillo al azar.
+// En la Historia no salen los marcados soloArena (Plaza extra y Ascenso): desequilibran unos niveles calibrados.
 // Estado de la partida en el jugador: plazaExtra, rollGratis, tiendaCerrada (rondas), intMax (interés máximo).
 const AUMENTOS={
  oro:{n:'Bolsa de oro',r:'comun',p:10,ico:'💰',d:'+10 de oro.',f:hu=>{hu.gold+=10}},
@@ -4838,9 +4844,9 @@ const AUMENTOS={
  ayuno:{n:'Ayuno del mercader',r:'poco',p:5,ico:'🔒',d:'La tienda se cierra durante 3 rondas, pero recibes ya un objeto completo.',f:hu=>{hu.tiendaCerrada=3;returnShop(hu);hu.items.push(pick(Object.keys(ITEMS).filter(k=>ITEMS[k].full)))}},
  eco:{n:'Eco',r:'poco',p:5,ico:'👥',d:'Una copia de un campeón al azar de tu tablero va a tu banquillo.',f:hu=>{const us=hu.board.filter(Boolean);const u=pick(us);const r=giveUnit(hu,u.id);toast(`Copia de ${CH[u.id].name}${r==='fusion'?': ¡se fusiona!':''}`)},ok:hu=>hu.board.some(Boolean)},
  banquero:{n:'Banquero',r:'poco',p:5,ico:'🏦',d:'El interés máximo sube de 5 a 8 de oro durante el resto de la partida.',f:hu=>{hu.intMax=8},ok:hu=>!hu.intMax},
- ascenso:{n:'Ascenso',r:'raro',p:2,ico:'⬆️',d:'Cada campeón de tu tablero se cambia por uno al azar de coste superior, con las mismas estrellas y objetos.',f:aumAscenso,ok:hu=>hu.board.some(u=>u&&CH[u.id].cost<5)},
+ ascenso:{n:'Ascenso',r:'raro',p:2,soloArena:true,ico:'⬆️',d:'Cada campeón de tu tablero se cambia por uno al azar de coste superior, con las mismas estrellas y objetos.',f:aumAscenso,ok:hu=>hu.board.some(u=>u&&CH[u.id].cost<5)},
  estrella:{n:'Estrella fugaz',r:'raro',p:2,ico:'⭐',d:'Un campeón de 1★ al azar de tu tablero sube a 2★.',f:hu=>{const u=pick(hu.board.filter(u=>u&&u.star===1));u.star=2;S.pool[u.id]=Math.max(0,(S.pool[u.id]||0)-2);toast(`${CH[u.id].name} sube a 2★`)},ok:hu=>hu.board.some(u=>u&&u.star===1)},
- plaza:{n:'Plaza extra',r:'muyraro',p:1,ico:'➕',d:'+1 campeón en tu equipo durante el resto de la partida.',f:hu=>{hu.plazaExtra=(hu.plazaExtra||0)+1},ok:hu=>!hu.plazaExtra}};
+ plaza:{n:'Plaza extra',r:'muyraro',p:1,soloArena:true,ico:'➕',d:'+1 campeón en tu equipo durante el resto de la partida.',f:hu=>{hu.plazaExtra=(hu.plazaExtra||0)+1},ok:hu=>!hu.plazaExtra}};
 const RAREZA={comun:'Común',poco:'Poco común',raro:'Raro',muyraro:'Muy raro'};
 // el Quitamanos es un objeto especial (no sale en el botín ni en el carrusel: ITEM_IDS ya está calculado)
 ITEMS.quitamanos={n:'Quitamanos',g:'Q',col:'#c9a23a',s:{},especial:true,d:'Arrástralo a un campeón: todos sus objetos vuelven a tu inventario.'};
@@ -4859,7 +4865,7 @@ function ofrecerAumento(){
   if(!tocaAumento())return;const k=S.stage+'-'+S.round;S.aumHechos=S.aumHechos||{};if(S.aumHechos[k])return;S.aumHechos[k]=true;
   for(const p of S.players)if(p.alive&&!p.human&&!p.remoto){const r=rnd();if(r<.4)p.gold+=10;else if(r<.75)p.items.push(pick(ITEM_IDS),pick(ITEM_IDS));else addXP0(p,8)} // bots
   const hu=H();if(!hu.alive)return;
-  const opc=[],pool=Object.keys(AUMENTOS).filter(id=>!AUMENTOS[id].ok||AUMENTOS[id].ok(hu));
+  const opc=[],pool=Object.keys(AUMENTOS).filter(id=>(!AUMENTOS[id].soloArena||S.mode!=='historia')&&(!AUMENTOS[id].ok||AUMENTOS[id].ok(hu)));
   while(opc.length<3&&opc.length<pool.length){const resto=pool.filter(id=>!opc.includes(id)),tot=resto.reduce((a,id)=>a+AUMENTOS[id].p,0);let v=Math.random()*tot;opc.push(resto.find(id=>(v-=AUMENTOS[id].p)<0)||resto[0])}
   $('#aumCartas').innerHTML=opc.map(id=>{const A=AUMENTOS[id];return `<button class="aumCarta ${A.r}" data-a="${id}"><span class="aumR">${RAREZA[A.r]}</span><span class="aumIco">${A.ico}</span><b>${A.n}</b><small>${A.d}</small></button>`}).join('');
   $('#aumCartas').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const A=AUMENTOS[b.dataset.a];$('#aumOv').hidden=true;A.f(H());sfx('levelup');if(!['eco','estrella','ascenso'].includes(b.dataset.a))toast(`Aumento: ${A.n}`);
