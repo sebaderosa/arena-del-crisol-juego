@@ -842,7 +842,11 @@ body.en-combate .goldPill{display:none}
 .aumCarta.muyraro{border-color:#ffd24a;box-shadow:0 0 20px rgba(255,210,74,.45);background:linear-gradient(180deg,#3a2d14,#1d160a)}.aumCarta.muyraro .aumR{color:#ffd98a}
 #shop.cerrada #cards{opacity:.25;pointer-events:none}
 #shop.cerrada::after{content:attr(data-cerrada);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,12,8,.92);border:1px solid #b88a3a;color:#ffd98a;font-weight:700;padding:6px 14px;border-radius:10px;pointer-events:none}
-@media (max-width:760px){.aumCartas{grid-template-columns:1fr}.aumCarta{flex-direction:row;text-align:left;gap:10px}.aumCarta .aumIco{font-size:32px}.aumCarta b{font-size:18px}}
+@media (max-width:760px){#aumOv .modal{width:auto;max-width:calc(100vw - 20px);box-sizing:border-box;padding:14px 12px}
+  .aumCartas{grid-template-columns:1fr;gap:8px}
+  .aumCarta{display:grid;grid-template-columns:42px 1fr;grid-template-areas:"ico r" "ico b" "ico d";text-align:left;column-gap:12px;row-gap:2px;align-items:center;padding:10px 12px;min-width:0}
+  .aumCarta .aumIco{grid-area:ico;font-size:32px;align-self:center}.aumCarta .aumR{grid-area:r}.aumCarta b{grid-area:b;font-size:18px}.aumCarta small{grid-area:d;font-size:12.5px}}
+@media (max-height:500px) and (min-width:761px){.aumCarta{padding:8px 8px;gap:3px}.aumCarta .aumIco{font-size:28px}.aumCarta b{font-size:17px}.aumCarta small{font-size:12px}#aumOv h2{margin:2px 0}}
 
 /* ===== estrellas, misiones, maestría y espía ===== */
 .mEst{display:block;font-style:normal;color:#ffd24a;font-size:10px;letter-spacing:1px}.mpEst{color:#ffd24a;font-size:15px;letter-spacing:2px}
@@ -1422,6 +1426,7 @@ function tierOf(t,n){let i=-1;TRAITS[t].tiers.forEach((x,k)=>{if(n>=x)i=k});retu
 // Equipa un objeto. Si es un componente y el campeón lleva otro componente suelto, se funden.
 // Devuelve null si no cabe, o {made: id del objeto completo o null}.
 function equipItem(u,it){
+  if(ITEMS[it].especial)return null; // el Quitamanos no se equipa (15i-aumentos.js)
   if(!ITEMS[it].full){const j=u.items.findIndex(x=>!ITEMS[x].full);if(j>=0){const made=RECIPE[u.items[j]+'+'+it];u.items[j]=made;return {made}}}
   if(u.items.length>=3)return null;
   u.items.push(it);return {made:null};
@@ -1906,7 +1911,7 @@ const ITEM_ROLES={hoja:['ranged','assassin','mage','tank'],arco:['ranged','assas
   vara:['mage','ranged','assassin','tank'],lagrima:['mage','tank','ranged','assassin'],cota:['tank','assassin','ranged','mage'],manto:['tank','assassin','ranged','mage'],gema:['tank','assassin','ranged','mage']};
 function aiItems(p){
   const bs=p.board.filter(Boolean).sort((a,b)=>valueOf(b)-valueOf(a));
-  p.items=p.items.filter(it=>{
+  p.items=p.items.filter(it=>{if(ITEMS[it].especial)return true;
     const order=ITEM_ROLES[it];
     const cand=order?order.flatMap(r=>bs.filter(u=>CH[u.id].role===r)):bs;
     return !cand.some(u=>equipItem(u,it));
@@ -2183,6 +2188,9 @@ function drawPoseWarped(g,pp,x0,y0,pw,ph,T,k,white){
   }
 }
 function drawSprite(g,o,sp,s,sc){
+  if(sp===SPR[o.id]&&!o.creep&&tieneMarioneta(o.id))return drawMezcla(g,o,sp,s,sc); // marioneta 2D por piezas mezclada con las poses (07b-marioneta.js)
+  drawSpriteBase(g,o,sp,s,sc)}
+function drawSpriteBase(g,o,sp,s,sc){
   const h=s*1.75*sc,w=h*sp.ar,T=o.t+o.seed,L=o.look||{},ranged=L.w==='bow'||L.w==='staff'||L.w==='orb';
   let sx=1,sy=1,rot=0,dx=0,dy=0;
   if(o.walk){const k=Math.sin(T*13);dy=-Math.abs(k)*h*.05;rot=k*.05}
@@ -2217,6 +2225,290 @@ function drawSprite(g,o,sp,s,sc){
   if(prev){const qw=prev.w*ps,qh=prev.h*ps;g.globalAlpha=(g.globalAlpha||1)*(1-pk);g.drawImage(prev.img,-qw*prev.ax,-qh,qw,qh)}
   g.restore();
 }
+
+// ================= MARIONETAS 2D (PRUEBA) =================
+// Un campeón con marioneta se dibuja por piezas (assets/piezas/<id>/) movidas con articulaciones, en vez de con sus poses.
+// Las piezas no se deforman: solo giran, se desplazan y se escalan. Página de ajuste: dist/_marioneta.html.
+// Desactivar para comparar: ?marioneta=0 en la dirección.
+const PIEZAS={"abisal":{"brazoA":"recursos/piezas/abisal/brazoA.webp?v=713f7922","brazoB":"recursos/piezas/abisal/brazoB.webp?v=db141dc7","cabeza":"recursos/piezas/abisal/cabeza.webp?v=54a65df1","capa":"recursos/piezas/abisal/capa.webp?v=bf13b8a5","cuerpo":"recursos/piezas/abisal/cuerpo.webp?v=85e888f4","pierna1":"recursos/piezas/abisal/pierna1.webp?v=622b0a05","pierna2":"recursos/piezas/abisal/pierna2.webp?v=73a2c15b","_rig":{"alto":531,"pies":141,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[91,222],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[37,5],"padre":"cadera","at":[-45,5],"z":2},"pierna2":{"img":"pierna2","piv":[45,10],"padre":"cadera","at":[32,5],"z":2},"capa":{"img":"capa","piv":[157,62],"padre":"cuerpo","at":[-75,-160],"z":1,"balanceo":0.7},"cabeza":{"img":"cabeza","piv":[195,227],"padre":"cuerpo","at":[18,-165],"z":6},"brazoB":{"img":"brazoB","piv":[42,21],"padre":"cuerpo","at":[-62,-125],"z":5},"brazoA":{"img":"brazoA","piv":[12,157],"padre":"cuerpo","at":[62,-115],"z":7}},"anim":{"tipo":"estocada","alza":-0.5,"golpe":0.5,"hab":-0.7,"habB":-0.12},"punta":["brazoA",188,-145]}},"alba":{"brazoA":"recursos/piezas/alba/brazoA.webp?v=bf23427f","brazoB":"recursos/piezas/alba/brazoB.webp?v=5f42c2cc","cabeza":"recursos/piezas/alba/cabeza.webp?v=7cdbdc2d","capa":"recursos/piezas/alba/capa.webp?v=42c8be76","cuerpo":"recursos/piezas/alba/cuerpo.webp?v=cef0b8e7","pelo":"recursos/piezas/alba/pelo.webp?v=33bbafae","pierna1":"recursos/piezas/alba/pierna1.webp?v=d205dc74","pierna2":"recursos/piezas/alba/pierna2.webp?v=edd999be","_rig":{"alto":536,"pies":136,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[63,173],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[47,4],"padre":"cadera","at":[-50,10],"z":2},"pierna2":{"img":"pierna2","piv":[28,4],"padre":"cadera","at":[53,10],"z":2},"cabeza":{"img":"cabeza","piv":[152,237],"padre":"cuerpo","at":[10,-165],"z":6},"pelo":{"img":"pelo","piv":[95,11],"padre":"cabeza","at":[-105,-40],"z":1,"balanceo":0.8},"brazoB":{"img":"brazoB","piv":[122,31],"padre":"cuerpo","at":[-40,-120],"z":5},"brazoA":{"img":"brazoA","piv":[12,77],"padre":"cuerpo","at":[51,-114],"z":7},"capa":{"img":"capa","piv":[132,5],"padre":"cuerpo","at":[-105,-100],"z":1,"balanceo":0.3}},"anim":{"tipo":"magia","alza":-0.5,"golpe":0.2,"hab":-0.8,"habB":-0.15},"punta":["brazoA",109,-31]}},"brasa":{"antebrazo":"recursos/piezas/brasa/antebrazo.png?v=cd202f2e","arco":"recursos/piezas/brasa/arco.png?v=eb466e26","brazo":"recursos/piezas/brasa/brazo.png?v=99ecfe4e","cabeza":"recursos/piezas/brasa/cabeza.png?v=7da4beb9","carcaj":"recursos/piezas/brasa/carcaj.png?v=511aa2c3","coleta":"recursos/piezas/brasa/coleta.png?v=7d03e42d","falda":"recursos/piezas/brasa/falda.png?v=33045191","pierna1":"recursos/piezas/brasa/pierna1.png?v=50df8408","pierna2":"recursos/piezas/brasa/pierna2.png?v=acab48d9","torso":"recursos/piezas/brasa/torso.png?v=7c137bdd"},"ceniza":{"brazoA":"recursos/piezas/ceniza/brazoA.webp?v=e14ca1c9","cabeza":"recursos/piezas/ceniza/cabeza.webp?v=55c701bf","capaD":"recursos/piezas/ceniza/capaD.webp?v=27a2b964","cuerpo":"recursos/piezas/ceniza/cuerpo.webp?v=a3e75fcf","pierna1":"recursos/piezas/ceniza/pierna1.webp?v=859f756c","pierna2":"recursos/piezas/ceniza/pierna2.webp?v=be788fff","_rig":{"alto":550,"pies":89,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[182,271],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[29,0],"padre":"cadera","at":[-55,18],"z":2},"pierna2":{"img":"pierna2","piv":[22,0],"padre":"cadera","at":[40,14],"z":2},"capaD":{"img":"capaD","piv":[4,16],"padre":"cuerpo","at":[94,-78],"z":1,"balanceo":1},"cabeza":{"img":"cabeza","piv":[130,213],"padre":"cuerpo","at":[5,-250],"z":6},"brazoA":{"img":"brazoA","piv":[14,77],"padre":"cuerpo","at":[42,-164],"z":7}},"anim":{"tipo":"magia","alza":-0.45,"golpe":0.12,"hab":-0.6,"habB":0},"punta":["brazoA",21,-41]}},"chipilin":{"brazoA":"recursos/piezas/chipilin/brazoA.webp?v=af862e9e","brazoB":"recursos/piezas/chipilin/brazoB.webp?v=d58595e8","cabeza":"recursos/piezas/chipilin/cabeza.webp?v=83eef11f","cuerpo":"recursos/piezas/chipilin/cuerpo.webp?v=f6797e8b","pierna1":"recursos/piezas/chipilin/pierna1.webp?v=ebb15019","pierna2":"recursos/piezas/chipilin/pierna2.webp?v=724b65c6","_rig":{"alto":521,"pies":101,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[136,192],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[44,4],"padre":"cadera","at":[-73,10],"z":2},"pierna2":{"img":"pierna2","piv":[28,2],"padre":"cadera","at":[77,10],"z":2},"cabeza":{"img":"cabeza","piv":[199,264],"padre":"cuerpo","at":[0,-158],"z":6},"brazoB":{"img":"brazoB","piv":[131,14],"padre":"cuerpo","at":[-107,-130],"z":5},"brazoA":{"img":"brazoA","piv":[8,66],"padre":"cuerpo","at":[97,-130],"z":7}},"anim":{"tipo":"estocada","alza":0.45,"golpe":-0.55,"hab":-0.5,"habB":0.3},"punta":["brazoA",116,-60]}},"coral":{"brazoA":"recursos/piezas/coral/brazoA.webp?v=09dfa339","brazoB":"recursos/piezas/coral/brazoB.webp?v=8a8fb717","cabeza":"recursos/piezas/coral/cabeza.webp?v=be1b1f78","cuerpo":"recursos/piezas/coral/cuerpo.webp?v=97f114d1","pierna1":"recursos/piezas/coral/pierna1.webp?v=9f86f64e","pierna2":"recursos/piezas/coral/pierna2.webp?v=fabd749c","_rig":{"alto":524,"pies":112,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[64,221],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[24,4],"padre":"cadera","at":[-43,4],"z":2},"pierna2":{"img":"pierna2","piv":[28,7],"padre":"cadera","at":[39,2],"z":2},"cabeza":{"img":"cabeza","piv":[135,240],"padre":"cuerpo","at":[15,-174],"z":6},"brazoB":{"img":"brazoB","piv":[102,28],"padre":"cuerpo","at":[-35,-130],"z":8},"brazoA":{"img":"brazoA","piv":[16,284],"padre":"cuerpo","at":[69,-126],"z":7}},"anim":{"tipo":"estocada","alza":-0.3,"golpe":1.0,"hab":-0.35,"habB":-0.4},"punta":["brazoA",144,-276]}},"crisol":{"brazoA":"recursos/piezas/crisol/brazoA.webp?v=195b9806","brazoB":"recursos/piezas/crisol/brazoB.webp?v=765abbdf","cabeza":"recursos/piezas/crisol/cabeza.webp?v=8f70cd1a","cuerpo":"recursos/piezas/crisol/cuerpo.webp?v=a63524e1","_rig":{"alto":522,"pies":122,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[172,167],"padre":"cadera","at":[0,0],"z":3},"cabeza":{"img":"cabeza","piv":[165,264],"padre":"cuerpo","at":[5,-138],"z":6},"brazoB":{"img":"brazoB","piv":[46,18],"padre":"cuerpo","at":[-52,-112],"z":5},"brazoA":{"img":"brazoA","piv":[22,164],"padre":"cuerpo","at":[48,-108],"z":7}},"anim":{"tipo":"magia","alza":-0.5,"golpe":0.25,"hab":-0.8,"habB":-0.15},"punta":["brazoA",94,-77]}},"draco":{"cabeza":"recursos/piezas/draco/cabeza.webp?v=64dd62d8","cola":"recursos/piezas/draco/cola.webp?v=52a577a9","cuerpo":"recursos/piezas/draco/cuerpo.webp?v=7a9641e9","pierna1":"recursos/piezas/draco/pierna1.webp?v=0c0a9440","pierna2":"recursos/piezas/draco/pierna2.webp?v=973f07d7","_rig":{"alto":1113,"pies":243,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[426,740],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[77,65],"padre":"cadera","at":[-175,80],"z":2},"pierna2":{"img":"pierna2","piv":[85,12],"padre":"cadera","at":[70,85],"z":2},"cabeza":{"img":"cabeza","piv":[228,367],"padre":"cuerpo","at":[120,-505],"z":6},"cola":{"img":"cola","piv":[322,625],"padre":"cuerpo","at":[-290,-80],"z":1,"balanceo":0.4}}}},"dracqueen":{"cabeza":"recursos/piezas/dracqueen/cabeza.webp?v=b4170e53","capa":"recursos/piezas/dracqueen/capa.webp?v=806f0a8c","capaD":"recursos/piezas/dracqueen/capaD.webp?v=053d0bb4","cuerpo":"recursos/piezas/dracqueen/cuerpo.webp?v=2b3818d1","_rig":{"alto":559,"pies":119,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[162,270],"padre":"cadera","at":[0,0],"z":3},"cabeza":{"img":"cabeza","piv":[158,250],"padre":"cuerpo","at":[20,-192],"z":2},"capa":{"img":"capa","piv":[188,20],"padre":"cuerpo","at":[-60,-154],"z":1,"balanceo":0.6},"capaD":{"img":"capaD","piv":[16,4],"padre":"cuerpo","at":[65,-92],"z":1,"balanceo":0.5}}}},"ebano":{"brazoA":"recursos/piezas/ebano/brazoA.webp?v=8aca2750","brazoB":"recursos/piezas/ebano/brazoB.webp?v=9576dd79","cabeza":"recursos/piezas/ebano/cabeza.webp?v=491fbc1d","capa":"recursos/piezas/ebano/capa.webp?v=2e0b24a1","cuerpo":"recursos/piezas/ebano/cuerpo.webp?v=7b0d44f2","pierna1":"recursos/piezas/ebano/pierna1.webp?v=9e63f53f","pierna2":"recursos/piezas/ebano/pierna2.webp?v=aa2d20be","_rig":{"alto":538,"pies":77,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[94,249],"padre":"cadera","at":[0,0],"z":3},"capa":{"img":"capa","piv":[111,5],"padre":"cuerpo","at":[-97,-160],"z":1,"balanceo":0.5},"cabeza":{"img":"cabeza","piv":[126,238],"padre":"cuerpo","at":[15,-225],"z":6},"brazoB":{"img":"brazoB","piv":[0,44],"padre":"cuerpo","at":[65,-195],"z":8},"brazoA":{"img":"brazoA","piv":[80,12],"padre":"cuerpo","at":[-65,-178],"z":7},"pierna1":{"img":"pierna1","piv":[43,16],"padre":"cadera","at":[-45,-38],"z":2},"pierna2":{"img":"pierna2","piv":[42,12],"padre":"cadera","at":[47,2],"z":2}},"anim":{"tipo":"tajo"},"punta":["brazoA",193,193]}},"eclipse":{"cabeza":"recursos/piezas/eclipse/cabeza.webp?v=1bff57d5","capa":"recursos/piezas/eclipse/capa.webp?v=c1613bb8","cuerpo":"recursos/piezas/eclipse/cuerpo.webp?v=c844fe14","pierna1":"recursos/piezas/eclipse/pierna1.webp?v=500df99c","pierna2":"recursos/piezas/eclipse/pierna2.webp?v=e2891b27","_rig":{"alto":530,"pies":110,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[108,254],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[34,6],"padre":"cadera","at":[-52,2],"z":2},"pierna2":{"img":"pierna2","piv":[27,6],"padre":"cadera","at":[45,6],"z":2},"capa":{"img":"capa","piv":[54,8],"padre":"cuerpo","at":[-108,-130],"z":1,"balanceo":0.4},"cabeza":{"img":"cabeza","piv":[133,214],"padre":"cuerpo","at":[30,-208],"z":6}},"anim":{"tipo":"disparo"},"punta":["cuerpo",166,-6]}},"espina":{"brazoA":"recursos/piezas/espina/brazoA.webp?v=41e866a2","brazoB":"recursos/piezas/espina/brazoB.webp?v=a5c17dce","cabeza":"recursos/piezas/espina/cabeza.webp?v=e9d00b56","cuerpo":"recursos/piezas/espina/cuerpo.webp?v=42da0893","pelo":"recursos/piezas/espina/pelo.webp?v=d8a11d44","pierna1":"recursos/piezas/espina/pierna1.webp?v=a98c9466","pierna2":"recursos/piezas/espina/pierna2.webp?v=3a84d704","_rig":{"alto":498,"pies":133,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[165,204],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[40,-26],"padre":"cadera","at":[-65,33],"z":2},"pierna2":{"img":"pierna2","piv":[20,-36],"padre":"cadera","at":[60,13],"z":2},"cabeza":{"img":"cabeza","piv":[106,174],"padre":"cuerpo","at":[10,-193],"z":6},"pelo":{"img":"pelo","piv":[116,-2],"padre":"cabeza","at":[-85,-62],"z":1,"balanceo":0.8},"brazoB":{"img":"brazoB","piv":[154,18],"padre":"cuerpo","at":[-78,-133],"z":5},"brazoA":{"img":"brazoA","piv":[16,72],"padre":"cuerpo","at":[64,-139],"z":7}},"anim":{"tipo":"estocada","alza":-0.35,"golpe":0.3,"hab":-0.8,"habB":0.3},"punta":["brazoA",126,109]}},"fresno":{"brazoA":"recursos/piezas/fresno/brazoA.webp?v=087cbf8b","cabeza":"recursos/piezas/fresno/cabeza.webp?v=4dc8a9fa","capa":"recursos/piezas/fresno/capa.webp?v=9e2c8593","cuerpo":"recursos/piezas/fresno/cuerpo.webp?v=7852baac","_rig":{"alto":517,"pies":37,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[126,251],"padre":"cadera","at":[0,0],"z":3},"capa":{"img":"capa","piv":[42,-12],"padre":"cuerpo","at":[-140,-178],"z":1,"balanceo":0.3},"cabeza":{"img":"cabeza","piv":[178,247],"padre":"cuerpo","at":[0,-235],"z":6},"brazoA":{"img":"brazoA","piv":[8,181],"padre":"cuerpo","at":[38,-200],"z":7}},"anim":{"tipo":"magia","alza":-0.2,"golpe":0.4,"hab":-0.25},"punta":["brazoA",102,-130]}},"kalima":{"brazoA":"recursos/piezas/kalima/brazoA.webp?v=3a160d9b","cabeza":"recursos/piezas/kalima/cabeza.webp?v=a54d5d26","cuerpo":"recursos/piezas/kalima/cuerpo.webp?v=f5301fed","melena":"recursos/piezas/kalima/melena.webp?v=8434fc62","pierna1":"recursos/piezas/kalima/pierna1.webp?v=becd34ef","pierna2":"recursos/piezas/kalima/pierna2.webp?v=28bb20fc","_rig":{"alto":537,"pies":157,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[163,326],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[62,9],"padre":"cadera","at":[-27,5],"z":2},"pierna2":{"img":"pierna2","piv":[24,9],"padre":"cadera","at":[25,5],"z":2},"melena":{"img":"melena","piv":[52,10],"padre":"cuerpo","at":[-135,-192],"z":1,"balanceo":0.5},"cabeza":{"img":"cabeza","piv":[109,197],"padre":"cuerpo","at":[5,-185],"z":6},"brazoA":{"img":"brazoA","piv":[12,100],"padre":"cuerpo","at":[55,-132],"z":7}},"anim":{"tipo":"disparo"},"punta":["brazoA",60,72]}},"lira":{"brazoA":"recursos/piezas/lira/brazoA.webp?v=d58c4733","cabeza":"recursos/piezas/lira/cabeza.webp?v=be1e2f5b","coletaD":"recursos/piezas/lira/coletaD.webp?v=b4dc68e7","coletaI":"recursos/piezas/lira/coletaI.webp?v=3bae9080","cuerpo":"recursos/piezas/lira/cuerpo.webp?v=2fff684e","pierna1":"recursos/piezas/lira/pierna1.webp?v=c3448deb","pierna2":"recursos/piezas/lira/pierna2.webp?v=7d45308e","_rig":{"alto":549,"pies":193,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[135,224],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[87,6],"padre":"cadera","at":[-35,4],"z":2},"pierna2":{"img":"pierna2","piv":[36,6],"padre":"cadera","at":[42,4],"z":2},"cabeza":{"img":"cabeza","piv":[82,178],"padre":"cuerpo","at":[0,-180],"z":6},"coletaI":{"img":"coletaI","piv":[160,58],"padre":"cabeza","at":[-72,-112],"z":1,"balanceo":1},"coletaD":{"img":"coletaD","piv":[14,-2],"padre":"cabeza","at":[52,-90],"z":1,"balanceo":1},"brazoA":{"img":"brazoA","piv":[20,100],"padre":"cuerpo","at":[48,-140],"z":7}},"anim":{"tipo":"disparo"},"punta":["brazoA",152,-86]}},"lobo":{"cola":"recursos/piezas/lobo/cola.webp?v=8beb8fbe","cuerpo":"recursos/piezas/lobo/cuerpo.webp?v=9f66affe","pierna1":"recursos/piezas/lobo/pierna1.webp?v=4e78c2e8","pierna2":"recursos/piezas/lobo/pierna2.webp?v=f5017560","pierna3":"recursos/piezas/lobo/pierna3.webp?v=e9839d75","pierna4":"recursos/piezas/lobo/pierna4.webp?v=8c051d0a","_rig":{"alto":1012,"pies":322,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[383,692],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[85,25],"padre":"cadera","at":[70,45],"z":5},"pierna3":{"img":"pierna3","piv":[65,12],"padre":"cadera","at":[-320,95],"z":5},"pierna2":{"img":"pierna2","piv":[87,37],"padre":"cadera","at":[265,35],"z":1},"pierna4":{"img":"pierna4","piv":[92,55],"padre":"cadera","at":[-100,50],"z":1},"cola":{"img":"cola","piv":[207,320],"padre":"cuerpo","at":[-305,-235],"z":2,"balanceo":0.6}},"anim":{"muerte":"tumba"}}},"martillo":{"brazoA":"recursos/piezas/martillo/brazoA.webp?v=a49b5c61","brazoB":"recursos/piezas/martillo/brazoB.webp?v=650c651f","cabeza":"recursos/piezas/martillo/cabeza.webp?v=81b9c300","cuerpo":"recursos/piezas/martillo/cuerpo.webp?v=b5ce61d0","pierna1":"recursos/piezas/martillo/pierna1.webp?v=e68c8dd6","pierna2":"recursos/piezas/martillo/pierna2.webp?v=f8adba44","_rig":{"alto":527,"pies":97,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[127,236],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[49,10],"padre":"cadera","at":[-50,0],"z":2},"pierna2":{"img":"pierna2","piv":[39,14],"padre":"cadera","at":[58,12],"z":2},"cabeza":{"img":"cabeza","piv":[147,247],"padre":"cuerpo","at":[15,-185],"z":6},"brazoA":{"img":"brazoA","piv":[277,192],"padre":"cuerpo","at":[25,-215],"z":5},"brazoB":{"img":"brazoB","piv":[76,32],"padre":"cuerpo","at":[-80,-160],"z":8}},"anim":{"tipo":"tajo","alza":0.4,"golpe":-0.1,"hab":0.3,"habB":-0.5},"punta":["brazoA",-195,-70]}},"matrona":{"cola":"recursos/piezas/matrona/cola.webp?v=ddc8ae55","cria":"recursos/piezas/matrona/cria.webp?v=4b0bc544","cuerpo":"recursos/piezas/matrona/cuerpo.webp?v=cae66642","pierna1":"recursos/piezas/matrona/pierna1.webp?v=cdbd88bf","pierna2":"recursos/piezas/matrona/pierna2.webp?v=7351ebf9","_rig":{"alto":1123,"pies":253,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[316,872],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[92,17],"padre":"cadera","at":[-170,95],"z":2},"pierna2":{"img":"pierna2","piv":[105,12],"padre":"cadera","at":[130,50],"z":2},"cola":{"img":"cola","piv":[282,440],"padre":"cuerpo","at":[-270,-80],"z":1,"balanceo":0.4},"cria":{"img":"cria","piv":[85,197],"padre":"cuerpo","at":[140,-155],"z":5,"balanceo":0.3}},"anim":{"muerte":"tumba"}}},"musgo":{"cuerpo":"recursos/piezas/musgo/cuerpo.webp?v=6451dfe5","pierna1":"recursos/piezas/musgo/pierna1.webp?v=badd6ff6","pierna2":"recursos/piezas/musgo/pierna2.webp?v=e04a2e0f","_rig":{"alto":546,"pies":115,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[227,433],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[60,4],"padre":"cadera","at":[-53,2],"z":2},"pierna2":{"img":"pierna2","piv":[34,12],"padre":"cadera","at":[53,2],"z":2}},"anim":{"tipo":"tajo","alza":0.15,"golpe":0.5,"hab":0.15,"habB":-0.6},"punta":["cuerpo",-195,-280]}},"nebula":{"brazoA":"recursos/piezas/nebula/brazoA.webp?v=96041380","cabeza":"recursos/piezas/nebula/cabeza.webp?v=1c221053","cuerpo":"recursos/piezas/nebula/cuerpo.webp?v=e3a6988a","pierna1":"recursos/piezas/nebula/pierna1.webp?v=1adc9531","pierna2":"recursos/piezas/nebula/pierna2.webp?v=5e258b27","_rig":{"alto":515,"pies":125,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[84,150],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[32,8],"padre":"cadera","at":[-25,10],"z":2},"pierna2":{"img":"pierna2","piv":[28,9],"padre":"cadera","at":[27,4],"z":2},"cabeza":{"img":"cabeza","piv":[137,242],"padre":"cuerpo","at":[10,-150],"z":6},"brazoA":{"img":"brazoA","piv":[19,48],"padre":"cuerpo","at":[-31,-122],"z":7}},"anim":{"tipo":"magia","alza":-0.55,"golpe":-0.2,"hab":-0.8},"punta":["brazoA",162,-2]}},"nerea":{"brazoA":"recursos/piezas/nerea/brazoA.webp?v=6019ea09","brazoB":"recursos/piezas/nerea/brazoB.webp?v=304ee8b5","cabeza":"recursos/piezas/nerea/cabeza.webp?v=6320adaf","cuerpo":"recursos/piezas/nerea/cuerpo.webp?v=7c68925f","_rig":{"alto":500,"pies":90,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[182,183],"padre":"cadera","at":[0,0],"z":3},"cabeza":{"img":"cabeza","piv":[166,242],"padre":"cuerpo","at":[-5,-170],"z":6},"brazoB":{"img":"brazoB","piv":[58,18],"padre":"cuerpo","at":[-70,-128],"z":5},"brazoA":{"img":"brazoA","piv":[16,174],"padre":"cuerpo","at":[38,-98],"z":7}},"anim":{"tipo":"magia","alza":-0.25,"golpe":0.45,"hab":0.2,"habB":-0.6},"punta":["brazoA",112,-130]}},"orion":{"brazoA":"recursos/piezas/orion/brazoA.webp?v=25b915bc","cabeza":"recursos/piezas/orion/cabeza.webp?v=0a85984a","cuerpo":"recursos/piezas/orion/cuerpo.webp?v=6ac96e9a","pierna1":"recursos/piezas/orion/pierna1.webp?v=b2728794","pierna2":"recursos/piezas/orion/pierna2.webp?v=7ffbd0e1","_rig":{"alto":537,"pies":172,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[132,152],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[28,-4],"padre":"cadera","at":[-50,95],"z":2},"pierna2":{"img":"pierna2","piv":[30,7],"padre":"cadera","at":[28,15],"z":2},"cabeza":{"img":"cabeza","piv":[162,222],"padre":"cuerpo","at":[10,-145],"z":6},"brazoA":{"img":"brazoA","piv":[27,102],"padre":"cuerpo","at":[-25,-113],"z":7}},"anim":{"tipo":"disparo","alza":-0.18,"hab":-0.25},"punta":["brazoA",210,-87]}},"rama":{"brazoA":"recursos/piezas/rama/brazoA.webp?v=09511ce2","brazoB":"recursos/piezas/rama/brazoB.webp?v=017e0d0d","cabeza":"recursos/piezas/rama/cabeza.webp?v=3f50eadc","cuerpo":"recursos/piezas/rama/cuerpo.webp?v=1c08d882","pierna1":"recursos/piezas/rama/pierna1.webp?v=6db1fc75","pierna2":"recursos/piezas/rama/pierna2.webp?v=3c517fc5","_rig":{"alto":516,"pies":106,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[100,185],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[44,4],"padre":"cadera","at":[-36,4],"z":2},"pierna2":{"img":"pierna2","piv":[32,7],"padre":"cadera","at":[36,2],"z":2},"cabeza":{"img":"cabeza","piv":[162,244],"padre":"cuerpo","at":[10,-168],"z":6},"brazoB":{"img":"brazoB","piv":[38,8],"padre":"cuerpo","at":[-62,-98],"z":7},"brazoA":{"img":"brazoA","piv":[4,81],"padre":"cuerpo","at":[54,-80],"z":7}},"anim":{"tipo":"disparo"},"punta":["brazoA",116,-40]}},"reinaarana":{"abdomen":"recursos/piezas/reinaarana/abdomen.webp?v=a67c6b33","cabeza":"recursos/piezas/reinaarana/cabeza.webp?v=3ad4a2e6","cuerpo":"recursos/piezas/reinaarana/cuerpo.webp?v=c83225a3","pierna1":"recursos/piezas/reinaarana/pierna1.webp?v=eadfda77","pierna2":"recursos/piezas/reinaarana/pierna2.webp?v=1e3d7df2","pierna3":"recursos/piezas/reinaarana/pierna3.webp?v=23376381","pierna4":"recursos/piezas/reinaarana/pierna4.webp?v=9400f494","_rig":{"alto":542,"pies":222,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[322,142],"padre":"cadera","at":[0,0],"z":3},"abdomen":{"img":"abdomen","piv":[256,73],"padre":"cuerpo","at":[-42,-130],"z":2,"balanceo":0.2},"pierna1":{"img":"pierna1","piv":[14,3],"padre":"cuerpo","at":[-19,91],"z":4},"pierna2":{"img":"pierna2","piv":[16,3],"padre":"cuerpo","at":[144,74],"z":4},"pierna3":{"img":"pierna3","piv":[20,6],"padre":"cuerpo","at":[-164,90],"z":4},"pierna4":{"img":"pierna4","piv":[44,6],"padre":"cuerpo","at":[-258,64],"z":4},"cabeza":{"img":"cabeza","piv":[61,216],"padre":"cuerpo","at":[10,-106],"z":6}},"anim":{"muerte":"tumba"}}},"reygoblin":{"cabeza":"recursos/piezas/reygoblin/cabeza.webp?v=1b0081f4","capa":"recursos/piezas/reygoblin/capa.webp?v=7ea2ec75","cuerpo":"recursos/piezas/reygoblin/cuerpo.webp?v=96080736","pierna1":"recursos/piezas/reygoblin/pierna1.webp?v=46983d18","pierna2":"recursos/piezas/reygoblin/pierna2.webp?v=9026f31a","_rig":{"alto":547,"pies":87,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[166,297],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[52,15],"padre":"cadera","at":[-42,-2],"z":4},"pierna2":{"img":"pierna2","piv":[50,6],"padre":"cadera","at":[60,24],"z":4},"capa":{"img":"capa","piv":[169,26],"padre":"cuerpo","at":[-95,-165],"z":1,"balanceo":0.4},"cabeza":{"img":"cabeza","piv":[194,260],"padre":"cuerpo","at":[20,-202],"z":6}}}},"soberana":{"brazoA":"recursos/piezas/soberana/brazoA.webp?v=d8533b0b","cabeza":"recursos/piezas/soberana/cabeza.webp?v=2f67c63f","cuerpo":"recursos/piezas/soberana/cuerpo.webp?v=de93e4e2","pelo":"recursos/piezas/soberana/pelo.webp?v=9667e13a","_rig":{"alto":541,"pies":131,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[232,168],"padre":"cadera","at":[0,0],"z":3},"cabeza":{"img":"cabeza","piv":[151,272],"padre":"cuerpo","at":[0,-140],"z":6},"pelo":{"img":"pelo","piv":[129,18],"padre":"cabeza","at":[-100,-50],"z":1,"balanceo":0.35},"brazoA":{"img":"brazoA","piv":[16,109],"padre":"cuerpo","at":[32,-118],"z":7}},"anim":{"tipo":"magia","alza":-0.6,"golpe":0.1,"hab":-0.45,"habB":0},"punta":["brazoA",86,-67]}},"sombrio":{"brazoA":"recursos/piezas/sombrio/brazoA.webp?v=5d51794c","brazoB":"recursos/piezas/sombrio/brazoB.webp?v=f9f08d6a","cabeza":"recursos/piezas/sombrio/cabeza.webp?v=8558c08b","cuerpo":"recursos/piezas/sombrio/cuerpo.webp?v=af87435a","pierna1":"recursos/piezas/sombrio/pierna1.webp?v=c296c181","pierna2":"recursos/piezas/sombrio/pierna2.webp?v=e0810d01","_rig":{"alto":537,"pies":147,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[95,171],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[86,10],"padre":"cadera","at":[-45,6],"z":2},"pierna2":{"img":"pierna2","piv":[48,18],"padre":"cadera","at":[47,2],"z":2},"cabeza":{"img":"cabeza","piv":[134,232],"padre":"cuerpo","at":[0,-160],"z":6},"brazoB":{"img":"brazoB","piv":[132,19],"padre":"cuerpo","at":[-65,-132],"z":5},"brazoA":{"img":"brazoA","piv":[16,16],"padre":"cuerpo","at":[57,-130],"z":7}},"anim":{"tipo":"estocada"},"punta":["brazoA",140,20]}},"titan":{"brazoB":"recursos/piezas/titan/brazoB.webp?v=65b6646f","cabeza":"recursos/piezas/titan/cabeza.webp?v=a897e0f2","cuerpo":"recursos/piezas/titan/cuerpo.webp?v=fa56e815","pierna1":"recursos/piezas/titan/pierna1.webp?v=e7608fbd","pierna2":"recursos/piezas/titan/pierna2.webp?v=a57f5a31","_rig":{"alto":505,"pies":115,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[269,320],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[50,12],"padre":"cadera","at":[-70,-5],"z":2},"pierna2":{"img":"pierna2","piv":[31,9],"padre":"cadera","at":[55,25],"z":2},"cabeza":{"img":"cabeza","piv":[75,157],"padre":"cuerpo","at":[15,-235],"z":6},"brazoB":{"img":"brazoB","piv":[-3,116],"padre":"cuerpo","at":[75,-210],"z":8}},"anim":{"tipo":"tajo","habB":-0.35},"punta":["cuerpo",200,-10]}},"tovo":{"brazo":"recursos/piezas/tovo/brazo.png?v=62178283","cabeza":"recursos/piezas/tovo/cabeza.png?v=877c18c4","cuerpo":"recursos/piezas/tovo/cuerpo.png?v=bc4d7466","escudo":"recursos/piezas/tovo/escudo.png?v=a7e3e570","pierna1":"recursos/piezas/tovo/pierna1.png?v=64990ce6","pierna2":"recursos/piezas/tovo/pierna2.png?v=0e5f3955"},"varg":{"brazoA":"recursos/piezas/varg/brazoA.webp?v=87220932","cabeza":"recursos/piezas/varg/cabeza.webp?v=07fd6489","cuerpo":"recursos/piezas/varg/cuerpo.webp?v=97c26e50","pierna1":"recursos/piezas/varg/pierna1.webp?v=5dedb649","pierna2":"recursos/piezas/varg/pierna2.webp?v=75b67391","_rig":{"alto":569,"pies":149,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[242,341],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[49,2],"padre":"cadera","at":[-64,40],"z":2},"pierna2":{"img":"pierna2","piv":[36,4],"padre":"cadera","at":[64,-10],"z":2},"cabeza":{"img":"cabeza","piv":[96,164],"padre":"cuerpo","at":[18,-258],"z":6},"brazoA":{"img":"brazoA","piv":[15,88],"padre":"cuerpo","at":[86,-215],"z":8}},"anim":{"tipo":"tajo","alza":0.2,"golpe":-0.25,"avance":24,"hab":-0.35,"habB":0},"punta":["brazoA",104,85]}},"vespa":{"aguijon":"recursos/piezas/vespa/aguijon.webp?v=b667e98d","brazoA":"recursos/piezas/vespa/brazoA.webp?v=2fea627b","cabeza":"recursos/piezas/vespa/cabeza.webp?v=780cd425","cuerpo":"recursos/piezas/vespa/cuerpo.webp?v=8e67322b","pierna1":"recursos/piezas/vespa/pierna1.webp?v=b583bfc1","pierna2":"recursos/piezas/vespa/pierna2.webp?v=e8fbcafa","_rig":{"alto":480,"pies":115,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[192,138],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[61,32],"padre":"cadera","at":[-32,-27],"z":2},"pierna2":{"img":"pierna2","piv":[27,13],"padre":"cadera","at":[30,-13],"z":2},"aguijon":{"img":"aguijon","piv":[72,15],"padre":"cadera","at":[-60,-10],"z":1,"balanceo":0.5},"cabeza":{"img":"cabeza","piv":[155,237],"padre":"cuerpo","at":[0,-130],"z":6},"brazoA":{"img":"brazoA","piv":[15,11],"padre":"cuerpo","at":[45,-75],"z":7}},"anim":{"tipo":"estocada"},"punta":["brazoA",138,118]}},"vidar":{"brazoA":"recursos/piezas/vidar/brazoA.webp?v=400eae0a","cabeza":"recursos/piezas/vidar/cabeza.webp?v=57a42df8","cuerpo":"recursos/piezas/vidar/cuerpo.webp?v=5f942a75","pierna1":"recursos/piezas/vidar/pierna1.webp?v=6454918b","pierna2":"recursos/piezas/vidar/pierna2.webp?v=583a9d5b","_rig":{"alto":543,"pies":133,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[183,252],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[43,-6],"padre":"cadera","at":[-75,50],"z":2},"pierna2":{"img":"pierna2","piv":[30,12],"padre":"cadera","at":[48,0],"z":2},"cabeza":{"img":"cabeza","piv":[110,192],"padre":"cuerpo","at":[10,-220],"z":6},"brazoA":{"img":"brazoA","piv":[14,19],"padre":"cuerpo","at":[62,-198],"z":7}},"anim":{"tipo":"tajo","alza":-1.7,"golpe":-0.35,"hab":-0.6},"punta":["brazoA",153,88]}},"yunque":{"brazoA":"recursos/piezas/yunque/brazoA.webp?v=9fc485bb","cabeza":"recursos/piezas/yunque/cabeza.webp?v=4f2632ab","cuerpo":"recursos/piezas/yunque/cuerpo.webp?v=2f47f6a3","faldon":"recursos/piezas/yunque/faldon.webp?v=b7531f46","melena":"recursos/piezas/yunque/melena.webp?v=a91d869e","pierna1":"recursos/piezas/yunque/pierna1.webp?v=7af0a7e7","pierna2":"recursos/piezas/yunque/pierna2.webp?v=30c74c9f","_rig":{"alto":524,"pies":114,"huesos":{"cadera":{"at":[0,0]},"cuerpo":{"img":"cuerpo","piv":[174,269],"padre":"cadera","at":[0,0],"z":3},"pierna1":{"img":"pierna1","piv":[59,5],"padre":"cadera","at":[-67,5],"z":2},"pierna2":{"img":"pierna2","piv":[46,17],"padre":"cadera","at":[70,5],"z":2},"cabeza":{"img":"cabeza","piv":[127,217],"padre":"cuerpo","at":[15,-195],"z":6},"melena":{"img":"melena","piv":[71,31],"padre":"cabeza","at":[-120,-130],"z":1,"balanceo":0.5},"brazoA":{"img":"brazoA","piv":[284,67],"padre":"cuerpo","at":[77,-180],"z":7},"faldon":{"img":"faldon","piv":[121,102],"padre":"cadera","at":[0,0],"z":4}},"anim":{"tipo":"tajo","alza":-1.6,"golpe":0.35},"punta":["brazoA",148,20]}}};
+const MARIONETA_ON=!/[?&]marioneta=0/.test(location.search);
+// Esqueleto. piv: punto de giro dentro de la imagen (px); at: enganche en el espacio del padre; r0: giro de reposo (rad);
+// z: orden de dibujo; sc: escala propia; mano: punto de la mano (para la cuerda); puntas: extremos del arco.
+const RIGS={
+ brasa:{alto:644,pies:225,huesos:{
+  cadera:{at:[0,0]},
+  pierna2:{img:'pierna2',padre:'cadera',at:[30,-6],piv:[62,28],r0:-.16,z:1},
+  carcaj:{img:'carcaj',padre:'cadera',at:[-58,-40],piv:[110,120],r0:.25,z:2,sc:.82},
+  torso:{img:'torso',padre:'cadera',at:[0,-10],piv:[92,196],r0:0,z:5},
+  brazoL:{img:'brazo',padre:'torso',at:[50,-150],piv:[42,22],r0:-1.25,z:3},
+  antebrazoL:{img:'antebrazo',padre:'brazoL',at:[2,78],piv:[24,20],r0:-.55,z:3.1},
+  arco:{img:'arco',padre:'antebrazoL',at:[62,92],piv:[44,200],r0:2.1,z:3.2,sc:.9},
+  pierna1:{img:'pierna1',padre:'cadera',at:[-34,-4],piv:[58,28],r0:.16,z:4},
+  falda:{img:'falda',padre:'torso',at:[-6,-14],piv:[168,18],r0:0,z:6,sc:.78},
+  coleta:{img:'coleta',padre:'cabeza',at:[-64,-178],piv:[200,34],r0:.1,z:4.5,sc:1.12},
+  cabeza:{img:'cabeza',padre:'torso',at:[8,-176],piv:[132,212],r0:0,z:8,sc:1.12},
+  brazoR:{img:'brazo',padre:'torso',at:[-40,-148],piv:[42,22],r0:.12,z:9},
+  antebrazoR:{img:'antebrazo',padre:'brazoR',at:[2,78],piv:[24,20],r0:-.9,z:9.1}},
+  mano:['antebrazoR',64,92],arco:{hueso:'arco',a:[-38,-170],b:[-38,165],agarre:[4,0]},efecto:{tipo:'fuego',hueso:'arco',p:[0,0]},anim:animBrasa,emite:emiteBrasa,extra:extraBrasa},
+ // Tovo: despiezado de su pose de reposo (tools/despiezar_tovo.py); el cuerpo lleva el mandil y la cabeza el casco
+ tovo:{alto:506,pies:75,huesos:{
+  cadera:{at:[0,0]},
+  pierna1:{img:'pierna1',padre:'cadera',at:[-40,-5],piv:[38,10],z:1},
+  pierna2:{img:'pierna2',padre:'cadera',at:[45,-5],piv:[45,10],z:1},
+  cuerpo:{img:'cuerpo',padre:'cadera',at:[0,0],piv:[88,209],z:3},
+  cabeza:{img:'cabeza',padre:'cuerpo',at:[5,-203],piv:[131,228],z:6},
+  escudo:{img:'escudo',padre:'cuerpo',at:[106,-94],piv:[95,109],z:7},
+  brazo:{img:'brazo',padre:'cuerpo',at:[-75,-160],piv:[147,21],z:8}},
+  efecto:{tipo:'chispas',hueso:'escudo',p:[0,0],golpe:['brazo',-105,140]},anim:animTovo,emite:emiteTovo,extra:extraTovo}};
+// imágenes (y su silueta blanca para el destello del golpe)
+const RIG_IMG={};
+function cargaRig(id){for(const n in PIEZAS[id])if(n[0]!=='_'){const im=new Image();im.src=PIEZAS[id][n];(RIG_IMG[id]=RIG_IMG[id]||{})[n]=im}}
+for(const id in RIGS)if(PIEZAS[id])cargaRig(id);
+function piezaBlanca(id,n){const im=RIG_IMG[id][n];if(im.blanca)return im.blanca;const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
+  const q=c.getContext('2d');q.drawImage(im,0,0);q.globalCompositeOperation='source-in';q.fillStyle='#fff';q.fillRect(0,0,c.width,c.height);return im.blanca=c}
+const tieneMarioneta=id=>MARIONETA_ON&&!!RIGS[id]&&!!RIG_IMG[id]&&Object.values(RIG_IMG[id]).every(i=>i.complete&&i.naturalWidth);
+// matrices 2D [a,b,c,d,e,f]
+const mMul=(m,n)=>[m[0]*n[0]+m[2]*n[1],m[1]*n[0]+m[3]*n[1],m[0]*n[2]+m[2]*n[3],m[1]*n[2]+m[3]*n[3],m[0]*n[4]+m[2]*n[5]+m[4],m[1]*n[4]+m[3]*n[5]+m[5]];
+const mPunto=(m,x,y)=>[m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];
+const suave=t=>t<.5?2*t*t:1-(-2*t+2)**2/2;
+// pose a partir del estado de la unidad: {hueso:{r,x,y,sx,sy}} + extras (cuerda tensada, brillo, impacto)
+function poseMarioneta(o){const P={},p=(k,q)=>{P[k]=Object.assign(P[k]||{},q)},T=o.t+o.seed,ex={cuerda:0,brillo:0,impacto:0};
+  RIGS[o.id].anim(o,p,ex,T,Math.sin,RIGS[o.id]);return [P,ex]}
+function animBrasa(o,p,ex,T,S){
+  const r=S(T*2.2);p('torso',{sy:1+.012*r,r:.01*r});p('cabeza',{r:.025*S(T*2.2+.6),y:-1.5*r});p('coleta',{r:.07*S(T*2.4-.8)});p('falda',{r:.02*S(T*2.2+1)});
+  p('brazoR',{r:.03*S(T*2.2+.3)});p('brazoL',{r:.02*S(T*2.2)});
+  if(o.walk){const s=S(T*7.5);p('pierna1',{r:.42*s});p('pierna2',{r:-.42*s});p('cadera',{y:-6*Math.abs(s)});p('brazoR',{r:-.3*s});p('antebrazoR',{r:-.15-.1*s});
+    p('brazoL',{r:.1*s});p('torso',{r:.05});p('coleta',{r:.18+.12*S(T*7.5-1)});p('falda',{r:-.05*s});p('cabeza',{r:-.03})}
+  const cast=o.cast||0;
+  if(cast>0){const t=suave(Math.min(1,cast*1.4)); // disparo cargado: se agacha, tensa con brillo
+    p('cadera',{y:14*t});p('pierna1',{r:.22*t});p('pierna2',{r:-.2*t});p('torso',{r:-.16*t});p('cabeza',{r:-.06*t});p('brazoL',{r:-.95*t});p('antebrazoL',{r:.45*t});
+    p('arco',{r:-.1*t,sx:1+.16*t});p('brazoR',{r:-1.7*t});p('antebrazoR',{r:-.8*t});p('coleta',{r:-.2*t});p('falda',{r:-.1*t});ex.cuerda=t;ex.brillo=t}
+  else{let t=0,suelto=0;
+    if(o.atk>0){const q=1-o.atk;t=1-suave(Math.min(1,q*1.6));suelto=q<.3?1-q/.3:0}      // acaba de soltar
+    else if(o.wind>0)t=suave(Math.min(1,o.wind));                                         // tensando
+    else if(o.aim)t=.12;                                                                    // apuntando
+    if(t>0||suelto>0){p('brazoL',{r:-.55*t});p('antebrazoL',{r:.5*t});p('arco',{r:-.08*t,sx:1+.12*t});
+      p('brazoR',{r:-1.55*Math.max(t,suelto*.9)-.25*suelto});p('antebrazoR',{r:-.95*Math.max(t,suelto*.9)+.6*suelto});
+      p('torso',{r:-.06*t+.04*suelto});p('cabeza',{r:.05*t});p('coleta',{r:-.1*t+.15*suelto});p('cadera',{x:-6*suelto});ex.cuerda=o.atk>0?0:t;ex.vibra=suelto}}
+  if(o.flash>0){const g=Math.min(1,o.flash*8);p('torso',{r:-.22*g});p('cabeza',{r:-.2*g});p('cadera',{x:-14*g});p('coleta',{r:.3*g});p('brazoR',{r:.5*g});p('brazoL',{r:.25*g});p('falda',{r:.12*g})}
+  if(o.dead){const f=suave(Math.min(1,o.dead*1.6));p('cadera',{r:-1.5*f,y:150*f,x:-60*f});p('cabeza',{r:-.25*f});p('brazoR',{r:.9*f});p('brazoL',{r:1.5*f});p('antebrazoL',{r:.4*f});
+    p('pierna1',{r:.35*f});p('pierna2',{r:-.1*f});p('coleta',{r:.6*f})}
+}
+function animTovo(o,p,ex,T,S){
+  const r=S(T*2.4);p('cuerpo',{sy:1+.015*r});p('cabeza',{r:.03*S(T*2.4+.6),y:-2*r});p('escudo',{y:-2*S(T*2.4+.3)});p('brazo',{r:.04*S(T*2.4+.2)});
+  if(o.walk){const s=S(T*9),b=Math.abs(s);p('pierna1',{r:.55*s,y:-6*Math.max(0,s)});p('pierna2',{r:-.55*s,y:-6*Math.max(0,-s)});p('cadera',{y:-12*b});p('cuerpo',{r:.07+.03*s,sy:1-.03*b});p('cabeza',{r:-.04*s,y:2*b});p('brazo',{r:-.35*s});p('escudo',{r:.07*s,y:-6*b,x:4*s})}
+  const cast=o.cast||0;
+  if(cast>0){const t=suave(Math.min(1,cast*1.4)); // forja el escudo: lo alza, brilla y golpea con el martillo
+    p('escudo',{y:-40*t,x:10*t,r:-.15*t});p('brazo',{r:2.3*t});p('cuerpo',{r:-.06*t});p('cabeza',{r:-.06*t});p('cadera',{y:6*t});ex.brillo=t}
+  else{
+    if(o.wind>0){const w=suave(Math.min(1,o.wind));p('brazo',{r:2.4*w});p('cuerpo',{r:-.08*w});p('cabeza',{r:-.05*w});p('escudo',{x:-6*w})}
+    else if(o.atk>0){const q=1-o.atk;let a;
+      if(q<.18){a=2.4+2.0*suave(q/.18)}else if(q<.35)a=4.4;else a=4.4+1.88*suave((q-.35)/.65);  // de arriba-atrás, por encima, golpe al frente; se sostiene y vuelve a colgar
+      const g=q<.18?suave(q/.18):q<.35?1:1-suave((q-.35)/.65);
+      p('brazo',{r:a,x:100*g,y:-6*g});p('cuerpo',{r:.16*g});p('cadera',{x:30*g});p('cabeza',{r:.08*g});p('escudo',{x:-30*g,y:40*g,r:.4*g});
+      p('pierna1',{r:-.25*g});p('pierna2',{r:.2*g});ex.impacto=q>=.16&&q<.3?1:0}
+    else if(o.aim){p('brazo',{r:.35});p('escudo',{x:4})}}
+  if(o.flash>0){const g=Math.min(1,o.flash*8);p('cuerpo',{r:-.15*g});p('cabeza',{r:-.15*g});p('cadera',{x:-12*g});p('escudo',{y:-18*g,r:-.25*g,x:6*g})}
+  if(o.dead){const f=suave(Math.min(1,o.dead*1.6));p('cadera',{r:-1.5*f,y:40*f,x:-40*f});p('cabeza',{r:-.2*f});p('brazo',{r:.6*f});p('escudo',{r:.5*f,y:20*f});p('pierna1',{r:.3*f});p('pierna2',{r:-.1*f})}}
+function matricesRig(H,P){const M={};const pend=Object.keys(H);let vueltas=0;
+  while(pend.length&&vueltas++<50)for(let i=pend.length-1;i>=0;i--){const k=pend[i],b=H[k];if(b.padre&&!M[b.padre])continue;const q=P[k]||{};
+    let m=b.padre?mMul(M[b.padre],[1,0,0,1,b.at[0],b.at[1]]):[1,0,0,1,0,0];const a=(b.r0||0)+(q.r||0),c=Math.cos(a),s=Math.sin(a);
+    m=mMul(mMul(mMul(m,[1,0,0,1,q.x||0,q.y||0]),[c,s,-s,c,0,0]),[q.sx||1,0,0,q.sy||1,0,0]);M[k]=m;pend.splice(i,1)}return M}
+// ---- partículas de fuego (solo visuales: Math.random) ----
+// Viven en el estado de dibujo de la unidad (o.st) y en coordenadas del esqueleto (cadera = 0,0; suelo en y = pies).
+function fuegoMarioneta(o,R,M,ex,mitad){const st=o.st;if(!st)return null;const now=performance.now(),dt=Math.min(.05,(now-(st.fT||now))/1000);st.fT=now;
+  const F=st.fuego=st.fuego||[],rnd2=(a,b)=>a+Math.random()*(b-a),[bx,by]=mPunto(M[R.efecto.hueso],R.efecto.p[0],R.efecto.p[1]),nace=(n,f)=>{for(let i=0;i<n;i++)F.push(f())};
+  const cuantos=ritmo=>{const v=ritmo*dt*(mitad?.5:1);return Math.floor(v)+(Math.random()<v%1?1:0)};
+  if(R.efecto.tipo==='generico'){} // los genéricos solo usan R.emite (07c-marioneta-generica.js)
+  else if(R.efecto.tipo==='chispas'){ // Tovo: chispas doradas de forja
+    if(ex.brillo>0)nace(cuantos(55*ex.brillo),()=>{const a=Math.random()*6.28;return {x:bx+Math.cos(a)*rnd2(40,110),y:by+Math.sin(a)*rnd2(40,120),vx:Math.cos(a)*rnd2(60,200),vy:Math.sin(a)*rnd2(60,200)-80,v:0,max:rnd2(.3,.6),tam:rnd2(5,11),oro:1}});
+    if(ex.impacto&&!st.chispa){st.chispa=1;const G=R.efecto.golpe,[gx,gy]=mPunto(M[G[0]],G[1],G[2]);nace(16,()=>{const a=rnd2(-3.0,-.1);return {x:gx,y:gy,vx:Math.cos(a)*rnd2(150,420),vy:Math.sin(a)*rnd2(150,420),v:0,max:rnd2(.2,.4),tam:rnd2(5,10),oro:1}})}
+    if(!ex.impacto)st.chispa=0}
+  else{
+  if(ex.brillo>0){ // habilidad: llamas alrededor del cuerpo y brasas del arco
+    nace(cuantos(50*ex.brillo),()=>{const lado=Math.random()<.5?-1:1,abajo=Math.random()<.45;return {x:abajo?rnd2(-120,120):lado*rnd2(85,165),y:R.pies-(abajo?rnd2(-10,30):rnd2(40,260)),vx:lado*rnd2(0,20),vy:rnd2(-150,-80),v:0,max:rnd2(.4,.75),tam:rnd2(16,32),llama:1,detras:Math.random()<.6}});
+    nace(cuantos(45*ex.brillo),()=>({x:bx+rnd2(-30,30),y:by+rnd2(-120,120),vx:rnd2(-40,40),vy:rnd2(-120,-40),v:0,max:rnd2(.3,.6),tam:rnd2(6,12)}))}
+  if(o.atk>0&&o.atk>.85&&!st.chispa){st.chispa=1;nace(14,()=>{const a=rnd2(-.6,.6);return {x:bx,y:by,vx:Math.cos(a)*rnd2(250,520),vy:Math.sin(a)*rnd2(250,520)-60,v:0,max:rnd2(.2,.4),tam:rnd2(5,10)}})}
+  if(!(o.atk>.85))st.chispa=0;
+  if(!o.dead)nace(cuantos(4),()=>({x:bx+rnd2(-10,40),y:by+rnd2(-150,150),vx:rnd2(-10,10),vy:rnd2(-60,-30),v:0,max:rnd2(.5,.9),tam:rnd2(4,7)}))} // ascuas sueltas del arco
+  if(R.emite)R.emite(o,ex,M,nace,cuantos,rnd2,st,R);
+  if(o.walk)nace(cuantos(7),()=>({x:rnd2(-50,50),y:R.pies-rnd2(0,8),vx:rnd2(-40,10),vy:rnd2(-25,-8),v:0,max:rnd2(.35,.6),tam:rnd2(12,20),polvo:1}));   // polvo al caminar
+  if(o.dead>.5&&!st.caido){st.caido=1;nace(12,()=>({x:rnd2(-160,60),y:R.pies-rnd2(0,10),vx:rnd2(-90,90),vy:rnd2(-40,-5),v:0,max:rnd2(.5,.8),tam:rnd2(16,28),polvo:1}))}
+  if(!o.dead)st.caido=0;
+  for(let i=F.length-1;i>=0;i--){const q=F[i];q.v+=dt;if(q.v>=q.max){F.splice(i,1);continue}q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.96;if(q.llama)q.vy-=60*dt;if(q.oro)q.vy+=500*dt;if(q.polvo){q.vx*=.92;q.vy*=.92}if(q.k)muevePart(q,dt)}
+  if(F.length>140)F.splice(0,F.length-140);return F}
+function pintaFuego(g,F,detras){if(!F||!F.length)return;g.save();
+  if(typeof pintaParticulas==='function')pintaParticulas(g,F,detras); // humo, hojas, burbujas, estrellas… (07c)
+  for(const q of F){if(q.k||!q.polvo||!!q.detras!==!!detras)continue;const u=q.v/q.max,a=(1-u)*(u<.2?u/.2:1);g.fillStyle=`rgba(170,150,120,${.26*a})`;g.beginPath();g.arc(q.x,q.y,q.tam*(.6+u*.9),0,7);g.fill()} // polvo: mezcla normal
+  g.globalCompositeOperation='lighter';
+  const gota=(x,y,s)=>{g.beginPath();g.moveTo(x,y-s*2.4);g.quadraticCurveTo(x+s*1.1,y-s*.3,x,y+s*.9);g.quadraticCurveTo(x-s*1.1,y-s*.3,x,y-s*2.4);g.fill()};
+  for(const q of F){if(q.k||q.polvo||!!q.detras!==!!detras)continue;const u=q.v/q.max,a=(1-u)*(u<.15?u/.15:1),s=q.tam*(q.llama?1-u*.45:1-u*.3),w=Math.sin(q.v*18+q.x)*.12;
+    if(q.llama){g.fillStyle=`rgba(${u<.5?'255,110,20':'210,45,10'},${.75*a})`;gota(q.x,q.y,s*(1+w));   // llama: exterior naranja-roja
+      g.fillStyle=`rgba(255,${u<.4?215:170},70,${.85*a})`;gota(q.x,q.y+s*.25,s*.55*(1-w))}              // y núcleo amarillo
+    else{const col=q.oro?(u<.4?'255,250,210':u<.7?'255,215,110':'230,150,40'):u<.3?'255,225,130':u<.6?'255,150,40':'230,70,20';g.fillStyle=`rgba(${col},${a})`;g.beginPath();g.arc(q.x,q.y,s*.5,0,7);g.fill();g.fillStyle=`rgba(${col},${.25*a})`;g.beginPath();g.arc(q.x,q.y,s*1.4,0,7);g.fill()}}
+  g.restore()}
+// dibuja la marioneta con los pies en (0,0), del alto h (el mismo que usaría el sprite)
+// op.soloEfectos: solo actualiza y pinta las partículas (encima de una pose dibujada); op.sinEfectos: solo el cuerpo (fundidos)
+function drawMarioneta(g,o,h,op){op=op||{};const R=RIGS[o.id],H=R.huesos,[P,ex]=poseMarioneta(o),M=matricesRig(H,P),k=h/R.alto,im=RIG_IMG[o.id];
+  g.save();g.scale(k,k);g.translate(0,-R.pies);
+  const F=R.efecto&&!op.sinEfectos?fuegoMarioneta(o,R,M,ex,op.soloEfectos):null; // encima de una pose dibujada, la mitad (ya trae sus efectos)pintaFuego(g,F,true); // las llamas de detrás, antes que el cuerpo
+  if(R.extra&&!op.sinEfectos&&o.st)R.extra(g,o,ex,M,o.st,'detras',R);
+  if(op.soloEfectos){pintaFuego(g,F,false);g.restore();return}
+  const capas=Object.entries(H).filter(([,b])=>b.img).sort((a,b)=>a[1].z-b[1].z),fl=o.flash>0?Math.min(1,o.flash*7)*.75:0;
+  for(const [n,b] of capas){g.save();g.transform(...M[n]);const sc=b.sc||1;g.scale(sc,sc);g.drawImage(im[b.img],-b.piv[0],-b.piv[1]);
+    if(fl){g.globalAlpha*=fl;g.drawImage(piezaBlanca(o.id,b.img),-b.piv[0],-b.piv[1])}g.restore();
+    if(R.arco&&n===R.arco.hueso){const A=R.arco,s2=H[A.hueso].sc||1,[ax,ay]=mPunto(M[n],A.a[0]*s2,A.a[1]*s2),[bx,by]=mPunto(M[n],A.b[0]*s2,A.b[1]*s2),[hx,hy]=mPunto(M[R.mano[0]],R.mano[1],R.mano[2]);
+      const t=ex.cuerda,vb=(ex.vibra||0)*Math.sin(performance.now()/14)*14,mx=(ax+bx)/2*(1-t)+hx*t+vb,my=(ay+by)/2*(1-t)+hy*t;g.strokeStyle='#efe3c4';g.lineWidth=2.4;g.beginPath();g.moveTo(ax,ay);g.lineTo(mx,my);g.lineTo(bx,by);g.stroke();
+      if(t>.15){const [gx,gy]=mPunto(M[n],A.agarre[0]*s2,A.agarre[1]*s2),L=Math.hypot(gx-mx,gy-my)||1,ux=(gx-mx)/L,uy=(gy-my)/L;g.strokeStyle='#6b4423';g.lineWidth=4;g.beginPath();g.moveTo(mx,my);g.lineTo(gx+ux*40,gy+uy*40);g.stroke();
+        g.fillStyle='#d9d4c8';g.beginPath();g.moveTo(gx+ux*58,gy+uy*58);g.lineTo(gx+ux*36-uy*8,gy+uy*36+ux*8);g.lineTo(gx+ux*36+uy*8,gy+uy*36-ux*8);g.fill()}}}
+  if(ex.brillo&&!op.sinEfectos){const [bx,by]=mPunto(M[R.efecto.hueso],R.efecto.p[0],R.efecto.p[1]),c0=R.efecto.col||(R.efecto.tipo==='chispas'?'255,215,110':'255,150,40');g.globalCompositeOperation='lighter';const fuerte=R.efecto.tipo==='generico'?.3:.55,radio=R.efecto.tipo==='generico'?140:200,gr=g.createRadialGradient(bx,by,10,bx,by,radio);gr.addColorStop(0,`rgba(${c0},${fuerte*ex.brillo})`);gr.addColorStop(1,'rgba(255,80,0,0)');g.fillStyle=gr;g.fillRect(bx-220,by-220,440,440);g.globalCompositeOperation='source-over'}
+  if(R.extra&&!op.sinEfectos&&o.st)R.extra(g,o,ex,M,o.st,'delante',R);
+  pintaFuego(g,F,false);
+  g.restore()}
+// ---- mezcla: poses dibujadas para los movimientos grandes, marioneta para el resto ----
+// Las poses (con todo su detalle) para caminar, atacar, apuntar y la habilidad, con las partículas por código encima;
+// la marioneta para el reposo, los golpes recibidos y la muerte. Al cambiar de una a otra, fundido de 0,15 s.
+// Modos: mezcla:'golpes' (los genéricos): dibujos para atacar y la habilidad, marioneta para el resto. mezcla:true (descartada: «se nota mucho»): dibujos también al caminar.
+function modoMezcla(o,sp){const mz=RIGS[o.id].mezcla;
+  if(mz==='golpes')return o.cast>0||o.atk>0||o.wind>0?'s':'m'; // golpes y habilidades con los dibujos; reposo, caminar, golpes recibidos y muerte con la marioneta
+  if(mz!==true)return 'm';const Q=sp.seq||{};
+  if(o.dead)return 'm';if(o.cast>0)return 's';if((o.atk>0||o.wind>0)&&Q.ataque)return 's';if(o.walk&&Q.caminar)return 's';
+  if(o.flash>0)return 'm';if(o.aim&&Q.ataque)return 's';return 'm'}
+function drawMezcla(g,o,sp,s,sc){const h=s*1.75*sc,modo=modoMezcla(o,sp),st=o.st,now=performance.now();let fade=0;
+  if(st){if(st.mModo!==modo){st.mPrev=st.mModo;st.mModo=modo;st.mT=now}if(st.mPrev&&now-st.mT<150)fade=1-(now-st.mT)/150}
+  if(modo==='m'){drawMarioneta(g,o,h);if(fade){g.save();g.globalAlpha*=fade;drawSpriteBase(g,o,sp,s,sc);g.restore()}}
+  else{drawSpriteBase(g,o,sp,s,sc);if(fade){g.save();g.globalAlpha*=fade;drawMarioneta(g,o,h,{sinEfectos:true});g.restore()}drawMarioneta(g,o,h,{soloEfectos:true})}}
+// ---- efectos propios de cada campeón (todo visual: Math.random y performance.now) ----
+function emiteBrasa(o,ex,M,nace,cuantos,rnd2,st,R){const A=R.arco,s2=R.huesos.arco.sc||1,[gx,gy]=mPunto(M.arco,A.agarre[0]*s2,A.agarre[1]*s2);
+  if(o.atk>.85&&!st.llamarada){st.llamarada=1;nace(7,()=>({x:gx+rnd2(0,20),y:gy+rnd2(-10,10),vx:rnd2(120,260),vy:rnd2(-60,10),v:0,max:rnd2(.25,.4),tam:rnd2(10,18),llama:1}))} // llamarada al soltar
+  if(!(o.atk>.85))st.llamarada=0;
+  if(o.cast>0&&ex.cuerda>.5){const [hx,hy]=mPunto(M[R.mano[0]],R.mano[1],R.mano[2]),L=Math.hypot(gx-hx,gy-hy)||1;   // flecha ardiendo
+    nace(cuantos(40),()=>({x:gx+(gx-hx)/L*45+rnd2(-6,6),y:gy+(gy-hy)/L*45+rnd2(-6,6),vx:rnd2(-20,20),vy:rnd2(-90,-40),v:0,max:rnd2(.2,.35),tam:rnd2(8,14),llama:1}))}}
+function extraBrasa(g,o,ex,M,st,fase,R){
+  if(fase==='detras'&&ex.brillo>0){const b=ex.brillo,t=performance.now()/1000;g.save();g.globalCompositeOperation='lighter'; // círculo de fuego en el suelo
+    g.translate(0,R.pies);g.scale(1,.28);
+    for(let i=0;i<2;i++){const r=150+30*i+8*Math.sin(t*9+i),gr=g.createRadialGradient(0,0,r*.55,0,0,r);gr.addColorStop(0,'rgba(255,90,10,0)');gr.addColorStop(.75,`rgba(255,${120+60*i},30,${.45*b})`);gr.addColorStop(1,'rgba(255,60,0,0)');g.fillStyle=gr;g.beginPath();g.arc(0,0,r,0,7);g.fill()}
+    g.restore()}}
+function emiteTovo(o,ex,M,nace,cuantos,rnd2,st,R){const [sx,sy]=mPunto(M.escudo,0,0);
+  if(o.flash>.08&&!st.clang){st.clang=1;nace(10,()=>{const a=rnd2(-2.6,-.4);return {x:sx+rnd2(20,60),y:sy+rnd2(-60,40),vx:Math.cos(a)*rnd2(150,330),vy:Math.sin(a)*rnd2(150,330),v:0,max:rnd2(.15,.3),tam:rnd2(4,8),oro:1}})} // chispas en el escudo
+  if(!(o.flash>.08))st.clang=0;
+  if(ex.impacto&&!st.golpeado){st.golpeado=1;const G=R.efecto.golpe,[gx,gy]=mPunto(M[G[0]],G[1],G[2]);st.onda={t:performance.now(),x:gx,y:gy};  // onda de choque y polvo al golpear
+    nace(10,()=>({x:gx+rnd2(-30,30),y:R.pies-rnd2(0,10),vx:rnd2(-120,120),vy:rnd2(-60,-10),v:0,max:rnd2(.4,.7),tam:rnd2(14,24),polvo:1}))}
+  if(!ex.impacto)st.golpeado=0}
+function extraTovo(g,o,ex,M,st,fase,R){const now=performance.now();
+  if(fase==='detras'){ // estela del martillo, por detrás del cuerpo
+  const G=R.efecto.golpe,E=st.estela=st.estela||[];
+  if(o.atk>0||o.wind>0){const [hx,hy]=mPunto(M[G[0]],G[1],G[2]);E.push([hx,hy,now])}
+  while(E.length&&now-E[0][2]>200)E.shift();
+  if(E.length>2){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';
+    for(let i=1;i<E.length;i++){const a=1-(now-E[i][2])/200;g.strokeStyle=`rgba(255,235,190,${.5*a})`;g.lineWidth=12+44*a;g.beginPath();g.moveTo(E[i-1][0],E[i-1][1]);g.lineTo(E[i][0],E[i][1]);g.stroke()}
+    g.restore()}
+  return}
+  // onda de choque
+  if(st.onda){const u=(now-st.onda.t)/350;if(u<1){g.save();g.translate(st.onda.x,st.onda.y);g.scale(.45,1);g.strokeStyle=`rgba(255,225,150,${.8*(1-u)})`;g.lineWidth=10*(1-u)+2;g.beginPath();g.arc(0,0,30+150*u,0,7);g.stroke();g.restore()}else st.onda=null}
+  // habilidad: emblema de escudo dorado con rayos
+  if(ex.brillo>0){const b=ex.brillo,[sx,sy]=mPunto(M.escudo,0,0),t=now/1000;g.save();g.translate(sx+40*b,sy-10);g.globalCompositeOperation='lighter';
+    for(let i=0;i<10;i++){const a=i/10*6.28+t*.8,l=(120+40*Math.sin(t*7+i))*b;g.strokeStyle=`rgba(255,220,120,${.35*b})`;g.lineWidth=6;g.beginPath();g.moveTo(Math.cos(a)*50,Math.sin(a)*50);g.lineTo(Math.cos(a)*l,Math.sin(a)*l);g.stroke()}
+    const k=.6+.4*b+.05*Math.sin(t*10);g.scale(k,k);g.beginPath();g.moveTo(0,-70);g.quadraticCurveTo(45,-62,58,-52);g.quadraticCurveTo(58,20,0,70);g.quadraticCurveTo(-58,20,-58,-52);g.quadraticCurveTo(-45,-62,0,-70);
+    const gr=g.createLinearGradient(0,-70,0,70);gr.addColorStop(0,`rgba(255,250,210,${.85*b})`);gr.addColorStop(1,`rgba(255,190,60,${.6*b})`);g.fillStyle=gr;g.fill();g.lineWidth=5;g.strokeStyle=`rgba(255,255,240,${.9*b})`;g.stroke();g.restore()}}
+
+// ================= MARIONETAS GENÉRICAS (PRUEBA) =================
+// Campeones despiezados de su pose de reposo con tools/despiezar.py: el esqueleto llega en PIEZAS[id]._rig.
+// Huesos con nombre fijo: cadera, cuerpo, cabeza, brazoA (el del arma), brazoB, pierna1, pierna2; los que llevan
+// «balanceo» (pelo, capa, cola…) se mecen. Animación común según el tipo de ataque (anim.tipo: disparo, tajo,
+// estocada o magia; por defecto, según el rol) con ángulos ajustables en despiece.json. Efectos según los rasgos:
+// el origen da las partículas (chispas, agua, sombra, hojas, estrellas, runas) y la clase un efecto propio
+// (arcano: círculo mágico; asesino: estela; guardián: burbuja de escudo; coloso: onda en el suelo; tirador: fogonazo).
+// Todo es visual: Math.random y performance.now, nunca rnd().
+const ORIGEN_FX={forja:'chispas',marea:'agua',umbra:'sombra',bosque:'hojas',astral:'estrellas',hermandad:'runas',monstruo:'polvo'};
+const rgbDe=hex=>{const n=parseInt(hex.slice(1),16);return `${n>>16},${n>>8&255},${n&255}`};
+const ANIM_DEF={disparo:{alza:-.35,retro:.18,hab:-.5,habB:0},tajo:{alza:-2.3,golpe:-.5,avance:24,hab:-1,habB:-.6},estocada:{alza:.5,golpe:-1.15,avance:45,hab:-.8,habB:.3},magia:{alza:-1.3,golpe:-.8,avance:10,hab:-1.6,habB:-1.1}};
+const tipoPorRol=id=>({ranged:'disparo',mage:'magia',assassin:'estocada',tank:'tajo'})[CH[id].role]||'tajo';
+for(const id in PIEZAS){const J=PIEZAS[id]._rig;if(!J||RIGS[id]||!CH[id])continue;
+  const tr=CH[id].traits,org=tr.find(t=>ORIGEN_FX[t])||tr[0],cls=tr.find(t=>t!==org),pt=J.punta&&J.huesos[J.punta[0]]?J.punta:J.huesos.cabeza?['cabeza',0,-60]:['cuerpo',0,-Math.round(J.alto*.55)]; // si no hay cabeza separada, del cuerpo
+  RIGS[id]=Object.assign({},J,{anim:animGenerico,emite:emiteGenerico,extra:extraGenerico,animCfg:J.anim||{},mezcla:'golpes',
+    efecto:Object.assign({tipo:'generico',hueso:pt[0],p:[pt[1],pt[2]],fx:ORIGEN_FX[org]||'chispas',clase:cls,col:rgbDe(TRAITS[org].col),col2:cls?rgbDe(TRAITS[cls].col):rgbDe(TRAITS[org].col)},J.efecto||{})});
+  cargaRig(id)}
+// ---- animación común ----
+function animGenerico(o,p,ex,T,S,R){const H=R.huesos,tipo=R.animCfg.tipo||tipoPorRol(o.id),A=Object.assign({},ANIM_DEF[tipo],R.animCfg),has=k=>!!H[k];
+  const extras=Object.keys(H).filter(k=>H[k].balanceo),r=S(T*2.3);
+  p('cuerpo',{sy:1+.014*r});p('cabeza',{r:.03*S(T*2.3+.6),y:-2*r});
+  const bz=A.brazos||0; // los brazos llevan el arma: quietos salvo que el despiece lo pida (al girar dejan ver cortes)
+  if(has('brazoA'))p('brazoA',{r:.04*bz*S(T*2.3+.3)});if(has('brazoB'))p('brazoB',{r:-.04*bz*S(T*2.3+.5)});
+  extras.forEach((k,i)=>p(k,{r:.06*H[k].balanceo*S(T*2.4-.8-i*.7)}));
+  if(o.walk){const s=S(T*8.5),b=Math.abs(s);p('pierna1',{r:.45*s});p('pierna2',{r:-.45*s});p('pierna3',{r:-.4*s});p('pierna4',{r:.4*s}); // 3 y 4: patas traseras (al trote, en diagonal)
+    p('cadera',{y:-9*b});p('cuerpo',{r:.05,sy:1-.02*b});p('cabeza',{r:-.03*s});
+    if(has('brazoA'))p('brazoA',{r:-.25*s*bz});if(has('brazoB'))p('brazoB',{r:.25*s*bz});extras.forEach((k,i)=>p(k,{r:(.15+.1*S(T*8.5-1-i))*H[k].balanceo}))}
+  const cast=o.cast||0;
+  if(cast>0){const t=suave(Math.min(1,cast*1.4));p('cuerpo',{r:-.08*t});p('cabeza',{r:-.08*t});p('cadera',{y:8*t});
+    if(has('brazoA'))p('brazoA',{r:(A.hab??-1.6)*t});if(has('brazoB'))p('brazoB',{r:(A.habB??-1.1)*t});extras.forEach(k=>p(k,{r:-.25*t*H[k].balanceo}));ex.brillo=t}
+  else if(o.wind>0){const w=suave(Math.min(1,o.wind));p('brazoA',{r:A.alza*w});p('cuerpo',{r:-.06*w});if(tipo!=='disparo')p('cadera',{x:-8*w})}
+  else if(o.atk>0){const q=1-o.atk;
+    if(tipo==='disparo'){const g=q<.25?1-q/.25:0;p('brazoA',{r:A.alza*(1-suave(Math.min(1,q*2)))+A.retro*g});p('cadera',{x:-8*g});p('cuerpo',{r:-.03*g});ex.impacto=q<.15?1:0}
+    else{let a,g;if(q<.18){g=suave(q/.18);a=A.alza+(A.golpe-A.alza)*g}else if(q<.35){a=A.golpe;g=1}else{g=1-suave((q-.35)/.65);a=A.golpe*g}
+      p('brazoA',{r:a,x:(A.avance||20)*.5*g});p('cuerpo',{r:.12*g});p('cadera',{x:(A.avance||20)*g});p('cabeza',{r:.06*g});
+      if(has('brazoB'))p('brazoB',{r:.2*g});extras.forEach(k=>p(k,{r:.2*g*H[k].balanceo}));ex.impacto=q>=.15&&q<.3?1:0}}
+  else if(o.aim&&tipo==='disparo')p('brazoA',{r:A.alza*.6});
+  if(o.flash>0){const g=Math.min(1,o.flash*8);p('cuerpo',{r:-.15*g});p('cabeza',{r:-.15*g});p('cadera',{x:-12*g});extras.forEach(k=>p(k,{r:.3*g*H[k].balanceo}))}
+  if(o.dead&&A.muerte==='tumba'){const f=suave(Math.min(1,o.dead*1.6));p('cadera',{r:-.35*f,y:R.pies*.35*f,sy:1-.25*f});p('cabeza',{r:.5*f});['pierna1','pierna2','pierna3','pierna4'].forEach((k,i)=>p(k,{r:(i%2?-.6:.6)*f}));extras.forEach(k=>p(k,{r:.4*f*H[k].balanceo}));return} // bestias: se desploman
+  if(o.dead){const f=suave(Math.min(1,o.dead*1.6));p('cadera',{r:-1.5*f,y:R.pies*.75*f,x:-30*f});p('cabeza',{r:-.2*f});
+    if(has('brazoA'))p('brazoA',{r:.8*f});if(has('brazoB'))p('brazoB',{r:.6*f});p('pierna1',{r:.3*f});p('pierna2',{r:-.1*f});extras.forEach(k=>p(k,{r:.5*f*H[k].balanceo}))}}
+// ---- partículas por origen ----
+function particula(fx,x,y,col,fuerza){const R2=(a,b)=>a+Math.random()*(b-a),f=fuerza||1,a=Math.random()*6.28,v=R2(60,220)*f;
+  switch(fx){
+    case 'agua':return Math.random()<.5?{k:'burbuja',x,y,vx:R2(-30,30),vy:R2(-90,-40),v:0,max:R2(.5,.9),tam:R2(5,11)}:{k:'gota',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-120,v:0,max:R2(.3,.6),tam:R2(5,9),col};
+    case 'sombra':return Math.random()<.7?{k:'humo',x:x+R2(-10,10),y,vx:R2(-30,30),vy:R2(-70,-20),v:0,max:R2(.6,1),tam:R2(12,24),col}:{k:'chispa',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,v:0,max:R2(.2,.4),tam:R2(4,8),col};
+    case 'hojas':return {k:'hoja',x,y,vx:Math.cos(a)*v*.7,vy:Math.sin(a)*v*.7-60,v:0,max:R2(.8,1.3),tam:R2(8,13),col,rot:R2(0,6.28),vr:R2(-8,8)};
+    case 'estrellas':case 'runas':return {k:'estrella',x,y,vx:Math.cos(a)*v*.6,vy:Math.sin(a)*v*.6,v:0,max:R2(.4,.8),tam:R2(8,16),col};
+    case 'polvo':return {polvo:1,x,y,vx:R2(-80,80),vy:R2(-50,-10),v:0,max:R2(.4,.7),tam:R2(12,22)};
+    default:return {k:'chispa',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,v:0,max:R2(.2,.45),tam:R2(4,9),col:'255,205,110'}}}
+function muevePart(q,dt){switch(q.k){
+  case 'chispa':q.vy+=450*dt;break;case 'gota':q.vy+=650*dt;break;
+  case 'burbuja':q.vy-=30*dt;q.x+=Math.sin(q.v*9)*.8;break;
+  case 'humo':q.vx*=.95;q.vy*=.95;break;
+  case 'hoja':q.vy=Math.min(q.vy+90*dt,70);q.vx*=.97;q.x+=Math.sin(q.v*4+q.rot)*40*dt;q.rot+=q.vr*dt;break;
+  case 'estrella':q.vx*=.92;q.vy*=.92;break}}
+function pintaParticulas(g,F,detras){g.save();
+  for(const q of F){if(!q.k||!!q.detras!==!!detras)continue;const u=q.v/q.max,a=(1-u)*(u<.15?u/.15:1),s=q.tam;
+    if(q.k==='humo'){g.globalCompositeOperation='source-over';g.fillStyle=`rgba(${q.col},${.32*a})`;g.beginPath();g.arc(q.x,q.y,s*(1+u*1.2),0,7);g.fill();g.fillStyle=`rgba(20,10,30,${.22*a})`;g.beginPath();g.arc(q.x,q.y,s*.6*(1+u),0,7);g.fill()}
+    else if(q.k==='hoja'){g.globalCompositeOperation='source-over';g.save();g.translate(q.x,q.y);g.rotate(q.rot);g.fillStyle=`rgba(${q.col},${.95*a})`;g.beginPath();g.ellipse(0,0,s,s*.45,0,0,7);g.fill();
+      g.strokeStyle=`rgba(30,70,20,${.7*a})`;g.lineWidth=1.5;g.beginPath();g.moveTo(-s,0);g.lineTo(s,0);g.stroke();g.restore()}
+    else if(q.k==='burbuja'){g.globalCompositeOperation='source-over';g.strokeStyle=`rgba(200,240,255,${.8*a})`;g.lineWidth=2;g.beginPath();g.arc(q.x,q.y,s,0,7);g.stroke();
+      g.fillStyle=`rgba(255,255,255,${.7*a})`;g.beginPath();g.arc(q.x-s*.35,q.y-s*.35,s*.25,0,7);g.fill()}
+    else if(q.k==='gota'){g.globalCompositeOperation='source-over';g.fillStyle=`rgba(${q.col},${.85*a})`;g.beginPath();g.ellipse(q.x,q.y,s*.55,s*.85,Math.atan2(q.vy,q.vx)-Math.PI/2,0,7);g.fill()}}
+  g.globalCompositeOperation='lighter';
+  for(const q of F){if(!q.k||!!q.detras!==!!detras)continue;const u=q.v/q.max,a=(1-u)*(u<.15?u/.15:1),s=q.tam;
+    if(q.k==='chispa'){g.fillStyle=`rgba(${q.col},${a})`;g.beginPath();g.arc(q.x,q.y,s*.5*(1-u*.4),0,7);g.fill();g.fillStyle=`rgba(${q.col},${.25*a})`;g.beginPath();g.arc(q.x,q.y,s*1.4,0,7);g.fill()}
+    else if(q.k==='estrella'){const t=s*(.6+.4*Math.sin(q.v*20));g.fillStyle=`rgba(${q.col},${a})`;g.beginPath();
+      for(let i=0;i<8;i++){const ang=i*Math.PI/4,r=i%2?t*.22:t;g.lineTo(q.x+Math.cos(ang)*r,q.y+Math.sin(ang)*r)}g.fill();g.fillStyle=`rgba(255,255,255,${.8*a})`;g.beginPath();g.arc(q.x,q.y,t*.15,0,7);g.fill()}}
+  g.restore()}
+function emiteGenerico(o,ex,M,nace,cuantos,rnd2,st,R){const E=R.efecto,[px,py]=mPunto(M[E.hueso],E.p[0],E.p[1]),cy=-R.alto*.3,col=E.col;
+  const fx=E.fx,colP=fx==='hojas'?['98,176,76','140,200,90','200,190,80'][Math.floor(Math.random()*3)]:fx==='estrellas'?'255,230,140':fx==='runas'?'120,230,240':col;
+  if(!o.dead)nace(cuantos(1.5),()=>Object.assign(particula(fx,rnd2(-R.alto*.3,R.alto*.3),cy+rnd2(-R.alto*.35,R.alto*.25),colP,.3),{detras:Math.random()<.5}));  // ambiente
+  if(ex.brillo>0){nace(cuantos(40*ex.brillo),()=>Object.assign(particula(fx,rnd2(-R.alto*.35,R.alto*.35),R.pies-rnd2(0,R.alto*.8),colP,.6),{detras:Math.random()<.5}));
+    nace(cuantos(25*ex.brillo),()=>particula(fx,px+rnd2(-15,15),py+rnd2(-15,15),colP,.8))}
+  if(ex.impacto&&!st.golpeG){st.golpeG=1;nace(12,()=>particula(fx,px,py,colP,1.2));if(E.clase==='coloso'||E.clase==='guardian')st.onda={t:performance.now(),x:px};
+    if(E.clase==='tirador')st.fogonazo=performance.now()}
+  if(!ex.impacto)st.golpeG=0;
+  if(o.flash>.08&&!st.dolor){st.dolor=1;nace(6,()=>particula(fx,rnd2(-30,30),cy+rnd2(-40,40),colP,.7))}
+  if(!(o.flash>.08))st.dolor=0}
+function extraGenerico(g,o,ex,M,st,fase,R){const E=R.efecto,now=performance.now(),c2=E.col2||E.col;
+  if(fase==='detras'){
+    if(E.clase==='arcano'&&ex.brillo>0){const b=ex.brillo,t=now/1000;g.save();g.translate(0,R.pies);g.scale(1,.3);g.globalCompositeOperation='lighter'; // círculo mágico
+      g.strokeStyle=`rgba(${c2},${.8*b})`;g.lineWidth=5;g.beginPath();g.arc(0,0,R.alto*.42,0,7);g.stroke();g.lineWidth=3;g.beginPath();g.arc(0,0,R.alto*.32,0,7);g.stroke();
+      g.save();g.rotate(t*1.5);for(let i=0;i<12;i++){g.rotate(Math.PI/6);g.fillStyle=`rgba(${c2},${.7*b})`;g.fillRect(R.alto*.34,-5,R.alto*.06,10)}g.restore();
+      const gr=g.createRadialGradient(0,0,0,0,0,R.alto*.42);gr.addColorStop(0,`rgba(${c2},${.25*b})`);gr.addColorStop(1,`rgba(${c2},0)`);g.fillStyle=gr;g.beginPath();g.arc(0,0,R.alto*.42,0,7);g.fill();g.restore()}
+    if(E.clase==='asesino'){const [px,py]=mPunto(M[E.hueso],E.p[0],E.p[1]),T2=st.estela=st.estela||[];   // estela del arma
+      if(o.atk>0||o.wind>0)T2.push([px,py,now]);while(T2.length&&now-T2[0][2]>180)T2.shift();
+      if(T2.length>2){g.save();g.globalCompositeOperation='lighter';g.lineCap='round';for(let i=1;i<T2.length;i++){const a=1-(now-T2[i][2])/180;g.strokeStyle=`rgba(${E.col},${.5*a})`;g.lineWidth=8+30*a;g.beginPath();g.moveTo(T2[i-1][0],T2[i-1][1]);g.lineTo(T2[i][0],T2[i][1]);g.stroke()}g.restore()}}
+    return}
+  if(st.onda){const u=(now-st.onda.t)/380;if(u<1){g.save();g.translate(st.onda.x,R.pies);g.scale(1,.3);g.strokeStyle=`rgba(${c2},${.8*(1-u)})`;g.lineWidth=10*(1-u)+2;g.beginPath();g.arc(0,0,30+R.alto*.45*u,0,7);g.stroke();g.restore()}else st.onda=null}
+  if(st.fogonazo){const u=(now-st.fogonazo)/140;if(u<1){const [px,py]=mPunto(M[E.hueso],E.p[0],E.p[1]);g.save();g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(px,py,0,px,py,60);gr.addColorStop(0,`rgba(255,250,220,${.9*(1-u)})`);gr.addColorStop(1,`rgba(${E.col},0)`);g.fillStyle=gr;g.beginPath();g.arc(px,py,60,0,7);g.fill();g.restore()}else st.fogonazo=0}
+  if(E.clase==='guardian'&&ex.brillo>0){const b=ex.brillo;g.save();g.globalCompositeOperation='lighter';const rx=R.alto*.42,ry=R.alto*.6,cy=R.pies-ry*.95; // burbuja de escudo
+    const gr=g.createRadialGradient(0,cy,rx*.4,0,cy,ry);gr.addColorStop(0,`rgba(${c2},0)`);gr.addColorStop(.85,`rgba(${c2},${.22*b})`);gr.addColorStop(1,`rgba(${c2},${.5*b})`);
+    g.fillStyle=gr;g.beginPath();g.ellipse(0,cy,rx,ry,0,0,7);g.fill();g.strokeStyle=`rgba(255,255,255,${.5*b})`;g.lineWidth=3;g.beginPath();g.ellipse(0,cy,rx,ry,0,0,7);g.stroke();g.restore()}
+  if(E.clase==='coloso'&&ex.brillo>0&&!st.ondaHab){st.ondaHab=1;st.onda={t:now,x:0}}
+  if(!(ex.brillo>0))st.ondaHab=0}
 
 // ---------- 2D champion figures ----------
 const LOOK={
@@ -2400,7 +2692,7 @@ function drawUnit(x,y,o){
   if(o.glow){ctx.strokeStyle=`rgba(255,217,138,${o.glow})`;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,fy,s*(.5+(1.3-o.glow)*.4)*sc,s*(.2+(1.3-o.glow)*.15)*sc,0,0,Math.PI*2);ctx.stroke()}
   // figure
   ctx.save();ctx.translate(x,fy);
-  if(o.dead){ctx.globalAlpha*=Math.max(0,1-o.dead);ctx.rotate(o.dead*1.35*(o.face||1))}
+  if(o.dead){ctx.globalAlpha*=Math.max(0,1-o.dead);if(!tieneMarioneta(o.id))ctx.rotate(o.dead*1.35*(o.face||1))} // la marioneta cae sola
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
   const esc=!o.creep&&CH[o.id]&&CH[o.id].escala||1;if(esc!==1)ctx.scale(esc,esc);
@@ -3137,7 +3429,7 @@ const ROLE_TAG={tank:['Tanque','<path d="M8 1 2 3.5V8c0 3.4 2.6 6 6 7 3.4-1 6-3.
   mage:['Mago','<path d="M8 1l1.8 4.6L15 6.2l-3.9 3.3 1.2 5L8 11.8 3.7 14.5l1.2-5L1 6.2l5.2-.6z"/>']};
 function roleTag(r){const R=ROLE_TAG[r]||ROLE_TAG.tank;return `<div class="crole"><svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" fill="currentColor">${R[1]}</svg><span>${R[0]}</span></div>`}
 function traitPill(t){const T=TRAITS[t];return `<span class="tp" style="--c:${T.col}"><b>${T.n}</b><i>${T.n.slice(0,3)}</i></span>`}
-function itemTitle(it){const I=ITEMS[it];if(I.full)return `${I.n} (${ITEMS[I.r[0]].n} + ${ITEMS[I.r[1]].n}): ${I.d}`;
+function itemTitle(it){const I=ITEMS[it];if(I.especial)return `${I.n}: ${I.d}`;if(I.full)return `${I.n} (${ITEMS[I.r[0]].n} + ${ITEMS[I.r[1]].n}): ${I.d}`;
   return `${I.n}: ${I.d}\nCon otro componente:\n`+ITEM_IDS.map(o=>`· ${ITEMS[o].n} → ${ITEMS[RECIPE[it+'+'+o]].n}`).join('\n')}
 
 // info panel
@@ -3978,7 +4270,7 @@ function renderDiario(){
 }
 // «Tu partida»: lo que puedes fabricar ya y los objetos que convienen a cada campeón de tu tablero
 function htmlPartida(){
-  const hu=H(),inv=hu.items.filter(i=>!ITEMS[i].full),us=hu.board.filter(Boolean);
+  const hu=H(),inv=hu.items.filter(i=>!ITEMS[i].full&&!ITEMS[i].especial),us=hu.board.filter(Boolean);
   const cuenta=a=>{const c={};a.forEach(x=>c[x]=(c[x]||0)+1);return c};
   const hay=(pool,r)=>{const c=cuenta(pool);return r.every(x=>(c[x]=(c[x]||0)-1)>=0)};
   const posibles=[...new Set(COMPLETOS.filter(id=>hay(inv,ITEMS[id].r)))];
@@ -4849,7 +5141,7 @@ const AUMENTOS={
  plaza:{n:'Plaza extra',r:'muyraro',p:1,soloArena:true,ico:'➕',d:'+1 campeón en tu equipo durante el resto de la partida.',f:hu=>{hu.plazaExtra=(hu.plazaExtra||0)+1},ok:hu=>!hu.plazaExtra}};
 const RAREZA={comun:'Común',poco:'Poco común',raro:'Raro',muyraro:'Muy raro'};
 // el Quitamanos es un objeto especial (no sale en el botín ni en el carrusel: ITEM_IDS ya está calculado)
-ITEMS.quitamanos={n:'Quitamanos',g:'Q',col:'#c9a23a',s:{},especial:true,d:'Arrástralo a un campeón: todos sus objetos vuelven a tu inventario.'};
+ITEMS.quitamanos={n:'Quitamanos',g:'🧤',col:'#c9a23a',s:{},especial:true,d:'Arrástralo a un campeón: todos sus objetos vuelven a tu inventario.'};
 // cada campeón del tablero pasa a otro de coste superior (de la reserva de la partida), conservando estrellas y objetos
 function aumAscenso(hu){const cambios=[];
   hu.board.forEach((u,i)=>{if(!u)return;const c=CH[u.id].cost;if(c>=5)return;
