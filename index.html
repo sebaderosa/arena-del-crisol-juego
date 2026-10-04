@@ -801,6 +801,35 @@ body.en-combate .goldPill{display:none}
 .tnFinEq{display:flex;gap:14px;justify-content:center;margin:12px 0}.tnFinEq div{display:flex;flex-direction:column;align-items:center;gap:3px}.tnFinEq img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#1d2a33}.tnFinEq b{color:var(--gold-hi)}
 @media (max-width:760px){.tnPanel{flex-direction:column;min-height:0}.tnLog{width:auto;max-height:54px}.tnObjs{grid-template-columns:1fr}}
 #bTnVel[aria-pressed="true"]{border-color:var(--gold-hi);color:var(--gold-hi)}
+/* ===== duelo (prueba) ===== */
+.mpLado #bDuelo{border-color:#6a2f2f}
+.dlBotones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlCaja{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.dlCaja h4{margin:0;font-family:var(--display);font-weight:400;color:var(--gold-hi);font-size:19px}
+.dlCaja input{font:inherit;font-size:22px;letter-spacing:.25em;text-transform:uppercase;text-align:center;background:#0b1115;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:8px;width:100%;box-sizing:border-box}
+.dlCodigo{font-family:var(--display);font-size:48px;letter-spacing:.2em;color:var(--gold-hi);text-align:center;margin:6px 0}
+.dlEstado{color:var(--muted);font-size:14px;text-align:center}
+.dlEstado.err{color:#ff8a7a}
+@media (max-width:760px){.dlBotones{grid-template-columns:1fr}}
+
+/* ===== arena con amigos (prueba) ===== */
+.salaCod{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px}.salaCod .dlCodigo{margin:0}
+.salaLista{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.salaLista li{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;min-width:0}
+.salaLista li b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}.salaLista li small{font-size:12px;color:var(--muted);white-space:nowrap}
+.salaLista li.listo{border-color:#5fc46f}.salaLista li.listo small{color:#8be29f}
+.salaLista li.bot{opacity:.5}.salaLista li.bot .saAv{background:#22313a;border-radius:50%}
+.saAv{width:32px;height:32px;flex:none;object-fit:contain}
+#multiReloj{position:fixed;left:50%;top:calc(var(--topH,60px) + 6px);transform:translateX(-50%);z-index:8;background:rgba(15,22,28,.88);border:1px solid #3a4f5c;border-radius:20px;padding:4px 14px;font-weight:700;color:#e8eef1;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+#multiReloj.prisa{color:#ffb86b;border-color:#ffb86b}
+.ptag.amigo{background:#2f6b45}
+@media (max-width:760px){.salaLista{grid-template-columns:1fr}}
+#bSalaListo:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.6)}
+
+.salaTiempo{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 10px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.salaTiempo span{margin-right:4px}.salaTiempo b{color:var(--gold-hi)}
+.salaTiempo button{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:4px 12px;color:var(--text);font-weight:600}
+.salaTiempo button[aria-pressed="true"]{background:#5a4318;border-color:var(--gold-hi);color:#fff3d0}
 
 </style>
 
@@ -839,6 +868,7 @@ body.en-combate .goldPill{display:none}
       <div id="banner"><div class="t"></div><div class="s"></div></div>
       <div id="toast"></div>
       <div id="supervReloj" hidden></div>
+      <div id="multiReloj" hidden></div>
       <div id="info" hidden></div>
     </div>
   </section>
@@ -890,7 +920,7 @@ body.en-combate .goldPill{display:none}
       <button data-d="normal" aria-pressed="true"><b>Normal</b><small>Rivales equilibrados que a veces espían tu formación.</small></button>
       <button data-d="dificil" aria-pressed="false"><b>Difícil</b><small>Rivales que ahorran, refrescan mucho y se adaptan a ti.</small></button>
     </div>
-    <div class="row" style="justify-content:space-between;margin-top:14px"><button class="big alt" id="bArenaVolver">Volver</button><button class="big" id="bStart">Jugar</button></div>
+    <div class="row" style="justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px"><button class="big alt" id="bArenaVolver">Volver</button><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="big alt" id="bAmigos" title="Crea una sala e invita a tus amigos; las plazas libres son bots">Jugar con amigos</button><button class="big" id="bStart">Jugar</button></span></div>
   </div>
 </div>
 
@@ -1047,6 +1077,18 @@ body.en-combate .goldPill{display:none}
 </div>
 
 <div class="overlay" id="tnPremioOv" hidden><div class="modal" id="tnPremio" style="max-width:640px;text-align:center"></div></div>
+
+<div class="overlay" id="salaOv" hidden>
+  <div class="modal" style="max-width:560px">
+    <div class="lbl">Arena libre · con amigos (prueba)</div>
+    <h2>Sala de la Arena</h2>
+    <div id="salaCodigo" class="salaCod"></div>
+    <div class="salaTiempo" id="salaTiempo"></div>
+    <ol class="salaLista" id="salaLista"></ol>
+    <p class="dlEstado" id="salaEstado"></p>
+    <div class="row" style="justify-content:space-between;margin-top:12px"><button class="big alt" id="bSalaSalir">Salir</button><button class="big" id="bSalaListo">Listo</button></div>
+  </div>
+</div>
 
 <div id="ghost" hidden></div>
 
@@ -1283,7 +1325,11 @@ const REINICIADO=(()=>{try{const v=localStorage.getItem('crisol_progreso');if(v=
 // tras(): setTimeout ligado a la partida actual; si se sale al menú (S cambia), no se ejecuta
 function tras(fn,ms){const g=S;return setTimeout(()=>{if(S&&S===g)fn()},ms)}
 const $=s=>document.querySelector(s);
-const rnd=Math.random, pick=a=>a[Math.floor(rnd()*a.length)];
+// RNG: generador en uso. Normalmente Math.random; en un duelo, el combate pone el suyo (con semilla) para que los dos
+// dispositivos simulen exactamente lo mismo. Lo puramente visual usa Math.random para no gastar números del combate.
+let RNG=Math.random;
+const rnd=()=>RNG(), pick=a=>a[Math.floor(rnd()*a.length)];
+function rngSemilla(a){a=a>>>0;return ()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}} // mulberry32
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const key=(c,r)=>c+','+r;
 function hexDist(c1,r1,c2,r2){const q1=c1-(r1-(r1&1))/2,q2=c2-(r2-(r2&1))/2;const dq=q1-q2,dr=r1-r2;return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2}
@@ -1464,7 +1510,8 @@ function pveWave(stage,round){
 function creepTeam(team){return pveWave(S.stage,S.round).map(([k,c,r,m])=>makeCreep(k,team,team===0?c:6-c,team===0?4+r:3-r,m))}
 
 class Combat{
-  constructor(A,B,vis){
+  constructor(A,B,vis,rng){
+    this.rng=rng||null; // duelo: generador con semilla para el paso del combate
     this.f=[...A,...B];this.vis=vis;this.grid=new Map();this.proj=[];this.fx=[];this.parts=[];this.shake=0;this.t=0;this.over=false;this.winner=null;
     for(const f of this.f)this.grid.set(key(f.c,f.r),f);
     // auras de objetos: afectan al portador y a sus aliados adyacentes al empezar
@@ -1473,7 +1520,7 @@ class Combat{
         if(P.auraVel)a.asBonus+=P.auraVel;
         if(P.auraMana&&a.ab)a.mana=Math.min(a.maxMana-1,a.mana+P.auraMana);
         if(P.auraDef){a.ar+=P.auraDef;a.mr+=P.auraDef}}}
-    for(const f of this.f)if(f.jump)this.jump(f);
+    {const p0=RNG;if(this.rng)RNG=this.rng;try{for(const f of this.f)if(f.jump)this.jump(f)}finally{RNG=p0}} // el salto inicial también usa el azar del combate
     for(const f of this.f)if(f.pas.retaguardia)this.aRetaguardia(f);
   }
   enemies(f){return this.f.filter(e=>e.alive&&e.team!==f.team)}
@@ -1502,7 +1549,7 @@ class Combat{
       if(this.vis)this.emit(12,f.x,f.y-.4,{col:['#c9a8ff','#2a1d35','#ffffff'],sp:2,life:.6,glow:1});if(f.jump)this.jump(f)}
     if(this.vis){this.addFx({k:'call',x:3*SQ3,y:2,s:'¡Oleada!',col:'#ffb86b',t:0,dur:1.4});sfx('fight')}}
   addFx(o){if(this.vis){o.t=0;this.fx.push(o)}}
-  text(t,s,col,big){if(this.vis)this.fx.push({k:'txt',x:t.x+(rnd()-.5)*.4,y:t.y-.3,s,col,big,t:0,dur:.8})}
+  text(t,s,col,big){if(this.vis)this.fx.push({k:'txt',x:t.x+(Math.random()-.5)*.4,y:t.y-.3,s,col,big,t:0,dur:.8})}
   nearest(f,list){list=list||this.enemies(f);let best=null,bd=1e9;for(const e of list){const d=hexDist(f.c,f.r,e.c,e.r)+e.hp/1e6;if(d<bd){bd=d;best=e}}return best}
   curAS(f){return Math.min(3,f.as*(1+f.asBonus+(f.hasteT>0?f.haste:0)))}
   pathStep(f,t){
@@ -1572,7 +1619,7 @@ class Combat{
   // invoca monstruos en las casillas libres más cercanas (murciélagos de Dracqueen); m: multiplicador de vida y daño
   summon(f,kind,n,m){const seen=new Set([key(f.c,f.r)]),q=[[f.c,f.r]],out=[];
     while(q.length&&out.length<n){const [c,r]=q.shift();for(const [nc,nr] of neighbors(c,r)){const k=key(nc,nr);if(seen.has(k))continue;seen.add(k);q.push([nc,nr]);
-      if(!this.grid.has(k)&&out.length<n){const b=makeCreep(kind,f.team,nc,nr,m);b.summ=true;b.seed=rnd()*6;this.f.push(b);this.grid.set(k,b);out.push(b);
+      if(!this.grid.has(k)&&out.length<n){const b=makeCreep(kind,f.team,nc,nr,m);b.summ=true;b.seed=Math.random()*6;this.f.push(b);this.grid.set(k,b);out.push(b);
         if(this.vis)this.emit(10,b.x,b.y-.4,{col:['#c9a8ff','#ff7aa8','#2a1d35'],sp:2,life:.5,glow:1})}}}
     out.forEach(b=>{if(b.jump)this.jump(b)});return out}
   heal(t,amt,src){if(!t.alive)return;const h=Math.min(amt,t.maxHp-t.hp);t.hp+=h;if(src)src.healing+=h;if(h>1)this.text(t,'+'+Math.round(h),'#8be29f')}
@@ -1598,9 +1645,9 @@ class Combat{
   emit(n,x,y,o){
     if(!this.vis)return;
     for(let i=0;i<n;i++){
-      const a=o.dir!=null?o.dir+(rnd()-.5)*(o.spread||1):rnd()*Math.PI*2,sp=(o.sp||2)*(.35+rnd()*.85);
-      this.parts.push({x:x+(rnd()-.5)*(o.jit||0),y:y+(rnd()-.5)*(o.jit||0)*.6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*(o.flat||.7)+(o.up||0)*(.6+rnd()*.8),g:o.g||0,drag:o.drag==null?2:o.drag,
-        life:0,max:(o.life||.6)*(.6+rnd()*.7),sz:(o.sz||.08)*(.6+rnd()*.8),col:Array.isArray(o.col)?pick(o.col):o.col,shape:o.shape||'dot',rot:rnd()*6,vr:(rnd()-.5)*10,glow:o.glow});
+      const a=o.dir!=null?o.dir+(Math.random()-.5)*(o.spread||1):Math.random()*Math.PI*2,sp=(o.sp||2)*(.35+Math.random()*.85);
+      this.parts.push({x:x+(Math.random()-.5)*(o.jit||0),y:y+(Math.random()-.5)*(o.jit||0)*.6,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*(o.flat||.7)+(o.up||0)*(.6+Math.random()*.8),g:o.g||0,drag:o.drag==null?2:o.drag,
+        life:0,max:(o.life||.6)*(.6+Math.random()*.7),sz:(o.sz||.08)*(.6+Math.random()*.8),col:Array.isArray(o.col)?o.col[Math.floor(Math.random()*o.col.length)]:o.col,shape:o.shape||'dot',rot:Math.random()*6,vr:(Math.random()-.5)*10,glow:o.glow});
     }
   }
   shakeIt(v){if(this.vis)this.shake=Math.max(this.shake||0,v)}
@@ -1682,7 +1729,8 @@ class Combat{
     if(P.escudoHab){f.tshield+=P.escudoHab;f.tshieldT=Math.max(f.tshieldT,3);f.shCol=f.shCol||col}
     if(P.curaHab)this.heal(f,f.maxHp*P.curaHab,f);
   }
-  step(dt){
+  step(dt){if(!this.rng)return this._step(dt);const p=RNG;RNG=this.rng;try{this._step(dt)}finally{RNG=p}}
+  _step(dt){
     if(this.over)return;
     this.t+=dt;
     for(const f of this.f){
@@ -1846,7 +1894,7 @@ function incomeFor(p){
   return 5+interest+(s>=5?3:s>=4?2:s>=2?1:0);
 }
 function beginRound(){
-  S.combat=null;S.resolving=false;S.endT=0;S.preview=null;S.opp=null;S.pairs=null;
+  S.combat=null;S.flip=false;S.resolving=false;S.endT=0;S.preview=null;S.opp=null;S.pairs=null;
   S.type=roundType(S.stage,S.round);
   if(S.type==='carousel'){S.phase='carousel';openCarousel();updateHUD();return}
   for(const p of S.players){if(!p.alive)continue;
@@ -1855,9 +1903,9 @@ function beginRound(){
   }
   // los emparejamientos se hacen antes del turno de la IA, para que cada una pueda espiar a su rival
   if(S.type==='pve')S.preview=enemyTeam(1);
-  else{S.pairs=makePairs();S.opp=S.pairs[0][1]}
+  else if(S.mode!=='multi'){S.pairs=makePairs();S.opp=S.pairs[0][1]} // con amigos, las parejas las hace el anfitrión al luchar (15d-multi.js)
   const oppOf=p=>{if(!S.pairs)return null;for(const [a,b] of S.pairs){const B=b.ghost?b.p:b;if(a===p)return B;if(b===p)return a}return null};
-  for(const p of S.players)if(p.alive&&!p.human)aiTurn(p,oppOf(p));
+  for(const p of S.players)if(p.alive&&!p.human&&!p.remoto)aiTurn(p,oppOf(p));
   S.phase='planning';if(S.mode==='historia')dialogoJefe(); // el jefe te habla al llegar a su ronda (15f-dialogos.js)
   const sub=S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?('Rival: '+S.opp.name+(S.opp.ghost?' (eco)':'')):'';
   banner(`Ronda ${S.stage}-${S.round}`,S.round===1||(S.stage===1&&S.round===2)?curTheme().n+(sub?' · '+sub:''):sub);
@@ -1872,10 +1920,12 @@ function makePairs(){
   if(rest.length===1){const g=pick(alive.filter(p=>p!==rest[0]));pairs.push([rest[0],{ghost:true,p:g,name:g.name}])}
   hu.lastOpp=opp;return pairs;
 }
-function nextRound(){S.round++;if(S.round>roundsIn(S.stage)){S.stage++;S.round=1}beginRound()}
+function nextRound(){if(S.mode==='multi')return multiHecho(); // con amigos, la siguiente ronda la marca el anfitrión (15d-multi.js)
+  S.round++;if(S.round>roundsIn(S.stage)){S.stage++;S.round=1}beginRound()}
 
 function startCombat(){
   if(!S||S.phase!=='planning')return;
+  if(S.mode==='multi'&&S.type==='pvp')return multiListo(); // 15d-multi.js
   const hu=H();autofill(hu);hideInfo();
   const RG=S.mode==='historia'&&NIVELES[S.story.nivel-1].regla;
   if(RG&&RG.minRasgo&&storyRound()&&storyRound().jefe){const n=traitCounts(hu.board)[RG.minRasgo]||0;if(n<RG.minN){toast(`Contra el jefe necesitas al menos ${RG.minN} campeones ${TRAITS[RG.minRasgo].n} en el tablero (tienes ${n})`);return}} // la regla vale en la ronda del jefe
@@ -1885,7 +1935,7 @@ function startCombat(){
   S.combat=new Combat(teamFrom(hu,0),enemy,true);
   if(S.mode==='historia')prepararSuperv(S.combat,storyRound()); // supervivencia: reloj y oleadas (15-historia.js)
   S.others=[];
-  if(S.type==='pve'){for(const p of S.players)if(p.alive&&!p.human)S.others.push({a:p,cb:simulate(teamFrom(p,0),creepTeam(1))})}
+  if(S.type==='pve'){for(const p of S.players)if(p.alive&&!p.human&&!p.remoto)S.others.push({a:p,cb:simulate(teamFrom(p,0),creepTeam(1))})}
   else for(const [a,b] of S.pairs.slice(1))S.others.push({a,b,cb:simulate(teamFrom(a,0),teamFrom(b.ghost?b.p:b,1))});
   S.phase='combat';S.endT=0;sfx('fight');
   dmgCb=S.combat;dmgLabel=`${S.stage}-${S.round}`;renderDmg();
@@ -1909,6 +1959,7 @@ function loot(p,kills,k){
 }
 function resolveCombat(){
   const cb=S.combat,hu=H();let title='',sub='',cls='';
+  if(S.mode==='multi'&&S.type==='pvp')return multiResolver();
   if(S.mode==='historia'){
     if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner('Derrota',cb.ejecutado?'Se acabó el tiempo: a tu equipo le quedaba menos vida':'Tu equipo ha caído','lose');updateHUD();tras(()=>storyLost(),2100);return}
     const L=storyLoot(hu);cuentaRonda(); // experiencia de cuenta (15e-cuenta.js)
@@ -1947,6 +1998,7 @@ function resolveCombat(){
   },2100);
 }
 function gameOver(place){
+  if(S.mode==='multi')return multiCae();
   S.phase='over';sfx('over');updateHUD();
   $('#bAgain').textContent='Jugar de nuevo';$('#bAgain').onclick=backToMenu;$('#bMenu').hidden=true;
   let best=null;try{best=+localStorage.getItem('crisol_best')||null;if(!best||place<best)localStorage.setItem('crisol_best',place)}catch(e){}
@@ -1971,10 +2023,11 @@ function carSpots(){const s=M.size,cx=M.W/2,cy=world(0,3).y*s+s*.6,rx=Math.min(M
 function carouselAt(x,y){let best=-1,bd=(M.size*1.1)**2;for(const p of carSpots()){const d=(x-p.x)**2+(y-(p.y-M.size*.5))**2;if(d<bd){bd=d;best=p.i}}return best}
 function pickCarousel(i){if(S.carPick||i<0)return;S.carPick={i,t:performance.now()/1000};sfx('buy');tras(()=>chooseCarousel(i),650)}
 function chooseCarousel(i){
+  if(!S.carOpts)return;
   const o=S.carOpts[i],hu=H(),C=CH[o.id];
   const res=giveUnit(hu,o.id);hu.items.push(o.item); // el objeto va al inventario, no al campeón
   const tiers=carTiers();
-  for(const p of S.players)if(p.alive&&!p.human){const ex=maxed(p),id=drawTier(pick(tiers),ex)||drawTier(1,ex);if(id)giveUnit(p,id);p.items.push(pick(ITEM_IDS));aiArrange(p);aiItems(p)}
+  for(const p of S.players)if(p.alive&&!p.human&&!p.remoto){const ex=maxed(p),id=drawTier(pick(tiers),ex)||drawTier(1,ex);if(id)giveUnit(p,id);p.items.push(pick(ITEM_IDS));aiArrange(p);aiItems(p)}
   S.carOpts=null;S.carPick=null;
   const I=ITEMS[o.item].n;
   toast(res==='vendido'?`Banquillo y tablero llenos: ${C.name} se vende por ${C.cost} de oro · ${I} va a tu inventario`
@@ -2442,8 +2495,8 @@ function drawFx(cb,s){
       case 'implode':{ctx.strokeStyle=o.col;ctx.globalAlpha=k;ctx.lineWidth=3;ctx.beginPath();ctx.arc(o.x*s,o.y*s,o.r*s*(1-k)+2,0,7);ctx.stroke();break}
       case 'disk':{const x=o.x*s,y=o.y*s-s*1.75,a=Math.sin(k*Math.PI);ctx.globalAlpha=a;ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(x,y,s*.3,x,y,s*.75);g.addColorStop(0,o.col);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,s*.75,0,7);ctx.fill();ctx.globalCompositeOperation='source-over';ctx.fillStyle='#0c0a12';ctx.beginPath();ctx.arc(x,y,s*.34,0,7);ctx.fill();break}
       case 'flash':{ctx.globalAlpha=1;ctx.fillStyle=`rgba(${o.col},${(1-k)*.35})`;ctx.fillRect(-50,-50,M.W+100,M.H+100);break}
-      case 'call':{const a=k<.75?Math.min(1,k*8):1-(k-.75)/.25;ctx.globalAlpha=a;ctx.font=`${Math.round(s*.36)}px 'Marcellus SC', Georgia, serif`;ctx.textAlign='center';ctx.lineWidth=3.5;ctx.strokeStyle='rgba(8,10,14,.85)';ctx.fillStyle=o.col;const y=o.y*s-s*1.5-k*s*.25;ctx.strokeText(o.s,o.x*s,y);ctx.fillText(o.s,o.x*s,y);break}
-      case 'txt':{ctx.globalAlpha=k<.7?1:1-(k-.7)/.3;const pop=o.big?1+Math.max(0,.35-k)*1.6:1;ctx.fillStyle=o.col;ctx.font=`700 ${Math.round(s*(o.big?.52:.38)*pop)}px 'Barlow Semi Condensed', sans-serif`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.8)';const y=(o.y-k*.7)*s-s*.95;ctx.strokeText(o.s,o.x*s,y);ctx.fillText(o.s,o.x*s,y);break}
+      case 'call':{if(S&&S.flip){ctx.save();ctx.translate(o.x*s,o.y*s);ctx.rotate(Math.PI);ctx.translate(-o.x*s,-o.y*s)}const a=k<.75?Math.min(1,k*8):1-(k-.75)/.25;ctx.globalAlpha=a;ctx.font=`${Math.round(s*.36)}px 'Marcellus SC', Georgia, serif`;ctx.textAlign='center';ctx.lineWidth=3.5;ctx.strokeStyle='rgba(8,10,14,.85)';ctx.fillStyle=o.col;const y=o.y*s-s*1.5-k*s*.25;ctx.strokeText(o.s,o.x*s,y);ctx.fillText(o.s,o.x*s,y);if(S&&S.flip)ctx.restore();break}
+      case 'txt':{if(S&&S.flip){ctx.save();ctx.translate(o.x*s,o.y*s);ctx.rotate(Math.PI);ctx.translate(-o.x*s,-o.y*s)}ctx.globalAlpha=k<.7?1:1-(k-.7)/.3;const pop=o.big?1+Math.max(0,.35-k)*1.6:1;ctx.fillStyle=o.col;ctx.font=`700 ${Math.round(s*(o.big?.52:.38)*pop)}px 'Barlow Semi Condensed', sans-serif`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.8)';const y=(o.y-k*.7)*s-s*.95;ctx.strokeText(o.s,o.x*s,y);ctx.fillText(o.s,o.x*s,y);if(S&&S.flip)ctx.restore();break}
     }
   }
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
@@ -2740,6 +2793,8 @@ function draw(){
   const isHidden=(where,i)=>hide&&hide.where===where&&hide.i===i;
   ctx.save();ctx.translate(0,M.pad);
   if(S.combat){const cb0=S.combat;if(cb0.shake>0)ctx.translate((rnd()-.5)*cb0.shake*s*.5,(rnd()-.5)*cb0.shake*s*.5);if(cb0.over&&cb0.finale){const z=1+.08*Math.min(1,S.endT*4)*Math.max(0,1-Math.max(0,S.endT-1.2)*2),fx=cb0.finale.x*s,fy=cb0.finale.y*s;ctx.translate(fx,fy);ctx.scale(z,z);ctx.translate(-fx,-fy)}}
+  // duelo, lado del invitado: el combate se simula con el anfitrión abajo y aquí se gira 180° sobre el centro del tablero
+  const giro=S.combat&&S.flip;if(giro){const gx=SQ3*3.75*s,gy=6.25*s;ctx.translate(gx,gy);ctx.rotate(Math.PI);ctx.translate(-gx,-gy)}
   if(S.combat){
     const cb=S.combat;
     const list=cb.f.slice().sort((a,b)=>a.y-b.y);
@@ -2749,9 +2804,11 @@ function draw(){
       let x=f.x*s,y=f.y*s;
       if(f.move){const m=f.move,k0=Math.min(1,m.t+REND_A*(1/30)/m.dur),k=k0*k0*(3-2*k0);x=(m.fx+(m.tx-m.fx)*k)*s;y=(m.fy+(m.ty-m.fy)*k)*s-Math.sin(k0*Math.PI)*s*.12} // entre pasos: suave y con saltito
       if(f.anim>0&&f.range<=1){const k=Math.sin((1-f.anim)*Math.PI)*.22;x+=(f.ax*s-x)*k;y+=(f.ay*s-y)*k}
-      drawUnit(x,y,{scale:f.jefe?1.3:1,id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:f.face||1,t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
-        st:f,wind:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range?Math.max(0,Math.min(1,1-f.atkCd/.4)):0,bars:f.alive,team:f.team,hpF:f.hp/f.maxHp,maxHp:f.maxHp,shieldF:(f.shield+f.tshield)/f.maxHp,mana:f.ab?f.mana/f.maxMana:null,stun:f.alive&&f.stunT>0&&!(f.frozenT>0),sel:S.selF===f});
+      if(giro){ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI);ctx.translate(-x,-y)} // cada figura, derecha
+      drawUnit(x,y,{scale:f.jefe?1.3:1,id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:(f.face||1)*(giro?-1:1),t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
+        st:f,wind:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range?Math.max(0,Math.min(1,1-f.atkCd/.4)):0,bars:f.alive,team:giro?1-f.team:f.team,hpF:f.hp/f.maxHp,maxHp:f.maxHp,shieldF:(f.shield+f.tshield)/f.maxHp,mana:f.ab?f.mana/f.maxMana:null,stun:f.alive&&f.stunT>0&&!(f.frozenT>0),sel:S.selF===f});
       if(f.alive)drawAuras(f,x,y,s,now);
+      if(giro)ctx.restore();
     }
     drawParticles(cb,s);drawProjectiles(cb,s);drawFx(cb,s);
   }else if(S.phase==='carousel'&&S.carOpts){drawCarousel(now)
@@ -2918,7 +2975,7 @@ function renderDmg(){
   const box=$('#dmg');if(!dmgCb){box.hidden=true;return}box.hidden=false;if(!box.offsetParent||box.offsetWidth===0)return; // no visible: no se redibuja
   $('#dmgRound').textContent=dmgLabel;
   const val=f=>dmgMetric==='dealt'?f.dealt:dmgMetric==='taken'?f.taken:f.healing;
-  const rows=dmgCb.f.filter(f=>f.team===dmgTeam&&!f.summ).sort((a,b)=>val(b)-val(a));
+  const rows=dmgCb.f.filter(f=>f.team===(dmgTeam^(S&&S.flip?1:0))&&!f.summ).sort((a,b)=>val(b)-val(a));
   const max=Math.max(1,...rows.map(val));
   $('#dmgLegend').innerHTML=dmgMetric==='dealt'?`<span><i style="background:${DCOL.phys}"></i>Físico</span><span><i style="background:${DCOL.magic}"></i>Mágico</span>`:dmgMetric==='taken'?'<span>Daño recibido tras armadura y escudos</span>':'<span>Curación y escudos generados</span>';
   $('#dmgRows').innerHTML=rows.map(f=>{
@@ -3011,7 +3068,7 @@ function updateHUD(){
   S.players.slice().sort((a,b)=>(b.alive-a.alive)||(b.alive?b.hp-a.hp:a.place-b.place)).forEach(p=>{
     const li=document.createElement('li');const isOpp=S.opp&&(S.opp===p||(S.opp.ghost&&S.opp.p===p))&&(pl||S.phase==='combat');
     li.className=(p.human?'me ':'')+(isOpp?'opp ':'')+(p.alive?'':'dead');
-    li.innerHTML=`<img class="pav${p.human?' marco-'+CUENTA.eq.marco:''}" src="${avatarImg(p.av||'zorro',p.col)}" alt=""><span class="pn">${p.name}${isOpp?'<span class="ptag">rival</span>':''}</span><span class="phv">${p.alive?Math.max(0,p.hp):ord(p.place)}</span><div class="pbar"><i style="width:${Math.max(0,p.hp)}%;background:${p.human?'#53c476':'#6f8794'}"></i></div>`;
+    li.innerHTML=`<img class="pav${p.human?' marco-'+CUENTA.eq.marco:''}" src="${avatarImg(p.av||'zorro',p.col)}" alt=""><span class="pn">${p.name}${isOpp?'<span class="ptag">rival</span>':p.amigo?'<span class="ptag amigo">amigo</span>':''}</span><span class="phv">${p.alive?Math.max(0,p.hp):ord(p.place)}</span><div class="pbar"><i style="width:${Math.max(0,p.hp)}%;background:${p.human?'#53c476':'#6f8794'}"></i></div>`;
     pl2.appendChild(li);
   });
   $('#log').innerHTML=S.logs.slice(-6).reverse().map(l=>`<div>${l}</div>`).join('');
@@ -3093,7 +3150,7 @@ function hitAt(x,y){
   return {};
 }
 function locFromHit(h){if(h.bench!=null)return {where:'bench',i:h.bench};if(h.cell&&h.cell[1]>=4)return {where:'board',i:(h.cell[1]-4)*7+h.cell[0]};return null}
-function fighterAt(x,y){if(!S.combat)return null;y=y-M.pad+M.size*.3;let best=null,bd=(M.size*.7)**2;for(const f of S.combat.f){if(!f.alive)continue;const d=(x-f.x*M.size)**2+(y-f.y*M.size)**2;if(d<bd){bd=d;best=f}}return best}
+function fighterAt(x,y){if(!S.combat)return null;y=y-M.pad+M.size*.3;if(S.flip){x=SQ3*7.5*M.size-x;y=12.5*M.size-y}let best=null,bd=(M.size*.7)**2;for(const f of S.combat.f){if(!f.alive)continue;const d=(x-f.x*M.size)**2+(y-f.y*M.size)**2;if(d<bd){bd=d;best=f}}return best}
 cv.addEventListener('pointerdown',e=>{
   if(!S||S.phase==='idle'||S.phase==='over')return;
   const [x,y]=canvasPos(e);const h=hitAt(x,y);
@@ -3914,6 +3971,262 @@ window.addEventListener('keydown',e=>{
   if(!$('#objOv').hidden){if(e.key==='ArrowLeft')objPaso(-1);else if(e.key==='ArrowRight')objPaso(1);else if(e.key==='Escape')$('#objOv').hidden=true;return}
   if(!$('#diarioOv').hidden&&e.key==='Escape')$('#diarioOv').hidden=true});
 
+// ================= ARENA CON AMIGOS (prueba) =================
+// Sala previa: el anfitrión crea la sala (código / enlace ?sala=CÓDIGO), se unen hasta 7 amigos y cada uno marca «Listo».
+// Al empezar, las plazas libres hasta 8 son bots. Conexión WebRTC con PeerJS en estrella: los invitados solo hablan con el anfitrión.
+// Reparto del trabajo:
+// - Cada jugador compra, coloca, juega el carrusel y las rondas de monstruos en su dispositivo (la reserva de campeones no es compartida).
+// - El anfitrión mueve a los bots (aiTurn) y hace de árbitro: en cada ronda contra jugadores espera el «listo» de todos los vivos
+//   (tablero, vida y nivel), empareja y manda a todos una foto de la ronda (tableros, vidas, parejas y semilla).
+// - Con esa foto, cada dispositivo simula TODOS los combates con azar con semilla (rngSemilla) y uid canónicos por plaza,
+//   así que todos llegan a las mismas vidas y eliminaciones sin más mensajes. El suyo lo ve dibujado (girado si es el equipo 1).
+// Ritmo: todos juegan las rondas a la vez. El anfitrión manda «fase» (ronda y segundos de preparación); al acabar el tiempo
+// (o antes, si pulsas «Luchar») se lucha. Cuando todos han terminado su combate («hecho»), o a los 80 s, manda la siguiente fase.
+// Mensajes: hola · sala {jugadores, tuSeat, tiempo} · listoSala {v} · lleno · inicio {semilla, diff, jugadores, tuSeat, tiempo}
+//           fase {k, dur} · listo {k, seat, tablero, hp, nivel} · faltan {k, nombres} · ronda {k, semilla, pares, jug} · hecho {k, hp}
+//           fin {seat} · aviso {txt} · ping · chao
+const PEERJS_URL='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
+const SALA_PREFIJO='arena-crisol-sala-',CODIGO_LETRAS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX_JUG=8,T_PREP=45;
+const SEAT_COL=['#53c476','#5aa6f2','#e0a03a','#c86ad0','#e0605b','#62c8b0','#d7c75e','#9fb2bd'];
+const NET={peer:null,host:false,conns:{},conn:null,sala:null,jugando:false,visto:{},vistoHost:0,sinSenal:30000,tiempo:30}; // tiempo: segundos de preparación por ronda (lo elige el anfitrión) // sinSenal: ms sin noticias para dar a alguien por desconectado
+function cargarPeerJS(){return window.Peer?Promise.resolve():new Promise((ok,mal)=>{const s=document.createElement('script');s.src=PEERJS_URL;s.onload=ok;s.onerror=()=>mal(new Error('PeerJS'));document.head.appendChild(s)})}
+const miNombre=()=>(myAv&&AVN[myAv])||'Jugador';
+function mandar(c,m){try{c&&c.open&&c.send(m)}catch(e){console.warn('sala: no se pudo enviar',e)}}
+function enviar(m){if(NET.host)Object.values(NET.conns).forEach(c=>mandar(c,m));else mandar(NET.conn,m)}
+function cerrarRed(){try{Object.values(NET.conns).forEach(c=>c.close())}catch(e){}try{NET.conn&&NET.conn.close()}catch(e){}try{NET.peer&&NET.peer.destroy()}catch(e){}
+  NET.peer=NET.conn=NET.sala=null;NET.conns={};NET.visto={};NET.host=false;NET.jugando=false}
+
+// ---- sala previa ----
+function abrirSala(){$('#salaOv').hidden=false;$('#arenaOv').hidden=true;$('#startOv').hidden=true}
+function cerrarSala(){cerrarRed();$('#salaOv').hidden=true;$('#startOv').hidden=false;showBest()}
+function salaEstado(t,err){const e=$('#salaEstado');e.textContent=t||'';e.classList.toggle('err',!!err)}
+async function crearSala(){
+  cerrarRed();audioInit();abrirSala();NET.host=true;
+  const cod=Array.from({length:5},()=>CODIGO_LETRAS[Math.floor(Math.random()*CODIGO_LETRAS.length)]).join('');
+  NET.sala={codigo:cod,miSeat:0,jugadores:[{seat:0,nombre:miNombre(),av:myAv||'zorro',listo:true,anfitrion:true}]};
+  renderSala();salaEstado('Conectando…');
+  try{await cargarPeerJS()}catch(e){return salaEstado('No se pudo cargar la conexión. Revisa tu internet.',true)}
+  NET.peer=new Peer(SALA_PREFIJO+cod);
+  NET.peer.on('open',()=>salaEstado('Pasa el código o el enlace a tus amigos. Las plazas libres serán bots.'));
+  NET.peer.on('error',e=>{if(e.type==='unavailable-id')return crearSala();salaEstado('Error de conexión: '+(e.type||e.message),true)});
+  NET.peer.on('connection',c=>atarInvitado(c));
+}
+function atarInvitado(c){
+  let seat=null;
+  c.on('data',m=>{
+    if(seat!=null)NET.visto[seat]=Date.now();
+    if(!m||!m.t||m.t==='ping')return;const J=NET.sala&&NET.sala.jugadores;
+    if(m.t==='hola'){
+      if(NET.jugando||!J||J.length>=MAX_JUG){mandar(c,{t:'lleno',txt:NET.jugando?'La partida ya ha empezado.':'La sala está llena.'});setTimeout(()=>c.close(),300);return}
+      seat=1;while(J.some(j=>j.seat===seat))seat++;
+      let nombre=String(m.nombre||'Jugador').slice(0,16);if(J.some(j=>j.nombre===nombre))nombre+=' '+(seat+1);
+      NET.conns[seat]=c;NET.visto[seat]=Date.now();J.push({seat,nombre,av:AVK.includes(m.av)?m.av:'zorro',listo:false});J.sort((a,b)=>a.seat-b.seat);difundirSala();
+    }else if(seat==null)return;
+    else if(m.t==='listoSala'){const j=J&&J.find(x=>x.seat===seat);if(j){j.listo=!!m.v;difundirSala()}}
+    else if(m.t==='listo')hostListo(m,seat);
+    else if(m.t==='hecho')hostHecho(m.k,seat,m);
+    else if(m.t==='fin')hostCae(seat);
+    else if(m.t==='chao')c.close();
+  });
+  c.on('close',()=>invitadoFuera(seat));
+}
+function invitadoFuera(seat){if(seat==null||!NET.conns[seat])return;const c=NET.conns[seat];delete NET.conns[seat];try{c.close()}catch(e){}
+  if(!NET.jugando){if(NET.sala){NET.sala.jugadores=NET.sala.jugadores.filter(j=>j.seat!==seat);difundirSala()}return}
+  hostDesconectado(seat)}
+// latido: cada 3 s todos dan señal; quien pasa NET.sinSenal sin darla se da por desconectado (PeerJS no siempre avisa al cerrar)
+setInterval(()=>{if(!NET.peer)return;const ahora=Date.now();
+  if(NET.host){enviar({t:'ping'});for(const s of Object.keys(NET.conns))if(ahora-(NET.visto[s]||ahora)>NET.sinSenal)invitadoFuera(+s)}
+  else if(NET.conn&&NET.conn.open){mandar(NET.conn,{t:'ping'});
+    if(NET.jugando&&NET.vistoHost&&ahora-NET.vistoHost>NET.sinSenal){try{NET.conn.close()}catch(e){}if(S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('Se ha perdido la conexión con el anfitrión: la partida no puede seguir.')}}},3000);
+function difundirSala(){if(!NET.sala)return;for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'sala',jugadores:NET.sala.jugadores,diff,tiempo:NET.tiempo,tuSeat:+seat});renderSala()}
+async function unirseSala(cod){
+  cerrarRed();audioInit();abrirSala();NET.sala={codigo:cod,miSeat:null,jugadores:[]};renderSala();salaEstado('Conectando con la sala…');
+  try{await cargarPeerJS()}catch(e){return salaEstado('No se pudo cargar la conexión. Revisa tu internet.',true)}
+  NET.peer=new Peer();
+  NET.peer.on('error',e=>salaEstado(e.type==='peer-unavailable'?`No existe la sala ${cod} o ya se ha cerrado.`:'Error de conexión: '+(e.type||e.message),true));
+  NET.peer.on('open',()=>{const c=NET.conn=NET.peer.connect(SALA_PREFIJO+cod,{reliable:true,serialization:'json'});
+    c.on('open',()=>{mandar(c,{t:'hola',nombre:miNombre(),av:myAv});salaEstado('Conectado. Marca «Listo» cuando quieras empezar.')});
+    c.on('data',m=>invitadoRecibe(m));
+    c.on('close',()=>{if(NET.jugando&&S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('El anfitrión se ha desconectado: la partida no puede seguir.');
+      else if(!$('#salaOv').hidden)salaEstado('Se ha cerrado la sala.',true);NET.conn=null})});
+}
+function invitadoRecibe(m){
+  NET.vistoHost=Date.now();if(!m||!m.t||m.t==='ping')return;
+  if(m.t==='sala'){NET.sala.jugadores=m.jugadores;NET.sala.miSeat=m.tuSeat;NET.sala.diff=m.diff;NET.sala.tiempo=m.tiempo;renderSala()}
+  else if(m.t==='lleno')salaEstado(m.txt||'La sala está llena.',true);
+  else if(m.t==='inicio')startMulti(false,m);
+  else if(!S||S.mode!=='multi')return;
+  else if(m.t==='ronda')aplicarRonda(m);
+  else if(m.t==='fase')aplicarFase(m);
+  else if(m.t==='faltan'){if(m.k===rondaK())S.multi.faltan=m.nombres}
+  else if(m.t==='aviso')toast(m.txt);
+}
+function renderSala(){
+  const Sa=NET.sala;if(!Sa)return;const J=Sa.jugadores,host=NET.host;
+  $('#salaCodigo').innerHTML=host?`<div class="dlCodigo">${Sa.codigo}</div><button class="big alt" id="bSalaCopiar">Copiar enlace</button>`:`<div class="dlCodigo">${Sa.codigo}</div>`;
+  if(host)$('#bSalaCopiar').onclick=()=>{const url=location.href.split(/[?#]/)[0]+'?sala='+Sa.codigo;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast('Enlace copiado'),()=>prompt('Copia el enlace:',url))};
+  const nb={facil:'Fácil',normal:'Normal',dificil:'Difícil'}[host?diff:Sa.diff||'normal'];
+  $('#salaLista').innerHTML=Array.from({length:MAX_JUG},(_,i)=>{const j=J[i];
+    if(!j)return `<li class="bot"><span class="saAv"></span><b>Bot</b><small>${nb}</small></li>`;
+    const yo=j.seat===Sa.miSeat;
+    return `<li class="${j.listo?'listo':''}"><img class="saAv" src="${avatarImg(j.av,SEAT_COL[j.seat])}" alt=""><b>${j.nombre}${yo?' (tú)':''}</b><small>${j.anfitrion?'Anfitrión':j.listo?'✓ Listo':'Esperando…'}</small></li>`}).join('');
+  const T=host?NET.tiempo:(Sa.tiempo||30);
+  $('#salaTiempo').innerHTML=host?`<span>Tiempo por ronda</span>${[20,30,45].map(t=>`<button data-t="${t}" aria-pressed="${t===T}">${t} s</button>`).join('')}`:`<span>Tiempo por ronda: <b>${T} s</b></span>`;
+  if(host)$('#salaTiempo').querySelectorAll('button').forEach(x=>x.onclick=()=>{NET.tiempo=+x.dataset.t;difundirSala()});
+  const b=$('#bSalaListo'),inv=J.filter(j=>!j.anfitrion);
+  if(host){const ok=inv.every(j=>j.listo);b.disabled=!ok;b.textContent=inv.length?'Empezar':'Empezar con bots';
+    if(inv.length&&!ok)salaEstado(`Faltan por marcar «Listo»: ${inv.filter(j=>!j.listo).map(j=>j.nombre).join(', ')}`);
+    else if(inv.length)salaEstado('¡Todos listos! Pulsa «Empezar».')}
+  else{const yo=J.find(j=>j.seat===Sa.miSeat);b.disabled=!yo;b.textContent=yo&&yo.listo?'No estoy listo':'Listo'}
+}
+function botonSala(){
+  if(NET.host){const semilla=Math.floor(Math.random()*4294967296),jug=NET.sala.jugadores.map(({seat,nombre,av})=>({seat,nombre,av}));NET.jugando=true;
+    for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'inicio',semilla,diff,jugadores:jug,tuSeat:+seat,tiempo:NET.tiempo});
+    startMulti(true,{semilla,diff,jugadores:jug,tuSeat:0,tiempo:NET.tiempo})}
+  else{const yo=NET.sala.jugadores.find(j=>j.seat===NET.sala.miSeat);if(yo)mandar(NET.conn,{t:'listoSala',v:!yo.listo})}
+}
+
+// ---- la partida ----
+const rondaK=()=>S.stage+'-'+S.round;
+const porSeat=s=>S.players.find(p=>p.seat===s);
+function startMulti(host,m){
+  NET.jugando=true;S=null;newGame(m.diff||'normal');S.mode='multi';
+  S.multi={host,semilla:m.semilla,miSeat:m.tuSeat,listos:{},hechos:{},faltan:[],ultRival:{},tiempo:m.tiempo||30};
+  const yo=S.players[0],pl=[yo];let nb=0;
+  for(let seat=0;seat<MAX_JUG;seat++){const j=m.jugadores.find(x=>x.seat===seat);let p;
+    if(seat===m.tuSeat){p=yo;p.av=j.av||p.av;p.col=SEAT_COL[seat]}
+    else if(j){p=newPlayer(j.nombre,false,SEAT_COL[seat]);p.av=j.av;p.amigo=true;p.remoto=true;pl.push(p)}
+    else{const [n,c]=AI_NAMES[nb++%AI_NAMES.length];p=newPlayer(n,false,c);p.av=AVK[seat%AVK.length];p.remoto=!host;pl.push(p)}
+    p.seat=seat}
+  S.players=pl;S.multi.finPrep=performance.now()+durRonda(1,1)*1000;S.multi.esperaHechos=host?S.multi.finPrep+80000:0;
+  ['#startOv','#salaOv','#arenaOv','#endOv'].forEach(s=>$(s).hidden=true);document.body.classList.remove('historia');dmgCb=null;renderDmg();layout();beginRound();
+  toast(`Arena con ${m.jugadores.length} jugador${m.jugadores.length>1?'es':''} y ${MAX_JUG-m.jugadores.length} bots`);
+}
+// segundos de preparación: el carrusel y la fase 1 (monstruos) son más cortos, como en otros autobattlers
+function durRonda(st,r){const t=roundType(st,r);return t==='carousel'?20:st===1?Math.min(20,S.multi.tiempo):S.multi.tiempo}
+// reloj común: al llegar a cero se lucha (o se elige en el carrusel) con lo que haya; el anfitrión fuerza las esperas largas
+setInterval(()=>{const r=$('#multiReloj');if(!S||S.mode!=='multi'||(S.phase==='over'&&!S.multi.host)){r.hidden=true;return}
+  const M=S.multi,now=performance.now(),q=Math.ceil((M.finPrep-now)/1000),fuera=!H().alive;r.hidden=fuera;
+  if(S.phase==='planning'||S.phase==='carousel'){r.textContent=`⏱ ${Math.max(0,q)} s`;r.classList.toggle('prisa',q<=10);
+    if(q<=0||(fuera&&M.host)){if(S.phase==='carousel'){if(!S.carPick&&S.carOpts)pickCarousel(Math.floor(Math.random()*S.carOpts.length))}else startCombat()}}
+  else if(S.phase==='espera'){r.classList.remove('prisa');r.textContent=M.faltan&&M.faltan.length?`Esperando a: ${M.faltan.join(', ')}`:'Esperando a los demás…';
+    if(M.host&&now>M.finPrep+2500)hostComprobar(rondaK(),true)} // quien no ha llegado juega con su último tablero
+  else if(S.phase==='hecho'){r.classList.remove('prisa');r.textContent='Esperando a que terminen los demás combates…'}
+  else r.hidden=true;
+  if(M.host&&M.esperaHechos&&now>M.esperaHechos)hostAvanzar()},250);
+// «Luchar» en una ronda contra jugadores: se manda el tablero al anfitrión y se espera
+function multiListo(){
+  const hu=H(),k=rondaK();autofill(hu);hideInfo();S.sel=null;
+  const m={t:'listo',k,seat:S.multi.miSeat,tablero:hu.board.map(u=>u&&{id:u.id,star:u.star,items:u.items.slice()}),hp:hu.hp,nivel:hu.level};
+  S.phase='espera';S.multi.faltan=[];if(hu.alive)banner('Esperando a los demás','Tu equipo está listo');updateHUD();
+  if(S.multi.host)hostListo(m,0);else mandar(NET.conn,m);
+}
+// ---- anfitrión: árbitro de las rondas ----
+function hostListo(m,seat){
+  if(!S||S.mode!=='multi')return;const L=S.multi.listos[m.k]=S.multi.listos[m.k]||{};L[seat]=m;
+  if(seat!==0){const p=porSeat(seat);if(p){p.hp=m.hp;p.level=m.nivel}}
+  hostComprobar(m.k);
+}
+function hostComprobar(k,forzar){
+  const M=S.multi,L=M.listos[k]||{};if(rondaK()!==k||S.phase!=='espera'||M.rondaEnviada===k)return; // el anfitrión también tiene que estar en esa ronda y listo
+  const faltan=S.players.filter(p=>p.alive&&(p.amigo||p.seat===0)&&p.remoto!==false&&!L[p.seat]&&!(p.seat===0&&!H().alive));
+  M.faltan=faltan.map(p=>p.seat===0?miNombre():p.name);enviar({t:'faltan',k,nombres:M.faltan});
+  if(faltan.length&&!forzar)return;
+  M.rondaEnviada=k;
+  // parejas: todos los vivos barajados, evitando repetir rival si se puede; si son impares, el último lucha contra un eco
+  const vivos=shuffle(S.players.filter(p=>p.alive).map(p=>p.seat)),pares=[];
+  while(vivos.length>=2){const a=vivos.shift();let i=vivos.findIndex(s=>s!==M.ultRival[a]);if(i<0)i=0;const b=vivos.splice(i,1)[0];pares.push([a,b,0]);M.ultRival[a]=b;M.ultRival[b]=a}
+  if(vivos.length){const a=vivos[0],otros=S.players.filter(p=>p.alive&&p.seat!==a);pares.push([a,pick(otros).seat,1])}
+  const ser=b=>b.map(u=>u&&{id:u.id,star:u.star,items:u.items.slice()});
+  const jug=S.players.map(p=>({seat:p.seat,nombre:p.seat===0?miNombre():p.name,hp:p.hp,nivel:p.level,vivo:p.alive,puesto:p.place,
+    tablero:L[p.seat]?L[p.seat].tablero:ser(p.board)}));
+  const m={t:'ronda',k,semilla:Math.floor(Math.random()*4294967296),pares,jug};
+  enviar(m);aplicarRonda(m);
+}
+// fin de ronda: cada jugador avisa al acabar su combate (o al elegir en el carrusel); con todos, el anfitrión pasa a la siguiente
+function multiHecho(){const M=S.multi;if(S.phase!=='result'&&S.phase!=='carousel')return; // avisos atrasados de una ronda ya cerrada
+  const k=rondaK();S.phase='hecho';updateHUD();if(M.host)hostHecho(k,0);else mandar(NET.conn,{t:'hecho',k,hp:H().hp})}
+function hostHecho(k,seat,m){if(!S||S.mode!=='multi')return;const H0=S.multi.hechos[k]=S.multi.hechos[k]||{};H0[seat]=true;
+  if(m&&seat){const p=porSeat(seat);if(p)p.hp=m.hp}hostComprobarHechos(k)}
+function hostComprobarHechos(k){const M=S.multi,H0=M.hechos[k]||{};if(rondaK()!==k)return;
+  const faltan=S.players.filter(p=>p.alive&&(p.amigo||p.seat===0)&&p.remoto!==false&&!H0[p.seat]&&!(p.seat===0&&!H().alive));
+  if(!faltan.length&&(S.phase==='hecho'||!H().alive))hostAvanzar()}
+function hostAvanzar(){const M=S.multi,k=rondaK();if(M.avanzada===k)return;
+  if(S.players.filter(p=>p.alive).length<=1)return;M.avanzada=k;
+  let st=S.stage,r=S.round+1;if(r>roundsIn(st)){st++;r=1}
+  const m={t:'fase',k:st+'-'+r,dur:durRonda(st,r)};enviar(m);aplicarFase(m)}
+// nueva ronda para todos; si este dispositivo iba con retraso, cierra de golpe lo que tuviera a medias
+function aplicarFase(m){if(!S||S.mode!=='multi')return;const M=S.multi;
+  if(S.phase==='carousel'&&S.carOpts)chooseCarousel(S.carPick?S.carPick.i:0);
+  if(S.phase==='combat'&&S.combat){let n=0;while(!S.combat.over&&n<6000){S.combat.step(1/30);n++}if(!S.resolving){S.resolving=true;resolveCombat()}}
+  if(!H().alive&&!M.host)return;
+  const [st,r]=m.k.split('-').map(Number);S.stage=st;S.round=r;M.finPrep=performance.now()+m.dur*1000;M.esperaHechos=M.host?M.finPrep+80000:0;
+  beginRound()}
+function hostCae(seat){const p=porSeat(seat);if(!p||!p.alive)return;p.alive=false;p.place=S.players.filter(x=>x.alive).length+1;log(`${p.name} queda eliminado (${ord(p.place)})`);updateHUD();if(S.phase==='espera')hostComprobar(rondaK());hostComprobarHechos(rondaK())}
+function hostDesconectado(seat){const p=porSeat(seat);if(!p||!p.amigo)return;
+  if(p.alive){p.remoto=false;p.amigo=false;p.name+=' (bot)';const t=`${p.name.replace(' (bot)','')} se ha desconectado: sigue un bot por él.`;toast(t);enviar({t:'aviso',txt:t});aiArrange(p)}
+  if(S&&S.phase==='espera')hostComprobar(rondaK());if(S)hostComprobarHechos(rondaK())}
+// ---- todos: la ronda contra jugadores ----
+function aplicarRonda(m){
+  if(!S||S.mode!=='multi'||m.k!==rondaK())return;const M=S.multi,hu=H();
+  for(const j of m.jug){const p=porSeat(j.seat);if(!p||p===hu)continue;
+    p.hp=j.hp;p.level=j.nivel;p.alive=j.vivo;if(!j.vivo)p.place=j.puesto||p.place;
+    if(p.remoto){p.board=j.tablero.map(u=>u&&{uid:0,id:u.id,star:u.star,items:u.items.slice()});p.name=j.nombre}}
+  if(!hu.alive&&!M.host){S.phase='over';return}
+  // cada pareja con su propio azar y uid canónicos por plaza (el eco usa otra base para no chocar con el original)
+  const canon=(tab,base)=>({board:tab.map((u,i)=>u&&{uid:base+i,id:u.id,star:u.star,items:u.items.slice()})});
+  const tab=s=>m.jug.find(j=>j.seat===s).tablero;
+  const combates=m.pares.map(([a,b,g],i)=>{const rng=rngSemilla((m.semilla^Math.imul(i+1,2654435761))>>>0),prev=RNG;RNG=rng;let A,B;
+    try{A=teamFrom(canon(tab(a),(a+1)*1000),0);B=teamFrom(canon(tab(b),(b+1)*1000+(g?100000:0)),1)}finally{RNG=prev}return {a,b,g,rng,A,B}});
+  const mio=combates.find(c=>c.a===M.miSeat||(c.b===M.miSeat&&!c.g));
+  S.others=[];
+  for(const c of combates){if(c===mio)continue;const cb=new Combat(c.A,c.B,false,c.rng);let n=0;while(!cb.over&&n<6000){cb.step(1/30);n++}if(!cb.over){cb.over=true;cb.winner=-1}S.others.push({c,cb})}
+  if(mio){S.combat=new Combat(mio.A,mio.B,true,mio.rng);S.multi.mio=mio;S.flip=mio.b===M.miSeat;const r=porSeat(mio.a===M.miSeat?mio.b:mio.a);S.opp=mio.g?{ghost:true,p:r,name:r.name}:r}
+  else{S.combat=new Combat([],[],false);S.combat.over=true;S.multi.mio=null;S.flip=false} // anfitrión eliminado: solo hace las cuentas
+  S.phase='combat';S.endT=0;sfx('fight');dmgCb=S.combat;dmgLabel=m.k;renderDmg();updateHUD();
+}
+function multiResolver(){
+  const M=S.multi,hu=H(),cbs=[];if(M.mio)cbs.push({c:M.mio,cb:S.combat});cbs.push(...S.others);
+  let title='',sub='',cls='';
+  for(const {c,cb} of cbs){const A=porSeat(c.a),B=porSeat(c.b);
+    if(cb.winner===0){winP(A);if(!c.g)loseP(B,pvpDmg(cb,0))}
+    else if(cb.winner===1){loseP(A,pvpDmg(cb,1));if(!c.g)winP(B)}
+    else{const d=STAGE_DMG[Math.min(S.stage,7)]||1;loseP(A,d);if(!c.g)loseP(B,d)}
+    if(c===M.mio){const yo=c.a===M.miSeat?0:1,riv=yo?A:B;
+      if(cb.winner===yo){title='Victoria';cls='win';sub=c.g?'+1 de oro':`${riv.name} pierde ${pvpDmg(cb,yo)} de vida`}
+      else if(cb.winner===1-yo){title='Derrota';cls='lose';sub=`−${pvpDmg(cb,1-yo)} de vida`}else{title='Empate';cls='lose'}
+      if(cb.ejecutado)sub='Por tiempo · '+sub;log(`${rondaK()}: ${cls==='win'?'ganaste':'perdiste'} contra ${riv.name}`)}}
+  const dying=S.players.filter(p=>p.alive&&p.hp<=0).sort((a,b)=>a.hp-b.hp||a.seat-b.seat);let n=S.players.filter(p=>p.alive).length;
+  for(const p of dying){p.alive=false;p.place=n--;if(p!==hu)log(`${p.name} queda eliminado (${ord(p.place)})`)}
+  S.phase='result';renderDmg();if(title){S.avRes={win:cls==='win',t:performance.now()/1000};sfx(cls==='win'?'win':'lose');banner(title,sub,cls)}updateHUD();
+  tras(()=>{const vivos=S.players.filter(p=>p.alive);
+    if(hu.alive&&vivos.length===1){hu.place=1;return multiFin(1)}
+    if(!hu.alive&&!M.multiFinVisto){M.multiFinVisto=true;multiFin(hu.place);if(!M.host)return}
+    if(vivos.length<=1&&M.host)return multiFinPartida(`Ha ganado ${vivos[0]?vivos[0].name:'nadie'}.`);
+    nextRound()},2100);
+}
+// has caído (contra monstruos): el anfitrión lo apunta
+function multiCae(){const hu=H(),M=S.multi;
+  if(!M.host){mandar(NET.conn,{t:'fin',seat:M.miSeat});return multiFin(hu.place)}
+  if(!M.multiFinVisto){M.multiFinVisto=true;multiFin(hu.place)}
+  if(S.players.filter(p=>p.alive).length>1)tras(()=>nextRound(),2100);else multiFinPartida('Fin de la partida.')}
+function multiFin(place){
+  const M=S.multi;if(!M.host)S.phase='over';sfx('over');
+  if(!M.cobrado){M.cobrado=true;cobrarArena(place)} // experiencia de cuenta y ascuas, como en la Arena (15e-cuenta.js)
+  $('#endPlace').textContent=ord(place);$('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
+  $('#endSub').textContent=M.host&&place>1?'Eres el anfitrión: la partida sigue para los demás mientras no salgas.':`Llegaste a la ronda ${S.stage}-${S.round}.`;
+  $('#bAgain').textContent=M.host&&place>1?'Ver la partida':'Volver al menú';$('#bAgain').onclick=()=>{if(M.host&&place>1){$('#endOv').hidden=true;return}cerrarRed();backToMenu()};
+  $('#bMenu').hidden=true;$('#endOv').hidden=false;
+}
+function multiFinPartida(txt){if(!S)return;S.phase='over';updateHUD();
+  $('#endPlace').textContent=H().alive?ord(1):ord(H().place||8);$('#endTitle').textContent='Fin de la partida';$('#endSub').textContent=txt;
+  $('#bAgain').textContent='Volver al menú';$('#bAgain').onclick=()=>{cerrarRed();backToMenu()};$('#bMenu').hidden=true;$('#endOv').hidden=false}
+$('#bAmigos').onclick=crearSala;$('#bSalaListo').onclick=botonSala;$('#bSalaSalir').onclick=()=>{if(!NET.host)mandar(NET.conn,{t:'chao'});cerrarSala()};
+$('#bPausaSalir').addEventListener('click',()=>{if(NET.peer){if(!NET.host)mandar(NET.conn,{t:'chao'});setTimeout(cerrarRed,300)}});
+window.addEventListener('beforeunload',()=>{if(NET.conn)mandar(NET.conn,{t:'chao'})});
+// enlace de invitación: ?sala=CÓDIGO abre la sala y se une directamente
+{const c=new URLSearchParams(location.search).get('sala');if(c&&/^[A-Z0-9]{5}$/i.test(c))setTimeout(()=>unirseSala(c.toUpperCase()),400)}
+
 // ================= CUENTA DEL JUGADOR: NIVEL, ASCUAS, TIENDA Y ASPECTOS =================
 // Progreso general (no de la partida): experiencia de cuenta y ascuas (la moneda de la tienda), que se ganan en el modo
 // Historia (por ronda ganada, fase superada y nivel completado, aunque pierdas) y en la Arena (según el puesto).
@@ -4494,7 +4807,7 @@ function start(data){
   loadSprites();layout();showBest();renderAvPick();renderPerfil();if(!myAv)abrirPerfil(true);setSound('m',SND.musicOn);setSound('s',SND.sfxOn);
   if(data&&data.S){S=data.S;$('#startOv').hidden=true;if(S.phase==='combat'||S.phase==='result'){S.phase='planning';S.combat=null}
     S.players[0].lastOpp=null;
-    if(S.phase==='planning'){if(S.type==='pve')S.preview=creepTeam(1);else{S.pairs=makePairs();S.opp=S.pairs[0][1]}}
+    if(S.phase==='planning'){if(S.type==='pve')S.preview=creepTeam(1);else if(S.mode!=='multi'){S.pairs=makePairs();S.opp=S.pairs[0][1]}}
     if(S.phase==='carousel')openCarousel();updateHUD()}
   requestAnimationFrame(frame);
 }
