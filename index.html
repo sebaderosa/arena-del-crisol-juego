@@ -831,6 +831,37 @@ body.en-combate .goldPill{display:none}
 .salaTiempo button{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:4px 12px;color:var(--text);font-weight:600}
 .salaTiempo button[aria-pressed="true"]{background:#5a4318;border-color:var(--gold-hi);color:#fff3d0}
 
+/* ===== aumentos ===== */
+.aumCartas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.aumCarta{display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(180deg,#1d2b34,#131c22);border:2px solid #4a5a66;border-radius:14px;padding:14px 10px;color:var(--text);transition:transform .15s}
+.aumCarta:hover{transform:translateY(-3px)}
+.aumCarta .aumR{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9fb2bd}
+.aumCarta .aumIco{font-size:40px;line-height:1.1}.aumCarta b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold-hi)}.aumCarta small{font-size:13px;color:#c9d6dd;line-height:1.35}
+.aumCarta.poco{border-color:#4a8acb;box-shadow:0 0 14px rgba(74,138,203,.3)}.aumCarta.poco .aumR{color:#8fc3ff}
+.aumCarta.raro{border-color:#b57be8;box-shadow:0 0 16px rgba(181,123,232,.35)}.aumCarta.raro .aumR{color:#d4b0ff}
+.aumCarta.muyraro{border-color:#ffd24a;box-shadow:0 0 20px rgba(255,210,74,.45);background:linear-gradient(180deg,#3a2d14,#1d160a)}.aumCarta.muyraro .aumR{color:#ffd98a}
+#shop.cerrada #cards{opacity:.25;pointer-events:none}
+#shop.cerrada::after{content:attr(data-cerrada);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,12,8,.92);border:1px solid #b88a3a;color:#ffd98a;font-weight:700;padding:6px 14px;border-radius:10px;pointer-events:none}
+@media (max-width:760px){.aumCartas{grid-template-columns:1fr}.aumCarta{flex-direction:row;text-align:left;gap:10px}.aumCarta .aumIco{font-size:32px}.aumCarta b{font-size:18px}}
+
+/* ===== estrellas, misiones, maestría y espía ===== */
+.mEst{display:block;font-style:normal;color:#ffd24a;font-size:10px;letter-spacing:1px}.mpEst{color:#ffd24a;font-size:15px;letter-spacing:2px}
+.misFila{display:flex;align-items:center;gap:10px;background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.misFila.cobrada{opacity:.55}.misTxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.misTxt b{color:#f3dfae;font-size:14px}.misTxt small{color:var(--muted);font-size:12px}
+.misPremio{display:flex;flex-direction:column;align-items:flex-end;font-weight:700;color:#ffd98a;font-size:14px}.misPremio small{color:var(--muted);font-weight:400}
+.mpPerfil{position:relative}.mpPerfil.conAviso::after{content:'';position:absolute;top:2px;left:36px;width:11px;height:11px;border-radius:50%;background:#ff5a5a;box-shadow:0 0 0 2px #0b1115}
+.alMae{position:absolute;right:6px;top:5px;font-size:10px;font-weight:800;color:#1a1206;background:linear-gradient(180deg,#ffe08a,#c98a26);border-radius:8px;padding:1px 5px}
+.fiMae{color:#d7b878;font-size:13px}
+#plist li{cursor:pointer}#plist li:hover{background:rgba(255,255,255,.05)}
+.espCab{display:flex;align-items:center;gap:10px;margin-bottom:10px}.espCab img{width:44px;height:44px;object-fit:contain}.espCab b{display:block;font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold-hi)}.espCab small{color:var(--muted)}
+.espTablero{position:relative;width:330px;height:156px;margin:0 auto}
+.espCelda{position:absolute;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.espCelda img{width:100%;height:100%;border-radius:50%;border:2px solid;object-fit:cover;box-sizing:border-box;background:#1d2a33}
+.espEst{position:absolute;left:50%;top:-6px;transform:translateX(-50%);font-size:9px;color:#ffd24a;text-shadow:0 1px 2px #000;white-space:nowrap}
+.espObj{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);display:flex;gap:1px}
+.espRasgos{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}.espRasgos .tp b{display:inline}
+.espBanco{display:flex;gap:4px;justify-content:center;margin-top:8px}.espBanco img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:#1d2a33;opacity:.75}
+
 </style>
 
 <div id="app">
@@ -1044,7 +1075,7 @@ body.en-combate .goldPill{display:none}
 <div class="overlay" id="cuentaOv" hidden>
   <div class="modal wide cuenta">
     <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Tu progreso</h2><span class="ctAscuas" id="ctAscuas"></span><button class="big" id="bCuentaOk">Cerrar</button></div>
-    <div class="diTabs" id="ctTabs"><button data-t="progreso">Progreso y pase</button><button data-t="tienda">Tienda</button></div>
+    <div class="diTabs" id="ctTabs"><button data-t="progreso">Progreso y pase</button><button data-t="misiones">Misiones</button><button data-t="tienda">Tienda</button></div>
     <div id="ctBody"></div>
   </div>
 </div>
@@ -1087,6 +1118,21 @@ body.en-combate .goldPill{display:none}
     <ol class="salaLista" id="salaLista"></ol>
     <p class="dlEstado" id="salaEstado"></p>
     <div class="row" style="justify-content:space-between;margin-top:12px"><button class="big alt" id="bSalaSalir">Salir</button><button class="big" id="bSalaListo">Listo</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="aumOv" hidden>
+  <div class="modal" style="max-width:760px;text-align:center">
+    <div class="lbl">Aumento</div>
+    <h2>Elige una mejora</h2>
+    <div class="aumCartas" id="aumCartas"></div>
+  </div>
+</div>
+
+<div class="overlay" id="espiaOv" hidden>
+  <div class="modal" style="max-width:420px">
+    <div id="espiaBody"></div>
+    <div class="row" style="justify-content:center;margin-top:10px"><button class="big" id="bEspiaOk">Cerrar</button></div>
   </div>
 </div>
 
@@ -1392,12 +1438,12 @@ function checkMerge(p,id){
       items.sort((a,b)=>ITEMS[b].full-ITEMS[a].full).forEach(it=>{if(!equipItem(nu,it))p.items.push(it)});
       const d=three[0];p[d.where][d.i]=nu;
       if(star+1===3){const ex=maxed(p);p.shop=p.shop.map(x=>{if(x!==id)return x;S.pool[x]++;return drawOne(p.level,ex)})}
-      if(p.human){FXQ.push({k:'merge',where:d.where,i:d.i,star:star+1});sfx(star+1===3?'merge3':'merge2');toast(star+1===3?`${CH[id].name} llega a ★★★ y sale de tu tienda`:`${CH[id].name} sube a ★★`);S.flashUid=nu.uid;S.flashT=1.2;}
+      if(p.human){if(star+1===3)misionEvento('tresEstrellas');FXQ.push({k:'merge',where:d.where,i:d.i,star:star+1});sfx(star+1===3?'merge3':'merge2');toast(star+1===3?`${CH[id].name} llega a ★★★ y sale de tu tienda`:`${CH[id].name} sube a ★★`);S.flashUid=nu.uid;S.flashT=1.2;}
     }
   }
 }
 function buy(p,slot){
-  const id=p.shop[slot];if(!id)return false;
+  const id=p.shop[slot];if(!id||p.tiendaCerrada>0)return false;
   const C=CH[id];
   if(p.gold<C.cost){if(p.human)toast('No tienes oro suficiente');return false}
   const free=p.bench.indexOf(null);
@@ -1405,7 +1451,7 @@ function buy(p,slot){
   if(free<0&&copies<2){if(p.human)toast('Banquillo lleno: vende o coloca unidades');return false}
   p.gold-=C.cost;p.shop[slot]=null; // la copia ya salió de la reserva al aparecer en la tienda
   const u={uid:++S.uid,id,star:1,items:[]};
-  if(p.human){sfx('buy');if(free>=0)FXQ.push({k:'buy',where:'bench',i:free})}
+  if(p.human){sfx('buy');misionEvento('compra');if(free>=0)FXQ.push({k:'buy',where:'bench',i:free})}
   if(free>=0){p.bench[free]=u;checkMerge(p,id)}
   else pushMerge(p,u);
   return true;
@@ -1429,7 +1475,7 @@ function giveUnit(p,id){
   const i=p.bench.indexOf(null),copies=allUnits(p).filter(o=>o.u.id===id&&o.u.star===1).length;
   if(i>=0){p.bench[i]=u;const n=allUnits(p).length;checkMerge(p,id);return allUnits(p).length<n?'fusion':'banquillo'}
   if(copies>=2){pushMerge(p,u);return 'fusion'}
-  if(boardCount(p)<p.level){p.board[freeBoardSlot(p,CH[id])]=u;return 'tablero'}
+  if(boardCount(p)<maxEq(p)){p.board[freeBoardSlot(p,CH[id])]=u;return 'tablero'}
   p.gold+=CH[id].cost;S.pool[id]++;return 'vendido';
 }
 function releaseUnits(p){allUnits(p).forEach(o=>S.pool[o.u.id]+=pow3(o.u.star));p.board.fill(null);p.bench.fill(null);returnShop(p)}
@@ -1444,7 +1490,7 @@ function freeBoardSlot(p,C){
   return p.board.indexOf(null);
 }
 function autofill(p){
-  while(boardCount(p)<p.level){
+  while(boardCount(p)<maxEq(p)){
     const bi=p.bench.findIndex(Boolean);if(bi<0)break;
     const u=p.bench[bi];const s=freeBoardSlot(p,CH[u.id]);if(s<0)break;
     p.board[s]=u;p.bench[bi]=null;
@@ -1835,7 +1881,7 @@ function aiArrange(p,intel){
   const score=u=>valueOf(u)*10+u.items.length*4+CH[u.id].traits.reduce((s,t)=>s+Math.min(cnt[t]||0,4),0)+(p.focus&&CH[u.id].traits.includes(p.focus)?6:0);
   units.sort((a,b)=>score(b)-score(a));
   p.board.fill(null);p.bench.fill(null);
-  const top=units.slice(0,p.level),rest=units.slice(p.level);
+  const top=units.slice(0,maxEq(p)),rest=units.slice(maxEq(p));
   if(!intel){
     top.sort((a,b)=>(CH[a.id].role==='tank'?0:1)-(CH[b.id].role==='tank'?0:1));
     top.forEach(u=>{const s=freeBoardSlot(p,CH[u.id]);p.board[s]=u});
@@ -1890,7 +1936,7 @@ function roundsIn(s){return S&&S.mode==='historia'?(NIVELES[S.story.nivel-1].nr|
 const nFases=()=>S&&S.mode==='historia'?NIVELES[S.story.nivel-1].fases.length:4; // fases del nivel de Historia
 function incomeFor(p){
   if(S.stage===1)return 3;
-  const interest=Math.min(5,Math.floor(p.gold/10)),s=Math.abs(p.streak);
+  const interest=Math.min(p.intMax||5,Math.floor(p.gold/10)),s=Math.abs(p.streak);
   return 5+interest+(s>=5?3:s>=4?2:s>=2?1:0);
 }
 function beginRound(){
@@ -1899,14 +1945,14 @@ function beginRound(){
   if(S.type==='carousel'){S.phase='carousel';openCarousel();updateHUD();return}
   for(const p of S.players){if(!p.alive)continue;
     p.gold+=incomeFor(p);addXP(p,2);
-    if(p.human){if(!p.locked)setShop(p);p.locked=false}
+    if(p.human){if(p.tiendaCerrada>0){p.tiendaCerrada--;returnShop(p);if(p.tiendaCerrada===0)setShop(p)}else{if(!p.locked)setShop(p);p.locked=false}}
   }
   // los emparejamientos se hacen antes del turno de la IA, para que cada una pueda espiar a su rival
   if(S.type==='pve')S.preview=enemyTeam(1);
   else if(S.mode!=='multi'){S.pairs=makePairs();S.opp=S.pairs[0][1]} // con amigos, las parejas las hace el anfitrión al luchar (15d-multi.js)
   const oppOf=p=>{if(!S.pairs)return null;for(const [a,b] of S.pairs){const B=b.ghost?b.p:b;if(a===p)return B;if(b===p)return a}return null};
   for(const p of S.players)if(p.alive&&!p.human&&!p.remoto)aiTurn(p,oppOf(p));
-  S.phase='planning';if(S.mode==='historia')dialogoJefe(); // el jefe te habla al llegar a su ronda (15f-dialogos.js)
+  S.phase='planning';if(S.mode==='historia')dialogoJefe();setTimeout(ofrecerAumento,S.mode==='historia'?900:700); // aumento a mitad de fase (15i-aumentos.js) // el jefe te habla al llegar a su ronda (15f-dialogos.js)
   const sub=S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?('Rival: '+S.opp.name+(S.opp.ghost?' (eco)':'')):'';
   banner(`Ronda ${S.stage}-${S.round}`,S.round===1||(S.stage===1&&S.round===2)?curTheme().n+(sub?' · '+sub:''):sub);
   if(S.stage===1&&S.round===2)setTimeout(()=>toast('Arrastra a tu campeón del banquillo al tablero'),1400);
@@ -1963,6 +2009,7 @@ function resolveCombat(){
   if(S.mode==='historia'){
     if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner('Derrota',cb.ejecutado?'Se acabó el tiempo: a tu equipo le quedaba menos vida':'Tu equipo ha caído','lose');updateHUD();tras(()=>storyLost(),2100);return}
     const L=storyLoot(hu);cuentaRonda(); // experiencia de cuenta (15e-cuenta.js)
+    estrellaRonda(cb);misionEvento('rondaHist');maestriaGana(idsEquipo(cb)); // estrellas, misiones y maestría (15j-progreso.js)
     title=cb.superv?'¡Has aguantado!':'Victoria';cls='win';sub=(L.got.length||L.g?('Botín: '+[...L.got.map(i=>ITEMS[i].n),L.g?`+${L.g} de oro`:''].filter(Boolean).join(', ')):'')+botinPicaro(hu);
     S.phase='result';renderDmg();S.avRes={win:true,t:performance.now()/1000};sfx('win');banner(title,sub,cls);updateHUD();
     tras(()=>storyNext(),2100);return;
@@ -1970,12 +2017,12 @@ function resolveCombat(){
   if(S.type==='pve'){
     const kills=cb.f.filter(f=>f.team===1&&!f.alive).length;
     const L=loot(hu,kills);
-    if(cb.winner===0){title='Victoria';cls='win';const bp=botinPicaro(hu);sub=bp?bp.slice(3)+' · ':''}else{const d=2+survivors(cb,1).length;hu.hp-=d;title='Derrota';cls='lose';sub=`−${d} de vida · `}
+    if(cb.winner===0){title='Victoria';cls='win';const bp=botinPicaro(hu);sub=bp?bp.slice(3)+' · ':'';maestriaGana(idsEquipo(cb))}else{const d=2+survivors(cb,1).length;hu.hp-=d;title='Derrota';cls='lose';sub=`−${d} de vida · `}
     sub+=L.got.length||L.g?('Botín: '+[...L.got.map(i=>ITEMS[i].n),L.g?`+${L.g} de oro`:''].filter(Boolean).join(', ')):'Sin botín';
     for(const o of S.others){const k=o.cb.f.filter(f=>f.team===1&&!f.alive).length;loot(o.a,k);if(o.cb.winner!==0)o.a.hp-=2+survivors(o.cb,1).length}
   }else{
     const o=S.opp,real=!o.ghost;
-    if(cb.winner===0){winP(hu);if(real)loseP(o,pvpDmg(cb,0));title='Victoria';cls='win';sub=`${cb.ejecutado?'Por tiempo · ':''}+1 de oro${real?` · ${o.name} pierde ${pvpDmg(cb,0)} de vida`:''}${botinPicaro(hu)}`}
+    if(cb.winner===0){winP(hu);maestriaGana(idsEquipo(cb));if(real)loseP(o,pvpDmg(cb,0));title='Victoria';cls='win';sub=`${cb.ejecutado?'Por tiempo · ':''}+1 de oro${real?` · ${o.name} pierde ${pvpDmg(cb,0)} de vida`:''}${botinPicaro(hu)}`}
     else if(cb.winner===1){const d=loseP(hu,pvpDmg(cb,1));if(real)winP(o);title='Derrota';cls='lose';sub=`${cb.ejecutado?'Por tiempo · ':''}−${d} de vida`}
     else{const d=loseP(hu,STAGE_DMG[Math.min(S.stage,7)]||1);if(real)loseP(o,STAGE_DMG[Math.min(S.stage,7)]||1);title='Empate';cls='lose';sub=`Tiempo agotado · −${d} de vida`}
     for(const {a,b,cb:c} of S.others){
@@ -2002,7 +2049,7 @@ function gameOver(place){
   S.phase='over';sfx('over');updateHUD();
   $('#bAgain').textContent='Jugar de nuevo';$('#bAgain').onclick=backToMenu;$('#bMenu').hidden=true;
   let best=null;try{best=+localStorage.getItem('crisol_best')||null;if(!best||place<best)localStorage.setItem('crisol_best',place)}catch(e){}
-  $('#endPlace').textContent=ord(place);cobrarArena(place);
+  $('#endPlace').textContent=ord(place);cobrarArena(place);if(place<=4)misionEvento('arenaTop4');if(place===1)misionEvento('arenaGana');
   $('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
   $('#endSub').textContent=`Llegaste a la ronda ${S.stage}-${S.round} con nivel ${H().level}.`+(best&&best<place?` Tu mejor puesto: ${ord(best)}.`:'');
   $('#endOv').hidden=false;
@@ -3000,17 +3047,18 @@ function updateHUD(){
   for(let r=1;r<=roundsIn(S.stage);r++){const d=document.createElement('i');d.className='pip '+roundType(S.stage,r)+(r<S.round?' done':r===S.round?' cur':'');d.title=({pvp:'Combate contra jugador',pve:'Monstruos',carousel:'Carrusel'})[roundType(S.stage,r)];pips.appendChild(d)}
   $('#hpv').textContent=Math.max(0,hu.hp);
   $('#goldv').textContent=hu.gold;
-  const inter=Math.min(5,Math.floor(hu.gold/10));$('#intv').textContent=`interés +${inter}`+(Math.abs(hu.streak)>=2?` · racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:'');
+  const inter=Math.min(hu.intMax||5,Math.floor(hu.gold/10));$('#intv').textContent=`interés +${inter}`+(Math.abs(hu.streak)>=2?` · racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:'');
   $('#lvlv').textContent=hu.level;
   const need=XP_NEED[hu.level]||0;$('#xpfill').style.width=hu.level>=9?'100%':(hu.xp/need*100)+'%';$('#xpv').textContent=hu.level>=9?'máx.':`${hu.xp}/${need}`;
   $('#bXP').disabled=!pl||hu.gold<4||hu.level>=9;
-  $('#bRoll').disabled=!pl||hu.gold<2;
+  $('#bRoll').disabled=!pl||hu.tiendaCerrada>0||(hu.gold<2&&!(hu.rollGratis>0));$('#bRoll').querySelector('.pr').innerHTML=hu.rollGratis>0?`Gratis ×${hu.rollGratis}`:'<span class="coin"></span>2';
+  $('#shop').classList.toggle('cerrada',hu.tiendaCerrada>0);$('#shop').dataset.cerrada=hu.tiendaCerrada>0?`Tienda cerrada · ${hu.tiendaCerrada} ronda${hu.tiendaCerrada>1?'s':''}`:'';
   $('#bLock').setAttribute('aria-pressed',hu.locked);$('#lockTxt').textContent=hu.locked?'Bloqueada':'Bloquear';
   const fb=$('#bFight');fb.disabled=!pl;
   fb.firstChild.textContent=S.phase==='combat'?'Combatiendo':S.type==='pve'&&pl&&S.mode!=='historia'?'Cazar':'Luchar';
   $('#fightSub').textContent=pl?(S.type==='pve'&&S.mode!=='historia'?'Monstruos · Espacio':'Espacio'):S.phase==='combat'?'Mira el combate':'';
   // count
-  const bc=boardCount(hu);$('#countTag').innerHTML=S.phase==='combat'||S.phase==='carousel'?'':`<span style="color:${bc<hu.level?'#ffd98a':'#8b9fab'}">${bc}/${hu.level}</span> en tablero`;
+  const bc=boardCount(hu);$('#countTag').innerHTML=S.phase==='combat'||S.phase==='carousel'?'':`<span style="color:${bc<maxEq(hu)?'#ffd98a':'#8b9fab'}">${bc}/${maxEq(hu)}</span> en tablero`;
   $('#oppTag').textContent=S.phase==='carousel'?'Carrusel · elige un campeón':S.phase==='combat'||pl?(S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?'Rival: '+S.opp.name+(S.opp.ghost?' (eco)':''):''):'';
   // shop
   const cards=$('#cards');cards.innerHTML='';
@@ -3069,7 +3117,7 @@ function updateHUD(){
     const li=document.createElement('li');const isOpp=S.opp&&(S.opp===p||(S.opp.ghost&&S.opp.p===p))&&(pl||S.phase==='combat');
     li.className=(p.human?'me ':'')+(isOpp?'opp ':'')+(p.alive?'':'dead');
     li.innerHTML=`<img class="pav${p.human?' marco-'+CUENTA.eq.marco:''}" src="${avatarImg(p.av||'zorro',p.col)}" alt=""><span class="pn">${p.name}${isOpp?'<span class="ptag">rival</span>':p.amigo?'<span class="ptag amigo">amigo</span>':''}</span><span class="phv">${p.alive?Math.max(0,p.hp):ord(p.place)}</span><div class="pbar"><i style="width:${Math.max(0,p.hp)}%;background:${p.human?'#53c476':'#6f8794'}"></i></div>`;
-    pl2.appendChild(li);
+    li.onclick=()=>abrirEspia(p);li.title='Ver su tablero';pl2.appendChild(li);
   });
   $('#log').innerHTML=S.logs.slice(-6).reverse().map(l=>`<div>${l}</div>`).join('');
   // items
@@ -3209,8 +3257,9 @@ function onDragEnd(e){
     if(!u)toast('Suelta el objeto sobre un campeón');
     else if(S.phase==='combat'&&loc.where==='board')toast('Espera a que acabe el combate');
     else{
-      const it=hu.items[d.idx],res=equipItem(u,it);
-      if(!res)toast('Ese campeón ya lleva 3 objetos');
+      const it=hu.items[d.idx],res=it==='quitamanos'?(usarQuitamanos(hu,u,d.idx),{quita:1}):equipItem(u,it); // Quitamanos: aumento (15i-aumentos.js)
+      if(res&&res.quita){}
+      else if(!res)toast('Ese campeón ya lleva 3 objetos');
       else{hu.items.splice(d.idx,1);
         if(res.made){sfx('merge2');FXQ.push({k:'merge',where:loc.where,i:loc.i,star:2});S.flashUid=u.uid;S.flashT=1.2;toast(`${CH[u.id].name} forja ${ITEMS[res.made].n}`)}
         else toast(`${CH[u.id].name} equipa ${ITEMS[it].n}`)}
@@ -3221,12 +3270,12 @@ function onDragEnd(e){
 function moveUnit(p,from,to){
   if(from.where===to.where&&from.i===to.i)return;
   const a=p[from.where][from.i],b=p[to.where][to.i];
-  if(from.where==='bench'&&to.where==='board'&&!b&&boardCount(p)>=p.level){toast(`Tablero lleno (${p.level}/${p.level}): sube de nivel para colocar más`);return}
+  if(from.where==='bench'&&to.where==='board'&&!b&&boardCount(p)>=maxEq(p)){toast(`Tablero lleno (${maxEq(p)}/${maxEq(p)}): sube de nivel para colocar más`);return}
   p[to.where][to.i]=a;p[from.where][from.i]=b;sfx('place');
   if(S.sel&&S.sel.where===from.where&&S.sel.i===from.i)S.sel=to;
 }
 $('#bXP').onclick=()=>{const hu=H();if(S.phase!=='planning'||hu.gold<4||hu.level>=9)return;hu.gold-=4;const lv=hu.level;sfx('xp');addXP(hu,4);if(hu.level>lv)toast(`Nivel ${hu.level}: ahora caben ${hu.level} campeones`);updateHUD()};
-$('#bRoll').onclick=()=>{const hu=H();if(S.phase!=='planning'||hu.gold<2)return;hu.gold-=2;setShop(hu);sfx('roll');updateHUD()};
+$('#bRoll').onclick=()=>{const hu=H();if(S.phase!=='planning'||hu.tiendaCerrada)return;if(hu.rollGratis>0)hu.rollGratis--;else{if(hu.gold<2)return;hu.gold-=2}setShop(hu);sfx('roll');updateHUD()};
 $('#bLock').onclick=()=>{const hu=H();hu.locked=!hu.locked;updateHUD()};
 $('#bFight').onclick=()=>startCombat();
 function setSpeed(v){if(S)S.speed=v;try{localStorage.setItem('crisol_vel',v)}catch(e){}['sp1','sp2','sp4'].forEach(j=>$('#'+j).setAttribute('aria-pressed',j==='sp'+v))}
@@ -3573,7 +3622,8 @@ function storyWin(){
   const W=MUNDOS[mundoDe(L.n)],sig=MUNDOS[mundoDe(L.n)+1],finMundo=primera&&W.niveles[W.niveles.length-1]===L.n&&sig&&NIVELES[sig.niveles[0]-1];
   if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}
   histSave(HIST);S.phase='over';sfx('over');updateHUD();
-  const fin=()=>{cobrarHistoria(true,primera,!!L.premio);endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>{if(finMundo)return showMundo(sig,W,openStory);openStory();despuesDeNivel(L.n,primera)})};
+  const est=guardarEstrellas(L.n,estrellasNivel());misionEvento('nivelHist');if(S.ganado)S.ganado.asc+=est.bonus; // estrellas (15j-progreso.js)
+  const fin=()=>{cobrarHistoria(true,primera,!!L.premio);endScreen('¡Nivel superado!',`${L.nombre} completado · ${S.perfectas||0} de ${S.combates||0} rondas sin perder ningún campeón.`+(est.bonus?` ¡${estrellasTotal()} estrellas: +${est.bonus} ascuas!`:'')+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),pintaEstrellas(est.e),'Continuar',()=>{if(finMundo)return showMundo(sig,W,openStory);openStory();despuesDeNivel(L.n,primera)})};
   if(nuevo)tras(()=>dialogoVictoria(L.n,()=>showUnlock(L.premio,fin)),900);else fin(); // el jefe vencido te habla antes de unirse
 }
 function storyLost(){
@@ -3680,7 +3730,7 @@ function renderMap(scroll){
     box.innerHTML=`<svg class="mapPath" width="${W}" height="${H}"><path d="${d}"/></svg>`}
   M.niveles.forEach((n,i)=>{const L=NIVELES[n-1],hecho=HIST.hechos.includes(n),abierto=nivelAbierto(n),[x,y]=pts[i];if(!nivelOcultoVisible(L))return; // nivel oculto (15g-mundo3.js)
     const b=document.createElement('button');b.className='mnode'+(hecho?' done':abierto?' open':' locked')+(n===mapSel?' sel':'');b.style.left=x+'px';b.style.top=y+'px';
-    b.innerHTML=`<span>${hecho?'✓':abierto?n:'🔒'}</span>`+(L&&L.premio&&!HIST.col.includes(L.premio)?`<img class="mprem" src="${portrait(L.premio)}" alt="">`:'')+(L?`<small>${n}. ${L.nombre}</small>`:'');
+    b.innerHTML=`<span>${hecho?'✓':abierto?n:'🔒'}</span>`+(L&&L.premio&&!HIST.col.includes(L.premio)?`<img class="mprem" src="${portrait(L.premio)}" alt="">`:'')+(L?`<small>${n}. ${L.nombre}${hecho?`<i class="mEst">${pintaEstrellas(estrellasDe(n))}</i>`:''}</small>`:'');
     b.onclick=()=>{if(!L){toast('Próximamente: este mundo aún se está construyendo');return}if(!abierto){toast('Supera el nivel anterior para desbloquearlo');return}if(mapSel===n){playSel();return}mapSel=n;HIST.sel=n;histSave(HIST);moveAvatar();renderMapMarks();renderMapCard()};
     box.appendChild(b)});
   const aqui=mundoDe(mapSel)===mapMundo;
@@ -3697,7 +3747,7 @@ function renderMapCard(){
     $('#mapCard').innerHTML=`<div class="mcInfo"><b>${M.titulo}</b><small>${hay?`Supera el nivel ${M.niveles[0]-1} para entrar`:'Próximamente: nuevos niveles y monstruos'}</small></div>`;return}
   const n=mapSel,L=NIVELES[n-1],hecho=HIST.hechos.includes(n),ok=mazoOk(),motivo=puedeJugar(n);
   const premio=L.premio?(HIST.col.includes(L.premio)?`<span class="mpOk">✓ ${CH[L.premio].name} ya está en tu colección</span>`:`<span class="mpNew"><img src="${portrait(L.premio)}" alt="">Jefe: ${CH[L.premio].name} se une a tu colección</span>`):'<span class="mpNo">Sin premio de campeón</span>';
-  $('#mapCard').innerHTML=`<div class="mcInfo"><b>Nivel ${n} · ${L.nombre}</b><small>${THEMES[L.tema].n} · ${L.turnos?'combate por turnos':L.superv?'supervivencia · 2 fases':'4 fases'}${hecho?' · superado':''}</small>${L.regla?`<span class="mpRegla">⚠ ${L.regla.t}</span>`:''}${premio}</div>
+  $('#mapCard').innerHTML=`<div class="mcInfo"><b>Nivel ${n} · ${L.nombre}</b><small>${THEMES[L.tema].n} · ${L.turnos?'combate por turnos':L.superv?'supervivencia · 2 fases':'4 fases'}${hecho?' · superado':''}</small>${L.regla?`<span class="mpRegla">⚠ ${L.regla.t}</span>`:''}${hecho?`<span class="mpEst">${pintaEstrellas(estrellasDe(n))}</span>`:''}${premio}</div>
     <button class="big" id="bPlay"${ok&&!motivo?'':' disabled'}>${hecho?'Repetir':'Jugar'}</button>`;
   $('#bPlay').onclick=playSel;
   $('#bDeck').textContent=`Mazo ${HIST.mazo.length}/${MAZO_N}`;$('#bDeck').classList.toggle('warn',!ok);
@@ -3784,7 +3834,7 @@ function renderAlbum(){
   ALBUM.forEach((id,i)=>{const C=CH[id],ok=enAlbum(id);if(ok)n++;
     const b=document.createElement('button');b.className='alc'+(ok?'':' bloq');b.style.setProperty('--cc',COST_COL[C.cost-1]);
     b.innerHTML=`<span class="aln">#${String(i+1).padStart(2,'0')}</span><div class="alimg"><img src="${albumImg(id)}" alt=""></div>
-      <b>${ok?C.name:'???'}</b><small>${ok?C.traits.map(t=>TRAITS[t].n).join(' · '):`Nivel ${nivelDe(id)}`}</small>`;
+      <b>${ok?C.name:'???'}</b><small>${ok?C.traits.map(t=>TRAITS[t].n).join(' · '):`Nivel ${nivelDe(id)}`}</small>${ok&&nivelMaestria(id)?`<span class="alMae" title="Maestría">M${nivelMaestria(id)}</span>`:''}`;
     b.onclick=()=>openFicha(id);box.appendChild(b)});
   $('#albumCount').textContent=`${n}/${ALBUM.length} descubiertos`;
 }
@@ -3810,7 +3860,8 @@ function openFicha(id){
         ${fila('Vida',f=>Math.round(f.maxHp))}${fila('Daño',f=>Math.round(f.ad))}</table>
       <div class="sgrid"><div><span>Vel. ataque</span>${C.as.toFixed(2)}</div><div><span>Alcance</span>${C.range}</div><div><span>Armadura</span>${C.ar}</div><div><span>Res. mágica</span>${C.mr}</div><div><span>Maná</span>${C.start}/${C.mana}</div><div><span>Crítico</span>5%</div></div>
       <div class="abil"><b>${C.ab.n}</b><br>${abilDesc(C.ab,1)}<br><small>★★: ${abilDesc(C.ab,2)}</small><br><small>★★★: ${abilDesc(C.ab,3)}</small></div>
-      ${nv?`<p class="fiNivel">Se consigue al derrotar al jefe del nivel ${nv} del modo Historia.</p>`:''}`
+      ${nv?`<p class="fiNivel">Se consigue al derrotar al jefe del nivel ${nv} del modo Historia.</p>`:''}
+      <p class="fiMae">Maestría ${nivelMaestria(id)}/4 · ${(CUENTA.maestria||{})[id]||0} combates ganados${nivelMaestria(id)<4?` · siguiente nivel a ${MAESTRIA[nivelMaestria(id)]}: ${['+50 ascuas','aspecto Eco','+150 ascuas','aspecto Dorado'][nivelMaestria(id)]}`:' · ¡máxima!'}</p>`
       :`<p class="fiHist">Un campeón todavía por descubrir.</p><p class="fiNivel">Se desbloquea al superar el <b>nivel ${nv}</b> del modo Historia.</p>`}
     </div></div>`;
   $('#fichaOv').hidden=false;
@@ -4193,7 +4244,7 @@ function multiResolver(){
     else if(cb.winner===1){loseP(A,pvpDmg(cb,1));if(!c.g)winP(B)}
     else{const d=STAGE_DMG[Math.min(S.stage,7)]||1;loseP(A,d);if(!c.g)loseP(B,d)}
     if(c===M.mio){const yo=c.a===M.miSeat?0:1,riv=yo?A:B;
-      if(cb.winner===yo){title='Victoria';cls='win';sub=c.g?'+1 de oro':`${riv.name} pierde ${pvpDmg(cb,yo)} de vida`}
+      if(cb.winner===yo){title='Victoria';cls='win';maestriaGana(idsEquipo(cb));sub=c.g?'+1 de oro':`${riv.name} pierde ${pvpDmg(cb,yo)} de vida`}
       else if(cb.winner===1-yo){title='Derrota';cls='lose';sub=`−${pvpDmg(cb,1-yo)} de vida`}else{title='Empate';cls='lose'}
       if(cb.ejecutado)sub='Por tiempo · '+sub;log(`${rondaK()}: ${cls==='win'?'ganaste':'perdiste'} contra ${riv.name}`)}}
   const dying=S.players.filter(p=>p.alive&&p.hp<=0).sort((a,b)=>a.hp-b.hp||a.seat-b.seat);let n=S.players.filter(p=>p.alive).length;
@@ -4212,7 +4263,7 @@ function multiCae(){const hu=H(),M=S.multi;
   if(S.players.filter(p=>p.alive).length>1)tras(()=>nextRound(),2100);else multiFinPartida('Fin de la partida.')}
 function multiFin(place){
   const M=S.multi;if(!M.host)S.phase='over';sfx('over');
-  if(!M.cobrado){M.cobrado=true;cobrarArena(place)} // experiencia de cuenta y ascuas, como en la Arena (15e-cuenta.js)
+  if(!M.cobrado){M.cobrado=true;cobrarArena(place);misionEvento('amigos');if(place<=4)misionEvento('arenaTop4');if(place===1)misionEvento('arenaGana')} // experiencia de cuenta y ascuas, como en la Arena (15e-cuenta.js)
   $('#endPlace').textContent=ord(place);$('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
   $('#endSub').textContent=M.host&&place>1?'Eres el anfitrión: la partida sigue para los demás mientras no salgas.':`Llegaste a la ronda ${S.stage}-${S.round}.`;
   $('#bAgain').textContent=M.host&&place>1?'Ver la partida':'Volver al menú';$('#bAgain').onclick=()=>{if(M.host&&place>1){$('#endOv').hidden=true;return}cerrarRed();backToMenu()};
@@ -4349,6 +4400,7 @@ function renderCuenta(){
   document.querySelectorAll('#ctTabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===cuentaTab));
   $('#ctAscuas').innerHTML=`<span class="ascua"></span> ${CUENTA.ascuas}`;
   const box=$('#ctBody');
+  if(cuentaTab==='misiones')return renderMisiones(); // 15j-progreso.js
   if(cuentaTab==='progreso'){
     const N=CUENTA.nivel,niveles=Array.from({length:Math.max(30,N+3)-1},(_,i)=>i+2);
     box.innerHTML=`<div class="ctPerfil"><img class="ctAv marco-${CUENTA.eq.marco}" src="${avatarImgBig(myAv||'zorro','#53c476')}" alt="">
@@ -4703,7 +4755,7 @@ function tnHacer(u,accion,t){
   const rango=u.creep?(CREEPS[u.id].range>1):CH[u.id].range>1;
   TN.anim={u,t:t||enemigos[0],tipo:accion,rango,t0:performance.now(),dur:tnT(rango?480:520)};setTimeout(golpe,tnT(rango?360:260));
 }
-function tnVictoria(){TN.fin=true;sfx('win');TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
+function tnVictoria(){TN.fin=true;sfx('win');misionEvento('rondaHist');maestriaGana(TN.equipo.filter(u=>u.vivo).map(u=>u.id));TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
   const vivos=TN.equipo.filter(u=>u.vivo),xp=40+TN.fase*15+(TN.combate===2?40:0);const subidas=[];
   TN.equipo.forEach(u=>{u.xp+=u.vivo?xp:Math.round(xp/2);while(u.xp>=tnXpNec(u.nivel)){u.xp-=tnXpNec(u.nivel);u.nivel++;subidas.push(`${u.nombre} sube a nivel ${u.nivel}`)}
     u.vivo=true;u.hp=Math.max(u.hp,tnStats(u).hp*(u.hp>0?0:.4));u.hp=Math.min(tnStats(u).hp,u.hp+tnStats(u).hp*.35)}); // recupera un 35 % (los caídos vuelven con un 40 %)
@@ -4723,8 +4775,9 @@ function tnDerrota(){TN.fin=true;sfx('lose');tnFinal(false)}
 // fin del nivel: como uno normal del modo Historia (nivel superado o derrota, con la experiencia de cuenta)
 function tnFinal(gana){const n=TN.nivel,L=NIVELES[n-1],g=TN.ganado,fase=TN.fase+1;TN.fin=true;$('#tnOv').hidden=true;$('#tnPremioOv').hidden=true;
   if(gana){const primera=!HIST.hechos.includes(n);if(primera){HIST.hechos.push(n);if(NIVELES[n])HIST.sel=n+1}histSave(HIST);
-    const B=primera?GANA.nivel1:GANA.nivelRep;mostrarCobro(g.xp+B[0],g.asc+B[1]);sfx('over');
-    endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')}.`,'Nivel '+n,'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)})}
+    const est=guardarEstrellas(n,TN.equipo.filter(u=>u.vivo).length||1);misionEvento('nivelHist'); // estrellas: campeones en pie al final
+    const B=primera?GANA.nivel1:GANA.nivelRep;mostrarCobro(g.xp+B[0],g.asc+B[1]+est.bonus);sfx('over');
+    endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')} · ${TN.equipo.filter(u=>u.vivo).length} de 3 en pie.`,pintaEstrellas(est.e),'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)})}
   else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de 4.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
 function tnLog(t){const l=$('#tnLog');if(!l)return;l.innerHTML=`<div>${t}</div>`+l.innerHTML;while(l.children.length>5)l.lastChild.remove()}
 function tnTexto(u,s,col){TN.fx.push({u,s,col,t0:performance.now()})}
@@ -4771,6 +4824,113 @@ $('#tnCv').addEventListener('pointerdown',e=>{if(!TN||!TN.accion||!TN.turno||TN.
   if(mejor)tnHacer(TN.turno,TN.accion,mejor)});
 $('#bTnEmpezar').onclick=tnEmpezar;$('#bTnVolver').onclick=()=>{$('#tnElegirOv').hidden=true;TN=null;openStory()};$('#bTnVel').onclick=()=>tnVel(TN&&TN.vel>1?1:2);
 $('#bTnRendirse').onclick=()=>{if(TN&&!TN.fin){TN.fin=true;tnFinal(false)}};
+
+// ================= AUMENTOS =================
+// A mitad de cada fase de la Historia (ronda 4; 3 en supervivencia) y en las rondas 2-2, 3-2 y 4-2 de la Arena eliges
+// 1 de 3 aumentos. Cuanto más cambia la partida, menos probable es (peso). Los bots reciben uno sencillo al azar.
+// Estado de la partida en el jugador: plazaExtra, rollGratis, tiendaCerrada (rondas), intMax (interés máximo).
+const AUMENTOS={
+ oro:{n:'Bolsa de oro',r:'comun',p:10,ico:'💰',d:'+10 de oro.',f:hu=>{hu.gold+=10}},
+ quitamanos:{n:'Quitamanos',r:'comun',p:10,ico:'🧤',d:'Recibes el Quitamanos: arrástralo a un campeón y todos sus objetos vuelven a tu inventario.',f:hu=>{hu.items.push('quitamanos')}},
+ botin:{n:'Botín',r:'comun',p:10,ico:'🎁',d:'2 componentes al azar.',f:hu=>{hu.items.push(pick(ITEM_IDS),pick(ITEM_IDS))}},
+ entreno:{n:'Entrenamiento',r:'comun',p:10,ico:'📘',d:'+8 de experiencia.',f:hu=>addXP(hu,8),ok:hu=>hu.level<9},
+ mercado:{n:'Mercado abierto',r:'comun',p:9,ico:'🔄',d:'Tus 4 próximos refrescos de la tienda son gratis.',f:hu=>{hu.rollGratis=(hu.rollGratis||0)+4}},
+ ayuno:{n:'Ayuno del mercader',r:'poco',p:5,ico:'🔒',d:'La tienda se cierra durante 3 rondas, pero recibes ya un objeto completo.',f:hu=>{hu.tiendaCerrada=3;returnShop(hu);hu.items.push(pick(Object.keys(ITEMS).filter(k=>ITEMS[k].full)))}},
+ eco:{n:'Eco',r:'poco',p:5,ico:'👥',d:'Una copia de un campeón al azar de tu tablero va a tu banquillo.',f:hu=>{const us=hu.board.filter(Boolean);const u=pick(us);const r=giveUnit(hu,u.id);toast(`Copia de ${CH[u.id].name}${r==='fusion'?': ¡se fusiona!':''}`)},ok:hu=>hu.board.some(Boolean)},
+ banquero:{n:'Banquero',r:'poco',p:5,ico:'🏦',d:'El interés máximo sube de 5 a 8 de oro durante el resto de la partida.',f:hu=>{hu.intMax=8},ok:hu=>!hu.intMax},
+ ascenso:{n:'Ascenso',r:'raro',p:2,ico:'⬆️',d:'Cada campeón de tu tablero se cambia por uno al azar de coste superior, con las mismas estrellas y objetos.',f:aumAscenso,ok:hu=>hu.board.some(u=>u&&CH[u.id].cost<5)},
+ estrella:{n:'Estrella fugaz',r:'raro',p:2,ico:'⭐',d:'Un campeón de 1★ al azar de tu tablero sube a 2★.',f:hu=>{const u=pick(hu.board.filter(u=>u&&u.star===1));u.star=2;S.pool[u.id]=Math.max(0,(S.pool[u.id]||0)-2);toast(`${CH[u.id].name} sube a 2★`)},ok:hu=>hu.board.some(u=>u&&u.star===1)},
+ plaza:{n:'Plaza extra',r:'muyraro',p:1,ico:'➕',d:'+1 campeón en tu equipo durante el resto de la partida.',f:hu=>{hu.plazaExtra=(hu.plazaExtra||0)+1},ok:hu=>!hu.plazaExtra}};
+const RAREZA={comun:'Común',poco:'Poco común',raro:'Raro',muyraro:'Muy raro'};
+// el Quitamanos es un objeto especial (no sale en el botín ni en el carrusel: ITEM_IDS ya está calculado)
+ITEMS.quitamanos={n:'Quitamanos',g:'Q',col:'#c9a23a',s:{},especial:true,d:'Arrástralo a un campeón: todos sus objetos vuelven a tu inventario.'};
+// cada campeón del tablero pasa a otro de coste superior (de la reserva de la partida), conservando estrellas y objetos
+function aumAscenso(hu){const cambios=[];
+  hu.board.forEach((u,i)=>{if(!u)return;const c=CH[u.id].cost;if(c>=5)return;
+    for(let k=c+1;k<=5;k++){const cand=Object.keys(S.pool).filter(id=>CH[id].cost===k&&S.pool[id]>=pow3(u.star)&&!hu.board.some(b=>b&&b.id===id));
+      if(!cand.length)continue;const id=pick(cand);S.pool[u.id]+=pow3(u.star);S.pool[id]-=pow3(u.star);cambios.push(`${CH[u.id].name} → ${CH[id].name}`);u.id=id;break}});
+  toast(cambios.length?'Ascenso: '+cambios.slice(0,3).join(', ')+(cambios.length>3?'…':''):'No había campeones mejores disponibles')}
+const maxEq=p=>p.level+(p.plazaExtra||0);
+// ¿toca aumento en esta ronda? (una vez por ronda)
+function tocaAumento(){if(!S||!S.players)return false;
+  if(S.mode==='historia'){const L=NIVELES[S.story.nivel-1];if(L.turnos)return false;return S.round===(L.nr===4?3:4)}
+  return S.stage>=2&&S.stage<=4&&S.round===2}
+function ofrecerAumento(){
+  if(!tocaAumento())return;const k=S.stage+'-'+S.round;S.aumHechos=S.aumHechos||{};if(S.aumHechos[k])return;S.aumHechos[k]=true;
+  for(const p of S.players)if(p.alive&&!p.human&&!p.remoto){const r=rnd();if(r<.4)p.gold+=10;else if(r<.75)p.items.push(pick(ITEM_IDS),pick(ITEM_IDS));else addXP0(p,8)} // bots
+  const hu=H();if(!hu.alive)return;
+  const opc=[],pool=Object.keys(AUMENTOS).filter(id=>!AUMENTOS[id].ok||AUMENTOS[id].ok(hu));
+  while(opc.length<3&&opc.length<pool.length){const resto=pool.filter(id=>!opc.includes(id)),tot=resto.reduce((a,id)=>a+AUMENTOS[id].p,0);let v=Math.random()*tot;opc.push(resto.find(id=>(v-=AUMENTOS[id].p)<0)||resto[0])}
+  $('#aumCartas').innerHTML=opc.map(id=>{const A=AUMENTOS[id];return `<button class="aumCarta ${A.r}" data-a="${id}"><span class="aumR">${RAREZA[A.r]}</span><span class="aumIco">${A.ico}</span><b>${A.n}</b><small>${A.d}</small></button>`}).join('');
+  $('#aumCartas').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const A=AUMENTOS[b.dataset.a];$('#aumOv').hidden=true;A.f(H());sfx('levelup');if(!['eco','estrella','ascenso'].includes(b.dataset.a))toast(`Aumento: ${A.n}`);
+    if(typeof misionEvento==='function')misionEvento('aumento');updateHUD()});
+  $('#aumOv').hidden=false;sfx('carousel');
+}
+// Quitamanos: devuelve los objetos del campeón al inventario (lo llama 14-controles.js al soltar el objeto)
+function usarQuitamanos(hu,u,idx){if(!u.items.length){toast('Ese campeón no lleva objetos');return}hu.items.splice(idx,1);hu.items.push(...u.items);toast(`${CH[u.id].name}: ${u.items.length} objeto${u.items.length>1?'s':''} de vuelta al inventario`);u.items=[];sfx('sell')}
+
+// ================= ESTRELLAS, MISIONES, ESPIAR TABLEROS Y MAESTRÍA =================
+// · Estrellas (1-3) por nivel de la Historia, según el % de rondas ganadas sin perder ningún campeón («perfectas»);
+//   en los niveles por turnos, según cuántos de tus 3 siguen en pie al final. Cada 10 estrellas: 100 ascuas.
+// · Misiones diarias (3) y semanales (3) con ascuas y experiencia de cuenta; se cobran en «Tu progreso» → Misiones.
+// · Espiar: tocar un jugador en la lista de la Arena muestra su tablero (el último conocido, en la Arena con amigos).
+// · Maestría: cada combate ganado suma 1 a cada campeón de tu tablero. Niveles 10/30/60/100: ascuas, aspecto Eco,
+//   ascuas y aspecto Dorado de ese campeón.
+// ---- estrellas ----
+const estrellasDe=n=>(HIST.estrellas||{})[n]||0;
+const estrellasTotal=()=>Object.values(HIST.estrellas||{}).reduce((a,b)=>a+b,0);
+const pintaEstrellas=e=>'★'.repeat(e)+'☆'.repeat(3-e);
+// al ganar una ronda de la Historia (resolveCombat): ¿perfecta?
+function estrellaRonda(cb){S.combates=(S.combates||0)+1;if(!cb.f.some(f=>f.team===0&&!f.creep&&!f.summ&&!f.alive))S.perfectas=(S.perfectas||0)+1}
+// guarda las estrellas del nivel y devuelve {e, nuevas, bonus (ascuas por cada 10 estrellas cruzadas)}
+function guardarEstrellas(n,e){HIST.estrellas=HIST.estrellas||{};const antes=estrellasTotal(),prev=estrellasDe(n);
+  if(e>prev)HIST.estrellas[n]=e;const despues=estrellasTotal(),bonus=(Math.floor(despues/10)-Math.floor(antes/10))*100;histSave(HIST);
+  if(despues>antes)misionEvento('estrellas',despues-antes);return {e,nuevas:despues-antes,bonus}}
+function estrellasNivel(){const pc=(S.perfectas||0)/Math.max(1,S.combates||1);return pc>=.6?3:pc>=.3?2:1}
+// ---- misiones ----
+const MISIONES_D={rondaHist:{t:'Gana {n} rondas del modo Historia',n:10},nivelHist:{t:'Supera {n} niveles del modo Historia',n:2},arenaTop4:{t:'Queda entre los 4 primeros en la Arena',n:1},
+ aumento:{t:'Elige {n} aumentos',n:3},compra:{t:'Compra {n} campeones',n:15},tresEstrellas:{t:'Consigue un campeón de 3★',n:1},estrellas:{t:'Gana {n} estrellas en la Historia',n:3}};
+const MISIONES_S={nivelHist:{t:'Supera {n} niveles del modo Historia',n:8},rondaHist:{t:'Gana {n} rondas del modo Historia',n:50},arenaGana:{t:'Gana una partida de la Arena (1.º)',n:1},
+ estrellas:{t:'Gana {n} estrellas en la Historia',n:8},aumento:{t:'Elige {n} aumentos',n:12},amigos:{t:'Juega {n} partidas en la Arena con amigos',n:2}};
+const PREMIO_MISION={d:{xp:50,asc:40},s:{xp:150,asc:120}};
+function hoy(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function semana(){const d=new Date(),t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),dia=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-dia);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+'-S'+Math.ceil(((t-y)/864e5+1)/7)}
+function misiones(){const M=CUENTA.misiones=CUENTA.misiones||{};const elige=(cat,k)=>shuffle(Object.keys(cat)).slice(0,k).map(id=>({id,p:0,c:false}));
+  if(M.dia!==hoy()){M.dia=hoy();M.d=elige(MISIONES_D,3)}if(M.sem!==semana()){M.sem=semana();M.s=elige(MISIONES_S,3)}return M}
+function misionEvento(tipo,n){const M=misiones();let cambio=false;
+  for(const [lista,cat] of [[M.d,MISIONES_D],[M.s,MISIONES_S]])for(const m of lista){if(m.id!==tipo||m.p>=cat[m.id].n)continue;m.p=Math.min(cat[m.id].n,m.p+(n||1));cambio=true;
+    if(m.p>=cat[m.id].n)toast(`¡Misión completada: ${cat[m.id].t.replace('{n}',cat[m.id].n)}! Cóbrala en «Tu progreso»`)}
+  if(cambio){cuentaSave();renderAvisoMisiones()}}
+const misionesPorCobrar=()=>{const M=misiones();return M.d.filter(m=>!m.c&&m.p>=MISIONES_D[m.id].n).length+M.s.filter(m=>!m.c&&m.p>=MISIONES_S[m.id].n).length};
+function renderAvisoMisiones(){const b=$('#bPerfil');if(b)b.classList.toggle('conAviso',misionesPorCobrar()>0)}
+function renderMisiones(){const M=misiones(),box=$('#ctBody');
+  const fila=(m,cat,tipo)=>{const D=cat[m.id],lista=m.p>=D.n,P=PREMIO_MISION[tipo];return `<div class="misFila${m.c?' cobrada':''}"><div class="misTxt"><b>${D.t.replace('{n}',D.n)}</b><div class="xpCuenta"><i style="width:${m.p/D.n*100}%"></i></div><small>${m.p}/${D.n}</small></div>
+    <div class="misPremio"><span><span class="ascua"></span> ${P.asc}</span><small>+${P.xp} exp.</small></div>${m.c?'<span class="ctEq">✓ Cobrada</span>':`<button class="btn" data-cobra="${tipo}:${m.id}"${lista?'':' disabled'}>Cobrar</button>`}</div>`};
+  box.innerHTML=`<h4 class="diSec">Misiones de hoy</h4>${M.d.map(m=>fila(m,MISIONES_D,'d')).join('')}<h4 class="diSec">Misiones de la semana</h4>${M.s.map(m=>fila(m,MISIONES_S,'s')).join('')}
+    <p class="diAyuda">Las de hoy cambian cada día y las de la semana, cada lunes. Estrellas en la Historia: ${estrellasTotal()} (cada 10, 100 ascuas).</p>`;
+  box.querySelectorAll('[data-cobra]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.cobra.split(':'),m=(t==='d'?M.d:M.s).find(x=>x.id===id);if(!m||m.c)return;m.c=true;const P=PREMIO_MISION[t];
+    const sub=ganar(P.xp,P.asc);sfx('levelup');toast(`+${P.asc} ascuas · +${P.xp} de experiencia`);renderCuenta();renderAvisoMisiones();if(sub.length)setTimeout(()=>mostrarSubidas(sub),300)})}
+// ---- maestría por campeón ----
+const MAESTRIA=[10,30,60,100];
+const nivelMaestria=id=>{const v=(CUENTA.maestria||{})[id]||0;return MAESTRIA.filter(x=>v>=x).length};
+function maestriaGana(ids){CUENTA.maestria=CUENTA.maestria||{};const sub=[];
+  for(const id of new Set(ids)){if(!CH[id])continue;const n0=nivelMaestria(id);CUENTA.maestria[id]=(CUENTA.maestria[id]||0)+1;const n1=nivelMaestria(id);
+    if(n1>n0){let premio='';if(n1===1){CUENTA.ascuas+=50;premio='+50 ascuas'}else if(n1===2){darArt('aspecto:'+id+':eco');premio=`aspecto ${CH[id].name} Eco`}
+      else if(n1===3){CUENTA.ascuas+=150;premio='+150 ascuas'}else{darArt('aspecto:'+id+':dorado');premio=`aspecto ${CH[id].name} Dorado`}
+      sub.push(`Maestría de ${CH[id].name}: nivel ${n1} · ${premio}`)}}
+  cuentaSave();if(sub.length){toast(sub[0]);sfx('levelup')}}
+// campeones de tu equipo en un combate ganado
+const idsEquipo=cb=>cb.f.filter(f=>f.team===(S&&S.flip?1:0)&&!f.creep&&!f.summ).map(f=>f.id);
+// ---- espiar el tablero de otro jugador ----
+function abrirEspia(p){if(!p)return;const T=traitCounts(p.board),activos=Object.keys(T).filter(t=>tierOf(t,T[t])>=0).sort((a,b)=>T[b]-T[a]);
+  const celda=(u,i)=>{const r=Math.floor(i/7),c=i%7;return `<div class="espCelda" style="left:${(c+(r&1)*.5)*44}px;top:${r*38}px">${u?`<img src="${portrait(u.id)}" style="border-color:${COST_COL[CH[u.id].cost-1]}" title="${CH[u.id].name}"><span class="espEst">${'★'.repeat(u.star)}</span><span class="espObj">${u.items.map(it=>itemBox(it,'','width:12px;height:12px')).join('')}</span>`:''}</div>`};
+  $('#espiaBody').innerHTML=`<div class="espCab"><img src="${avatarImg(p.av||'zorro',p.col)}" alt=""><div><b>${p.human?'Tu tablero':p.name}</b><small>Vida ${Math.max(0,p.hp)} · nivel ${p.level}${p.remoto&&p.amigo?' · último tablero conocido':''}</small></div></div>
+    <div class="espTablero">${p.board.map(celda).join('')}</div>
+    <div class="espRasgos">${activos.length?activos.map(t=>`<span class="tp" style="--c:${TRAITS[t].col}"><b>${T[t]} ${TRAITS[t].n}</b></span>`).join(''):'<small>Sin sinergias activas</small>'}</div>
+    ${p.bench&&p.bench.some(Boolean)&&!p.remoto?`<div class="espBanco">${p.bench.filter(Boolean).map(u=>`<img src="${portrait(u.id)}" title="${CH[u.id].name}">`).join('')}</div>`:''}`;
+  $('#espiaOv').hidden=false}
+$('#bEspiaOk').onclick=()=>{$('#espiaOv').hidden=true};$('#espiaOv').onclick=e=>{if(e.target.id==='espiaOv')$('#espiaOv').hidden=true};
+renderAvisoMisiones();
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
