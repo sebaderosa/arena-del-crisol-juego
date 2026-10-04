@@ -684,6 +684,83 @@ body.en-combate .goldPill{display:none}
 @media (max-width:760px){.diTabla .item{width:26px;height:26px}.diTabla button{padding:1px}.diTabla{border-spacing:2px}}
 @media (max-width:760px){.diTabla button{width:33px;height:33px;box-sizing:border-box}.diTabla .item{width:28px;height:28px;margin:0}}
 
+/* ===== cuenta: perfil del menú, ascuas, marcos ===== */
+.pfAv{position:relative;display:block;flex:none}
+.pfAv i{position:absolute;right:-4px;bottom:-3px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#3d2f12;border:1px solid var(--gold-hi);color:var(--gold-hi);font-size:11px;font-style:normal;font-weight:700;display:grid;place-items:center}
+.pfXp{display:block;width:90px;height:4px;border-radius:2px;background:#0b1115;margin-top:3px;overflow:hidden}.pfXp i{display:block;height:100%;background:linear-gradient(90deg,#c98a26,#ffd98a);width:0}
+.ascua{display:inline-block;width:14px;height:14px;vertical-align:-2px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:radial-gradient(circle at 60% 40%,#ffe08a,#ff8a3a 50%,#b8360f);box-shadow:0 0 6px rgba(255,140,60,.6)}
+[class*="marco-"]{border-radius:50%}
+.marco-bronce{box-shadow:0 0 0 3px #b07a45,0 0 8px rgba(176,122,69,.6)}
+.marco-plata{box-shadow:0 0 0 3px #c9d6dd,0 0 10px rgba(201,214,221,.6)}
+.marco-oro{box-shadow:0 0 0 3px #ffd24a,0 0 12px rgba(255,210,74,.7)}
+.marco-fuego{animation:mFuego 1.2s ease-in-out infinite alternate}
+.marco-hielo{animation:mHielo 2s ease-in-out infinite alternate}
+.marco-sombra{animation:mSombra 2.4s ease-in-out infinite alternate}
+.marco-estelar{animation:mEstelar 3s linear infinite}
+.marco-crisol{animation:mCrisol 2s linear infinite}
+@keyframes mFuego{from{box-shadow:0 0 0 3px #ff6a2a,0 0 8px #ff6a2a}to{box-shadow:0 0 0 3px #ffb13a,0 0 18px #ff3a1a}}
+@keyframes mHielo{from{box-shadow:0 0 0 3px #9fe6ff,0 0 8px #9fe6ff}to{box-shadow:0 0 0 3px #e8fbff,0 0 16px #5fb8e8}}
+@keyframes mSombra{from{box-shadow:0 0 0 3px #3a2560,0 0 10px #7a5ad0}to{box-shadow:0 0 0 3px #7a5ad0,0 0 18px #2a1640}}
+@keyframes mEstelar{0%{box-shadow:0 0 0 3px #6a5ad0,0 0 12px #fff5a0}50%{box-shadow:0 0 0 3px #fff5a0,0 0 16px #b28cff}100%{box-shadow:0 0 0 3px #6a5ad0,0 0 12px #fff5a0}}
+@keyframes mCrisol{0%{box-shadow:0 0 0 3px #ffd24a,0 0 10px #ff8a3a}50%{box-shadow:0 0 0 3px #ff8a3a,0 0 22px #ffd24a,0 0 0 7px rgba(255,210,74,.3)}100%{box-shadow:0 0 0 3px #ffd24a,0 0 10px #ff8a3a}}
+/* ===== ventana de la cuenta ===== */
+.cuenta{box-sizing:border-box;min-width:0;max-width:900px}
+.ctAscuas{font-weight:700;font-size:18px;color:#ffd98a;margin-left:auto;margin-right:12px}
+#ctBody{max-height:66vh;overflow:auto;padding-right:4px}
+.ctPerfil{display:flex;gap:16px;align-items:center;margin:4px 0 8px}
+.ctAv{width:84px;height:84px;object-fit:contain;background:#1d2a33;flex:none}
+.ctDatos{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.ctDatos>b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--gold-hi)}.ctDatos>small{color:#d7b878}
+.ctDatos .btn{align-self:flex-start}
+.epBarra{display:flex;align-items:center;gap:8px}.epBarra b{color:var(--gold-hi);white-space:nowrap}.epBarra small{color:var(--muted);font-size:12px}
+.xpCuenta{flex:1;height:10px;border-radius:5px;background:#0b1115;border:1px solid #3a2e18;overflow:hidden;min-width:80px}.xpCuenta i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c98a26,#ffd98a);transition:width .7s ease}
+.pase{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 10px}
+.paseNv{flex:none;width:118px;background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:center;opacity:.65}
+.paseNv>b{font-family:var(--display);font-weight:400;font-size:20px;color:#bfae8a}
+.paseNv.hecho{opacity:1;border-color:#5fc46f}.paseNv.hecho>b{color:#8be29f}.paseNv.hecho>b::after{content:" \2713"}
+.paseNv.sig{opacity:1;border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.3)}.paseNv.sig>b{color:var(--gold-hi)}
+.paseArt{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}.paseArt small{font-size:11px;color:#d7c7a4;line-height:1.2}
+.artAv{width:38px;height:38px;object-fit:contain;background:#1d2a33}.artAsp{width:44px;height:44px;object-fit:contain}.artTab{display:block;width:48px;height:32px;border-radius:6px;border:1px solid #6b5426}
+.artIco{font-size:26px;color:var(--gold-hi);line-height:1}.paseArt .ascua{width:22px;height:22px}
+.ctChs{display:flex;gap:4px;overflow-x:auto;padding:4px 2px 8px}
+.ctCh{position:relative;flex:none;width:46px;height:46px;border-radius:50%;padding:0;border:2px solid #3a2e18;background:#1d2a33;overflow:hidden}.ctCh img{width:100%;height:100%;object-fit:cover}
+.ctCh.sel{border-color:var(--gold-hi);box-shadow:0 0 10px rgba(255,190,90,.4)}.ctCh small{position:absolute;right:2px;bottom:0;font-size:10px;color:#8be29f;font-weight:700;text-shadow:0 1px 2px #000}
+.ctAsps,.ctGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ctArt{background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.ctArt.eq{border-color:#5fc46f}.ctArt b{color:#f3dfae;font-size:14px}
+.artAspG{width:110px;height:120px;object-fit:contain;object-position:center bottom}.artAspG.aura{filter:drop-shadow(0 0 10px rgba(255,210,74,.8))}
+.artTabG{display:block;width:120px;height:70px;border-radius:8px;border:1px solid #6b5426}.artAvG{width:70px;height:70px;object-fit:contain;background:#1d2a33}
+.artTit{font-family:var(--display);color:var(--gold-hi);font-size:17px;padding:10px 0}
+.ctEq{color:#8be29f;font-weight:700;font-size:13px}.ctPase{color:#d7b878;font-size:12px}
+.ctComprar{display:inline-flex;align-items:center;gap:5px}.ctComprar:disabled{opacity:.45}
+/* ===== progreso al final de la partida y subida de nivel ===== */
+.endProg{background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:10px 12px;margin:6px 0 14px;text-align:left}
+.epFila{display:flex;justify-content:space-between;color:#f3dfae;font-weight:600;margin-bottom:6px}
+.subPremios{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.subPremio{display:flex;flex-direction:column;align-items:center;gap:4px;width:120px;font-size:13px;color:#f3dfae}
+.subida h2{font-size:40px}
+/* ===== diálogos ===== */
+.overlay.dialogo{background:rgba(3,5,8,.55);backdrop-filter:none;display:block;padding:0;z-index:45;overflow:hidden;cursor:pointer}
+.dlgFondo{position:absolute;inset:0;background:center/cover no-repeat;filter:brightness(.35) blur(2px);transform:scale(1.05)}
+.dlgPj{position:absolute;bottom:0;height:min(78vh,620px);max-width:55vw;object-fit:contain;object-position:bottom;filter:drop-shadow(0 10px 30px rgba(0,0,0,.7));pointer-events:none}
+.dlgPj.izq{left:4vw}.dlgPj.der{right:4vw;transform:scaleX(-1)}
+.dlgPj.entra.izq{animation:dlgEntraI .35s ease-out}.dlgPj.entra.der{animation:dlgEntraD .35s ease-out}
+@keyframes dlgEntraI{from{opacity:0;translate:-40px 0}to{opacity:1;translate:0 0}}
+@keyframes dlgEntraD{from{opacity:0;translate:40px 0}to{opacity:1;translate:0 0}}
+.dlgCaja{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 32px));box-sizing:border-box;background:linear-gradient(180deg,rgba(24,20,13,.95),rgba(14,12,8,.97));border:1px solid #8a6a2e;border-radius:14px;padding:16px 20px 10px;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.dlgNombre{position:absolute;top:-16px;left:20px;background:#2a2112;border:1px solid var(--c,#e9b44c);color:var(--c,#e9b44c);font-family:var(--display);font-size:19px;padding:2px 14px;border-radius:8px}
+.dlgCaja.der .dlgNombre{left:auto;right:20px}
+#dlgTexto{margin:6px 0 8px;font-size:18px;line-height:1.5;color:#f1ead8;min-height:54px}
+.dlgPie{display:flex;justify-content:space-between;align-items:center}
+.dlgPie button{background:none;border:1px solid #4a3a1c;color:#bfae8a;border-radius:8px;padding:3px 10px;font-size:13px}
+.dlgSig{color:#bfae8a;font-size:13px;animation:dlgParpadeo 1.2s infinite}
+@keyframes dlgParpadeo{50%{opacity:.35}}
+@media (max-width:760px){
+  .dlgPj{height:52vh;max-width:80vw;bottom:150px}.dlgPj.izq{left:0}.dlgPj.der{right:0}
+  #dlgTexto{font-size:16px}.dlgCaja{bottom:14px;padding:16px 14px 8px}
+  .cuenta{padding:12px}#ctBody{max-height:calc(100dvh - 190px)}.ctAscuas{font-size:15px;margin-right:6px}
+  .ctAsps,.ctGrid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}.artAspG{width:90px;height:100px}
+  .pfXp{width:70px}
+}
+
 </style>
 
 <div id="app">
@@ -747,7 +824,7 @@ body.en-combate .goldPill{display:none}
 <div class="overlay menuPrin" id="startOv">
   <div class="mpFondo"></div>
   <header class="mpTop">
-    <button class="mpPerfil" id="bPerfil" title="Cambiar de personaje"><img id="perfilAv" alt=""><span><small>Tu perfil</small><b id="perfilNom">—</b></span></button>
+    <button class="mpPerfil" id="bPerfil" title="Tu progreso, recompensas y personaje"><span class="pfAv"><img id="perfilAv" alt=""><i id="perfilNv">1</i></span><span><small id="perfilTit">Aprendiz del Crisol</small><b id="perfilNom">—</b><span class="pfXp"><i id="perfilXp"></i></span></span></button>
     <div class="mpAcc"><button class="mpIco" id="bReglas" title="Cómo se juega" aria-label="Cómo se juega">?</button><button class="mpIco" id="bInstalar" title="Instalar en el móvil" aria-label="Instalar en el móvil" hidden><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></button></div>
   </header>
   <div class="mpLogo"><span class="mpPre">Autobattler táctico</span><h1>Arena del Crisol</h1><p>Recluta campeones, combínalos y sé el último en pie.</p></div>
@@ -755,6 +832,7 @@ body.en-combate .goldPill{display:none}
     <button class="mpCarta grande" id="bStory"><div class="mpImg" id="mpImgHist"></div><div class="mpTxt"><b>Modo Historia</b><small id="mpHistSub">Mundos con jefes · tu mazo de campeones</small></div></button>
     <button class="mpCarta grande" id="bArena"><div class="mpImg" id="mpImgArena"></div><div class="mpTxt"><b>Arena libre</b><small id="bestTxt">8 jugadores · el último en pie gana</small></div></button>
     <div class="mpLado">
+      <button class="mpCarta album" id="bTienda"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 24h44l-4 30H14z" fill="#3a2d14" stroke="#ffd98a" stroke-width="3" stroke-linejoin="round"/><path d="M22 24c0-8 4-13 10-13s10 5 10 13" fill="none" stroke="#e9b44c" stroke-width="3"/><path d="M32 30c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#ff8a3a"/></svg></div><div class="mpTxt"><b>Tienda</b><small>Aspectos, tableros y marcos</small></div></button>
       <button class="mpCarta album" id="bAlbum"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="34" height="46" rx="5" fill="#2a2110" stroke="#e9b44c" stroke-width="3" transform="rotate(-8 27 31)"/><rect x="20" y="8" width="34" height="46" rx="5" fill="#3a2d14" stroke="#ffd98a" stroke-width="3"/><path d="M37 18l3.4 7 7.6 1.1-5.5 5.4 1.3 7.6L37 35.5l-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#ffd98a"/></svg></div><div class="mpTxt"><b>Álbum</b><small id="mpAlbumSub">Tus campeones</small></div></button>
       <button class="mpCarta album" id="bObjetos"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 14c8-4 16-4 24 1v38c-8-5-16-5-24-1z" fill="#2a2110" stroke="#e9b44c" stroke-width="3" stroke-linejoin="round"/><path d="M56 14c-8-4-16-4-24 1v38c8-5 16-5 24-1z" fill="#3a2d14" stroke="#ffd98a" stroke-width="3" stroke-linejoin="round"/><path d="M44 21l4 4-9 9-2 5-3-3 5-2z" fill="#ffd98a"/><circle cx="20" cy="31" r="6" fill="#6fd0ff" stroke="#e9b44c" stroke-width="2"/></svg></div><div class="mpTxt"><b>Objetos</b><small>Diario y combinaciones</small></div></button>
     </div>
@@ -830,6 +908,7 @@ body.en-combate .goldPill{display:none}
     <div class="place" id="endPlace">1.º</div>
     <h2 id="endTitle">¡Victoria!</h2>
     <p class="sub" id="endSub"></p>
+    <div class="endProg" id="endProg" hidden></div>
     <div class="row" style="justify-content:center"><button class="big" id="bAgain">Jugar de nuevo</button><button class="big alt" id="bMenu" hidden>Niveles</button></div>
   </div>
 </div>
@@ -888,6 +967,22 @@ body.en-combate .goldPill{display:none}
 
 <div class="overlay" id="objOv" hidden>
   <div class="modal wide ficha objFicha"><button class="ix" id="bObjX" aria-label="Cerrar">×</button><button class="fiNav prev" id="bObjPrev" aria-label="Objeto anterior">‹</button><button class="fiNav next" id="bObjNext" aria-label="Objeto siguiente">›</button><div id="objBody"></div></div>
+</div>
+
+<div class="overlay" id="cuentaOv" hidden>
+  <div class="modal wide cuenta">
+    <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Tu progreso</h2><span class="ctAscuas" id="ctAscuas"></span><button class="big" id="bCuentaOk">Cerrar</button></div>
+    <div class="diTabs" id="ctTabs"><button data-t="progreso">Progreso y pase</button><button data-t="tienda">Tienda</button></div>
+    <div id="ctBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="subidaOv" hidden><div class="modal subida" style="max-width:460px;text-align:center"></div></div>
+
+<div class="overlay dialogo" id="dialogoOv" hidden>
+  <div class="dlgFondo"></div>
+  <img class="dlgPj izq" id="dlgPj" alt="">
+  <div class="dlgCaja izq"><div class="dlgNombre" id="dlgNombre"></div><p id="dlgTexto"></p><div class="dlgPie"><button id="bDlgSaltar">Saltar</button><span class="dlgSig">Toca para seguir ▸</span></div></div>
 </div>
 
 <div id="ghost" hidden></div>
@@ -1112,7 +1207,7 @@ function velGuardada(){let v=1;try{v=+localStorage.getItem('crisol_vel')||1}catc
 function newPlayer(name,human,col){return {av:'zorro',name,human,col,hp:100,gold:0,level:1,xp:0,board:Array(28).fill(null),bench:Array(9).fill(null),items:[],shop:[],locked:false,streak:0,alive:true,place:0,lastOpp:null}}
 // historia: {nivel, mazo} para el modo Historia (solo tú contra combates diseñados; la tienda sale de tu mazo)
 function newGame(diff,historia){
-  S={diff,mode:historia?'historia':'arena',story:historia||null,stage:1,round:1,phase:'idle',type:'carousel',uid:0,speed:velGuardada(),pool:{},players:[],logs:[],carOpts:null,sel:null,preview:null,opp:null,pairs:null,combat:null};
+  S={diff,mode:historia?'historia':'arena',story:historia||null,stage:1,round:1,phase:'idle',type:'carousel',uid:0,speed:velGuardada(),temaFijo:historia?null:temaTablero(),pool:{},players:[],logs:[],carOpts:null,sel:null,preview:null,opp:null,pairs:null,combat:null};
   (historia?historia.mazo:ARENA_IDS).forEach(id=>S.pool[id]=POOL_SIZE[CH[id].cost-1]);
   S.players.push(newPlayer('Tú',true,'#53c476'));
   if(!historia)AI_NAMES.forEach(([n,c])=>S.players.push(newPlayer(n,false,c)));
@@ -1630,7 +1725,7 @@ function beginRound(){
   else{S.pairs=makePairs();S.opp=S.pairs[0][1]}
   const oppOf=p=>{if(!S.pairs)return null;for(const [a,b] of S.pairs){const B=b.ghost?b.p:b;if(a===p)return B;if(b===p)return a}return null};
   for(const p of S.players)if(p.alive&&!p.human)aiTurn(p,oppOf(p));
-  S.phase='planning';
+  S.phase='planning';if(S.mode==='historia')dialogoJefe(); // el jefe te habla al llegar a su ronda (15f-dialogos.js)
   const sub=S.mode==='historia'?storyRoundName():S.type==='pve'?'Monstruos del crisol':S.opp?('Rival: '+S.opp.name+(S.opp.ghost?' (eco)':'')):'';
   banner(`Ronda ${S.stage}-${S.round}`,S.round===1||(S.stage===1&&S.round===2)?curTheme().n+(sub?' · '+sub:''):sub);
   if(S.stage===1&&S.round===2)setTimeout(()=>toast('Arrastra a tu campeón del banquillo al tablero'),1400);
@@ -1676,7 +1771,7 @@ function resolveCombat(){
   const cb=S.combat,hu=H();let title='',sub='',cls='';
   if(S.mode==='historia'){
     if(cb.winner!==0){S.phase='result';renderDmg();sfx('lose');banner('Derrota',cb.ejecutado?'Se acabó el tiempo: a tu equipo le quedaba menos vida':'Tu equipo ha caído','lose');updateHUD();tras(()=>storyLost(),2100);return}
-    const L=storyLoot(hu);
+    const L=storyLoot(hu);cuentaRonda(); // experiencia de cuenta (15e-cuenta.js)
     title='Victoria';cls='win';sub=L.got.length||L.g?('Botín: '+[...L.got.map(i=>ITEMS[i].n),L.g?`+${L.g} de oro`:''].filter(Boolean).join(', ')):'';
     S.phase='result';renderDmg();S.avRes={win:true,t:performance.now()/1000};sfx('win');banner(title,sub,cls);updateHUD();
     tras(()=>storyNext(),2100);return;
@@ -1715,7 +1810,7 @@ function gameOver(place){
   S.phase='over';sfx('over');updateHUD();
   $('#bAgain').textContent='Jugar de nuevo';$('#bAgain').onclick=backToMenu;$('#bMenu').hidden=true;
   let best=null;try{best=+localStorage.getItem('crisol_best')||null;if(!best||place<best)localStorage.setItem('crisol_best',place)}catch(e){}
-  $('#endPlace').textContent=ord(place);
+  $('#endPlace').textContent=ord(place);cobrarArena(place);
   $('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
   $('#endSub').textContent=`Llegaste a la ronda ${S.stage}-${S.round} con nivel ${H().level}.`+(best&&best<place?` Tu mejor puesto: ${ord(best)}.`:'');
   $('#endOv').hidden=false;
@@ -2063,7 +2158,9 @@ function drawUnit(x,y,o){
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
   const esc=!o.creep&&CH[o.id]&&CH[o.id].escala||1;if(esc!==1)ctx.scale(esc,esc);
-  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id])drawSprite(ctx,o,SPR[o.id],s,sc);
+  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id]){const mio=o.team!==1&&!o.creep,au=mio&&auraAspecto(o.id); // tus unidades llevan el aspecto equipado (15e-cuenta.js)
+    if(au){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=.35+.15*Math.sin(o.t*3);const ga=ctx.createRadialGradient(0,-s*.8*sc,s*.1,0,-s*.8*sc,s*1.1*sc);ga.addColorStop(0,au);ga.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=ga;ctx.fillRect(-s*1.2*sc,-s*2*sc,s*2.4*sc,s*2.2*sc);ctx.restore()}
+    drawSprite(ctx,o,(mio&&aspectoSpr(o.id))||SPR[o.id],s,sc)}
   else if(!LOOK[o.id]&&CREEPS[o.id])drawCreep(ctx,Object.assign({},o,{creep:o.id,col:CREEPS[o.id].col}),u); // monstruo jugable sin sprite: su dibujo de monstruo
   else drawChamp(ctx,o,u);
   ctx.restore();
@@ -2226,7 +2323,7 @@ const THEMES=[
  {n:'Lagos y fraguas',sky:['#08161b','#0f272c'],pa:'#2b3c3f',pb:'#304346',ea:'#35312b',eb:'#3b362f',line:'#527375',lineE:'#62573f',side:'#071215',mid:'rgba(150,225,235,.5)',amb:'firefly',ac:['#bff4ff','#ffd27a'],prop:'lakes',deco:'losas'},
  {n:'Cumbres nevadas',sky:['#0b1124','#19223d'],pa:'#3b475b',pb:'#424f64',ea:'#3d3548',eb:'#443a4f',line:'#8199bf',lineE:'#7d678c',side:'#080c18',mid:'rgba(225,240,255,.55)',amb:'snow',ac:['#ffffff','#dbe9ff'],prop:'snow',deco:'nieve'},
 ];
-const themeIdx=()=>S&&S.mode==='historia'?S.story.tema:Math.min(5,S?S.stage:1)-1; // Historia: el escenario es el del nivel
+const themeIdx=()=>S&&S.mode==='historia'?S.story.tema:S&&S.temaFijo!=null?S.temaFijo:Math.min(5,S?S.stage:1)-1; // temaFijo: tablero equipado en la Arena // Historia: el escenario es el del nivel
 const curTheme=()=>THEMES[themeIdx()];
 function srand(seed){seed=(seed%2147483646)+1;return ()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
 function mkCanvas(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*DPR));c.height=Math.max(1,Math.round(h*DPR));const g=c.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);return [c,g]}
@@ -2285,6 +2382,8 @@ function tileDeco(b,th,x,y,s,rr,C){
       b.strokeStyle='rgba(255,220,230,.09)';b.lineWidth=1;{let [px,py]=R();b.beginPath();b.moveTo(px,py);b.bezierCurveTo(px+(rr()-.5)*s,py+(rr()-.5)*s,px+(rr()-.5)*s,py+(rr()-.5)*s,px+(rr()-.5)*s*1.4,py+(rr()-.5)*s*1.4);b.stroke()}break;
     case 'losas':b.strokeStyle='rgba(0,0,0,.25)';b.lineWidth=1.2;b.beginPath();b.moveTo(x-s,y);b.lineTo(x+s,y);b.moveTo(x+(rr()-.5)*s*.5,y-s);b.lineTo(x+(rr()-.5)*s*.5,y);b.moveTo(x+(rr()-.5)*s*.5,y);b.lineTo(x+(rr()-.5)*s*.5,y+s);b.stroke();
       if(rr()<.25){const [px,py]=R();b.fillStyle='rgba(120,205,235,.2)';b.beginPath();b.ellipse(px,py,s*.28,s*.14,0,0,7);b.fill();b.fillStyle='rgba(255,255,255,.18)';b.fillRect(px-s*.1,py-1,s*.12,1.5)}break;
+    case 'petalos':for(let i=0;i<4;i++){const [px,py]=R();b.fillStyle=uno(['rgba(255,190,215,.55)','rgba(255,225,235,.5)']);b.beginPath();b.ellipse(px,py,2.6,1.5,rr()*3,0,7);b.fill()}
+      for(let i=0;i<3;i++){const [px,py]=R();b.strokeStyle='rgba(170,210,140,.25)';b.lineWidth=1.1;b.beginPath();b.moveTo(px,py);b.lineTo(px+1.5,py-4);b.stroke()}break;
     case 'nieve':for(let i=0;i<3;i++){const [px,py]=R();b.fillStyle='rgba(235,245,255,.22)';b.beginPath();b.ellipse(px,py,s*(.18+rr()*.3),s*(.1+rr()*.16),0,0,7);b.fill()}
       for(let i=0;i<3;i++){const [px,py]=R();b.fillStyle='rgba(255,255,255,.5)';b.fillRect(px,py,1.2,1.2)}break;
   }
@@ -2754,7 +2853,7 @@ function updateHUD(){
   S.players.slice().sort((a,b)=>(b.alive-a.alive)||(b.alive?b.hp-a.hp:a.place-b.place)).forEach(p=>{
     const li=document.createElement('li');const isOpp=S.opp&&(S.opp===p||(S.opp.ghost&&S.opp.p===p))&&(pl||S.phase==='combat');
     li.className=(p.human?'me ':'')+(isOpp?'opp ':'')+(p.alive?'':'dead');
-    li.innerHTML=`<img class="pav" src="${avatarImg(p.av||'zorro',p.col)}" alt=""><span class="pn">${p.name}${isOpp?'<span class="ptag">rival</span>':''}</span><span class="phv">${p.alive?Math.max(0,p.hp):ord(p.place)}</span><div class="pbar"><i style="width:${Math.max(0,p.hp)}%;background:${p.human?'#53c476':'#6f8794'}"></i></div>`;
+    li.innerHTML=`<img class="pav${p.human?' marco-'+CUENTA.eq.marco:''}" src="${avatarImg(p.av||'zorro',p.col)}" alt=""><span class="pn">${p.name}${isOpp?'<span class="ptag">rival</span>':''}</span><span class="phv">${p.alive?Math.max(0,p.hp):ord(p.place)}</span><div class="pbar"><i style="width:${Math.max(0,p.hp)}%;background:${p.human?'#53c476':'#6f8794'}"></i></div>`;
     pl2.appendChild(li);
   });
   $('#log').innerHTML=S.logs.slice(-6).reverse().map(l=>`<div>${l}</div>`).join('');
@@ -3238,11 +3337,11 @@ function storyWin(){
   const W=MUNDOS[mundoDe(L.n)],sig=MUNDOS[mundoDe(L.n)+1],finMundo=primera&&W.niveles[W.niveles.length-1]===L.n&&sig&&NIVELES[sig.niveles[0]-1];
   if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}
   histSave(HIST);S.phase='over';sfx('over');updateHUD();
-  const fin=()=>endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>finMundo?showMundo(sig,W,openStory):openStory());
-  if(nuevo)tras(()=>showUnlock(L.premio,fin),900);else fin();
+  const fin=()=>{cobrarHistoria(true,primera,!!L.premio);endScreen('¡Nivel superado!',`${L.nombre} completado.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),'Nivel '+L.n,'Continuar',()=>finMundo?showMundo(sig,W,openStory):openStory())};
+  if(nuevo)tras(()=>dialogoVictoria(L.n,()=>showUnlock(L.premio,fin)),900);else fin(); // el jefe vencido te habla antes de unirse
 }
 function storyLost(){
-  const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();
+  const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();cobrarHistoria(false);
   endScreen('Derrota',`Nivel ${n} · ${NIVELES[n-1].nombre}: tu equipo cayó en la ronda ${where} (fase ${S.stage}, ronda ${S.round} de 6). Vuelves a la fase 1.`,`Nivel ${n} · ${where}`,'Reintentar',()=>startStory(n));
   $('#endPlace').classList.add('corto');
 }
@@ -3284,7 +3383,7 @@ function rewardOptions(){
   });
 }
 function showReward(){
-  S.phase='reward';updateHUD();const box=$('#rewCards');box.innerHTML='';
+  cuentaFase();S.phase='reward';updateHUD();const box=$('#rewCards');box.innerHTML='';
   rewardOptions().forEach(o=>{
     const b=document.createElement('button');b.className='ccard';
     const ico=o.t==='objeto'?itemBox(o.v,'','width:56px;height:56px'):o.t==='campeon'?`<div class="cg" style="border-color:${COST_COL[CH[o.v].cost-1]}"><img src="${portrait(o.v)}" alt=""></div>`
@@ -3368,7 +3467,7 @@ function renderMapCard(){
   $('#bDeck').textContent=`Mazo ${HIST.mazo.length}/${MAZO_N}`;$('#bDeck').classList.toggle('warn',!ok);
 }
 function playSel(){const ok=mazoOk();if(!ok){toast('Completa tu mazo antes de jugar');openDeck();return}const m=puedeJugar(mapSel);if(m){toast(m);return}
-  const n=mapSel,L=NIVELES[n-1];if(L.regla)return showRegla(n,()=>{S=null;startStory(n)});S=null;startStory(n)}
+  const n=mapSel,L=NIVELES[n-1];dialogoNivel(n,()=>{if(L.regla)return showRegla(n,()=>{S=null;startStory(n)});S=null;startStory(n)})} // primero te hablan (15f-dialogos.js)
 // aviso de la regla del nivel: el porqué y con qué campeones juegas
 function showRegla(n,go){const L=NIVELES[n-1],m=mazoNivel(n,HIST.mazo,HIST.col);
   $('#rgTit').textContent=L.regla.t;$('#rgTxt').textContent=L.regla.motivo;
@@ -3378,10 +3477,10 @@ function showRegla(n,go){const L=NIVELES[n-1],m=mazoNivel(n,HIST.mazo,HIST.col);
 function showMundo(M,prev,done){const ov=$('#mundoOv'),I=MAPAS[M.n];
   ov.querySelector('.mdFondo').style.backgroundImage=I?`url(${I.src})`:'none';
   $('#mdFinTit').textContent=prev?prev.titulo:'';$('#mdLbl').textContent=prev?'Nuevo mundo':'Modo Historia';
-  $('#mdTit').textContent=M.titulo;$('#mdReg').textContent=M.nombre;$('#mdTxt').innerHTML=M.intro.map(p=>`<p>${p}</p>`).join('');
+  $('#mdTit').textContent=M.titulo;$('#mdReg').textContent=M.nombre;$('#mdTxt').innerHTML=DLG_MUNDO[M.n]?'':M.intro.map(p=>`<p>${p}</p>`).join('');$('#mdTxt').hidden=!!DLG_MUNDO[M.n];
   ov.classList.toggle('conFin',!!prev);ov.classList.remove('play');void ov.offsetWidth;ov.classList.add('play');ov.hidden=false;
   if(prev){sfx('merge3');setTimeout(()=>sfx('levelup'),2600)}else sfx('carousel');
-  $('#bMundoOk').onclick=()=>{ov.hidden=true;if(!HIST.intro.includes(M.n)){HIST.intro.push(M.n);histSave(HIST)}done&&done()}}
+  $('#bMundoOk').onclick=()=>{ov.hidden=true;if(!HIST.intro.includes(M.n)){HIST.intro.push(M.n);histSave(HIST)}dialogo(DLG_MUNDO[M.n],done,I&&I.src)}}
 function openDeck(){renderDeck();$('#deckOv').hidden=false}
 function avatarImgBig(kind,col){const S0=SPRITE_SRC[avSpr(kind)];if(S0)return S0.src;const k='big'+kind+col;if(AVIMG[k])return AVIMG[k];const [c,g]=mkCanvas(96,96);drawAvatar(g,48,90,34,kind,col,0);return AVIMG[k]=c.toDataURL()}
 function renderDeck(aviso){
@@ -3635,6 +3734,283 @@ $('#objOv').onclick=e=>{if(e.target.id==='objOv')$('#objOv').hidden=true};
 window.addEventListener('keydown',e=>{
   if(!$('#objOv').hidden){if(e.key==='ArrowLeft')objPaso(-1);else if(e.key==='ArrowRight')objPaso(1);else if(e.key==='Escape')$('#objOv').hidden=true;return}
   if(!$('#diarioOv').hidden&&e.key==='Escape')$('#diarioOv').hidden=true});
+
+// ================= CUENTA DEL JUGADOR: NIVEL, ASCUAS, TIENDA Y ASPECTOS =================
+// Progreso general (no de la partida): experiencia de cuenta y ascuas (la moneda de la tienda), que se ganan en el modo
+// Historia (por ronda ganada, fase superada y nivel completado, aunque pierdas) y en la Arena (según el puesto).
+// Cada nivel de cuenta da una recompensa (PASE). La tienda vende aspectos de campeones, tableros para la Arena, marcos
+// para tu personaje y títulos. Los aspectos se generan en el juego recoloreando los sprites (recolorear), sin imágenes nuevas.
+// Se guarda en este dispositivo (CUENTA_KEY).
+const CUENTA_KEY='crisol_cuenta_v1';
+function cuentaLoad(){let c=null;try{c=JSON.parse(localStorage.getItem(CUENTA_KEY))}catch(e){}
+  c=Object.assign({xp:0,nivel:1,ascuas:0,tengo:[],eq:{}},c||{});c.eq=Object.assign({marco:'ninguno',titulo:'aprendiz',tablero:null,aspectos:{}},c.eq);c.eq.aspectos=c.eq.aspectos||{};return c}
+let CUENTA=cuentaLoad();
+function cuentaSave(){try{localStorage.setItem(CUENTA_KEY,JSON.stringify(CUENTA))}catch(e){}}
+const xpNivel=n=>150+50*n; // experiencia para pasar del nivel n al n+1
+
+// ---- catálogo ----
+const MARCOS={ninguno:{n:'Sin marco',p:0},bronce:{n:'Bronce',p:200},plata:{n:'Plata',p:350},oro:{n:'Oro',p:600},fuego:{n:'Llama viva',p:500},
+  hielo:{n:'Escarcha',p:500},sombra:{n:'Penumbra',p:500},estelar:{n:'Estelar',p:700},crisol:{n:'Corona del Crisol',pase:30}};
+const TITULOS={aprendiz:{n:'Aprendiz del Crisol',p:0},estratega:{n:'Estratega',p:150},coleccionista:{n:'Coleccionista',p:150},alquimista:{n:'Alquimista',p:150},
+  rompeescudos:{n:'Rompeescudos',p:150},carrusel:{n:'Estrella del carrusel',p:200},mareas:{n:'Voz de las mareas',p:200},corazon:{n:'Corazón de llama',p:200},
+  fragua:{n:'Mano de la Fragua',pase:13},cazadragones:{n:'Cazadragones',pase:18},caverna:{n:'Terror de la caverna',pase:23},leyenda:{n:'Leyenda del Crisol',pase:28}};
+// tableros para la Arena (escenarios extra de THEMES); sin tablero, la Arena cambia de escenario por etapa
+const TABLEROS={
+ cerezo:{n:'Jardín de cerezos',p:500,th:{sky:['#1a0f16','#2a1622'],pa:'#3b2a33',pb:'#43303a',ea:'#2f2a36',eb:'#36303e',line:'#9a5c78',lineE:'#5c5478',side:'#120a10',mid:'rgba(255,180,210,.55)',amb:'firefly',ac:['#ffc6dc','#ffffff'],prop:'',deco:'petalos'}},
+ lava:{n:'Lava viva',p:500,th:{sky:['#140504','#260a06'],pa:'#2c1612',pb:'#331a15',ea:'#2a1210',eb:'#311512',line:'#a03a1a',lineE:'#7a2a14',side:'#0c0302',mid:'rgba(255,120,40,.6)',amb:'ember',ac:['#ffb13a','#ff5a1a'],prop:'',deco:'brasas'}},
+ hielo:{n:'Palacio de hielo',p:500,th:{sky:['#0c1a28','#16283c'],pa:'#40566e',pb:'#48607a',ea:'#3a4a66',eb:'#42536f',line:'#a8d4f0',lineE:'#8aa4d8',side:'#08121c',mid:'rgba(220,245,255,.6)',amb:'snow',ac:['#ffffff','#dff4ff'],prop:'',deco:'nieve'}},
+ abismo:{n:'Abismo estelar',p:600,th:{sky:['#05030f','#0d0826'],pa:'#1c1640',pb:'#211a4a',ea:'#25163a',eb:'#2b1a43',line:'#6a5ad0',lineE:'#9a4ac0',side:'#030208',mid:'rgba(190,160,255,.55)',amb:'star',ac:['#ffffff','#d8c8ff'],prop:'',deco:'estrellas'}},
+ templo:{n:'Templo dorado',pase:29,th:{sky:['#1a1206','#2a1d0a'],pa:'#4a3a1c',pb:'#544222',ea:'#3e3020',eb:'#463726',line:'#e9b44c',lineE:'#b8863a',side:'#100b04',mid:'rgba(255,215,120,.6)',amb:'firefly',ac:['#ffe7a6','#fff7d6'],prop:'',deco:'marmol'}}};
+for(const k in TABLEROS){const T=TABLEROS[k];T.tema=THEMES.length;THEMES.push(Object.assign({n:T.n},T.th));MUSIC.push(MUSIC[[0,1,2,3,4][Object.keys(TABLEROS).indexOf(k)%5]])}
+// aspectos: cada campeón tiene los mismos seis estilos. tono: gira los colores (respeta la piel); tinte: degradado por luminosidad
+const ESTILOS={eco:{n:'Eco',p:150,r:{tono:150}},glacial:{n:'Glacial',p:300,r:{tinte:['#0b2340','#5fb8e8','#f0ffff']}},infernal:{n:'Infernal',p:300,r:{tinte:['#240400','#e0461a','#ffe08a']}},
+  jade:{n:'Jade',p:300,r:{tinte:['#04241a','#2fae6e','#e0ffe8']}},penumbra:{n:'Penumbra',p:300,r:{tinte:['#0a0614','#5b3c9a','#e6dcff']}},dorado:{n:'Dorado',p:600,r:{tinte:['#3a2200','#e2a72e','#fff6c8']},aura:'#ffd24a'}};
+// recompensas del pase por nivel de cuenta (del 31 en adelante, 100 ascuas por nivel)
+const PASE={2:['ascuas:100'],3:['marco:bronce'],4:['titulo:estratega'],5:['aspecto:brasa:eco'],6:['ascuas:150'],7:['tablero:cerezo'],8:['marco:plata'],9:['titulo:coleccionista'],
+ 10:['aspecto:tovo:glacial','ascuas:200'],11:['ascuas:150'],12:['marco:fuego'],13:['titulo:fragua'],14:['tablero:lava'],15:['aspecto:nerea:jade','ascuas:250'],16:['ascuas:200'],
+ 17:['marco:hielo'],18:['titulo:cazadragones'],19:['tablero:hielo'],20:['aspecto:lira:dorado','ascuas:300'],21:['ascuas:250'],22:['marco:sombra'],23:['titulo:caverna'],
+ 24:['tablero:abismo'],25:['aspecto:crisol:infernal','ascuas:300'],26:['ascuas:300'],27:['marco:estelar'],28:['titulo:leyenda'],29:['tablero:templo'],30:['marco:crisol','aspecto:soberana:dorado']};
+const paseDe=n=>PASE[n]||(n>30?['ascuas:100']:[]);
+// nombre e icono de una recompensa / artículo
+function infoArt(id){const [t,a,b]=id.split(':');
+  if(t==='ascuas')return {n:`${a} ascuas`,ico:'<span class="ascua"></span>'};
+  if(t==='marco')return {n:`Marco ${MARCOS[a].n}`,ico:`<img class="artAv marco-${a}" src="${avatarImg(myAv||'zorro','#53c476')}" alt="">`};
+  if(t==='titulo')return {n:`Título «${TITULOS[a].n}»`,ico:'<span class="artIco">❝</span>'};
+  if(t==='tablero')return {n:`Tablero ${TABLEROS[a].n}`,ico:`<span class="artTab" style="${estiloTablero(a)}"></span>`};
+  if(t==='aspecto')return {n:`${CH[a].name} ${ESTILOS[b].n}`,ico:`<img class="artAsp" src="${miniAspecto(a,b)}" alt="">`};
+  return {n:id,ico:''}}
+const estiloTablero=k=>{const T=TABLEROS[k].th;return `background:linear-gradient(135deg,${T.pa},${T.line} 55%,${T.ea})`};
+const tiene=id=>id.startsWith('ascuas')||CUENTA.tengo.includes(id)||id==='marco:ninguno'||id==='titulo:aprendiz';
+function darArt(id){const [t,a]=id.split(':');if(t==='ascuas')CUENTA.ascuas+=+a;else if(!CUENTA.tengo.includes(id))CUENTA.tengo.push(id)}
+
+// ---- ganar experiencia y ascuas ----
+// devuelve los niveles subidos [{n, premios}]
+function ganar(xp,asc){
+  CUENTA.xp+=xp;CUENTA.ascuas+=asc;const sub=[];
+  while(CUENTA.xp>=xpNivel(CUENTA.nivel)){CUENTA.xp-=xpNivel(CUENTA.nivel);CUENTA.nivel++;const P=paseDe(CUENTA.nivel);P.forEach(darArt);sub.push({n:CUENTA.nivel,P})}
+  cuentaSave();renderPerfilCuenta();return sub}
+// durante un nivel del modo Historia se va acumulando lo ganado (S.ganado) y se cobra al terminar, ganes o pierdas
+const GANA={ronda:[4,0],fase:[20,8],nivel1:[120,60],nivelRep:[50,20],jefe:[0,50],arena:[[150,60],[110,45],[90,35],[70,25],[55,20],[45,15],[35,10],[25,5]]};
+function cuentaRonda(){if(!S.ganado)S.ganado={xp:0,asc:0};S.ganado.xp+=GANA.ronda[0];S.ganado.asc+=GANA.ronda[1]}
+function cuentaFase(){if(!S.ganado)S.ganado={xp:0,asc:0};S.ganado.xp+=GANA.fase[0];S.ganado.asc+=GANA.fase[1];toast(`Fase superada: +${GANA.fase[0]} de experiencia de cuenta · +${GANA.fase[1]} ascuas`)}
+function cobrarHistoria(gana,primera,jefe){const g=S.ganado||{xp:0,asc:0};
+  if(gana){const B=primera?GANA.nivel1:GANA.nivelRep;g.xp+=B[0];g.asc+=B[1];if(jefe&&primera)g.asc+=GANA.jefe[1]}
+  mostrarCobro(g.xp,g.asc)}
+function cobrarArena(puesto){const [x,a]=GANA.arena[Math.max(0,Math.min(7,puesto-1))];mostrarCobro(x,a)}
+// bloque de progreso en la pantalla final, con la barra animada, y las subidas de nivel después
+function mostrarCobro(xp,asc){
+  const n0=CUENTA.nivel,x0=CUENTA.xp,sub=ganar(xp,asc),box=$('#endProg');
+  box.innerHTML=`<div class="epFila"><span>+${xp} de experiencia</span><span><span class="ascua"></span> +${asc}</span></div>
+    <div class="epBarra"><b>Nv ${n0}</b><div class="xpCuenta"><i style="width:${x0/xpNivel(n0)*100}%"></i></div></div>`;box.hidden=false;
+  requestAnimationFrame(()=>setTimeout(()=>{const i=box.querySelector('.xpCuenta i'),b=box.querySelector('.epBarra b');
+    if(sub.length){i.style.width='100%';setTimeout(()=>{b.textContent='Nv '+CUENTA.nivel;i.style.transition='none';i.style.width='0%';void i.offsetWidth;i.style.transition='';i.style.width=CUENTA.xp/xpNivel(CUENTA.nivel)*100+'%'},700)}
+    else i.style.width=CUENTA.xp/xpNivel(CUENTA.nivel)*100+'%'},150));
+  if(sub.length)setTimeout(()=>mostrarSubidas(sub),1300);
+}
+function mostrarSubidas(sub){
+  const P=sub.flatMap(s=>s.P),ov=$('#subidaOv');
+  ov.querySelector('.modal').innerHTML=`<div class="lbl">Cuenta</div><h2>¡Nivel ${sub[sub.length-1].n}!</h2>
+    ${P.length?`<p class="sub">Recompensas del pase:</p><div class="subPremios">${P.map(id=>{const I=infoArt(id);return `<div class="subPremio">${I.ico}<span>${I.n}</span></div>`}).join('')}</div>`:''}
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="big alt" id="bSubVer">Ver en la tienda</button><button class="big" id="bSubOk">¡Genial!</button></div>`;
+  ov.hidden=false;sfx('levelup');$('#bSubOk').onclick=()=>{ov.hidden=true};$('#bSubVer').onclick=()=>{ov.hidden=true;abrirCuenta('tienda')}}
+
+// ---- aspectos: recolorear los sprites ----
+const hex2rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const M=Math.max(r,g,b),m=Math.min(r,g,b),l=(M+m)/2;if(M===m)return [0,0,l];const d=M-m,s=l>.5?d/(2-M-m):d/(M+m);
+  const h=M===r?(g-b)/d+(g<b?6:0):M===g?(b-r)/d+2:(r-g)/d+4;return [h*60,s,l]}
+function hsl2rgb(h,s,l){const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t%1+1)%1;return t<1/6?p+(q-p)*6*t:t<.5?q:t<2/3?p+(q-p)*(2/3-t)*6:p};h/=360;return [f(h+1/3)*255,f(h)*255,f(h-1/3)*255]}
+function recolorear(src,R){
+  const w=src.naturalWidth||src.width,h=src.naturalHeight||src.height,c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(src,0,0);
+  let d;try{d=g.getImageData(0,0,w,h)}catch(e){return src}const p=d.data;
+  if(R.tono!=null){for(let i=0;i<p.length;i+=4){if(p[i+3]<8)continue;const [H,Sa,L]=rgb2hsl(p[i],p[i+1],p[i+2]);if(Sa<.14)continue;
+      if(H>=4&&H<=48&&Sa<.72&&L>.34&&L<.93)continue; // tonos de piel: se quedan
+      const q=hsl2rgb((H+R.tono)%360,Sa,L);p[i]=q[0];p[i+1]=q[1];p[i+2]=q[2]}}
+  else{const G=R.tinte.map(hex2rgb),m=R.mezcla||.8;for(let i=0;i<p.length;i+=4){if(p[i+3]<8)continue;const L=(.299*p[i]+.587*p[i+1]+.114*p[i+2])/255;
+      const [A,B,t]=L<.5?[G[0],G[1],L*2]:[G[1],G[2],(L-.5)*2];for(let k=0;k<3;k++)p[i+k]=p[i+k]*(1-m)+(A[k]+(B[k]-A[k])*t)*m}}
+  g.putImageData(d,0,0);return c}
+const ASP_CACHE={},MINI_ASP={};
+// sprite con el aspecto puesto (se prepara una vez; si las secuencias llegan después, se rehace)
+function spriteAspecto(id,est){const sp=SPR[id];if(!sp||!ESTILOS[est])return null;const k=id+':'+est,nq=sp.seq?Object.keys(sp.seq).length:0,C=ASP_CACHE[k];
+  if(C&&C.nq===nq&&C.np===!!sp.attack+!!sp.cast)return C.sp;
+  const R=ESTILOS[est].r,cl=pp=>pp&&Object.assign({},pp,{img:recolorear(pp.img,R),cache:{}}),ns=Object.assign({},sp,{idle:cl(sp.idle),attack:cl(sp.attack),cast:cl(sp.cast)});
+  ns.img=ns.idle.img;if(sp.seq){ns.seq={};for(const a in sp.seq)ns.seq[a]=sp.seq[a].map(cl)}
+  ASP_CACHE[k]={sp:ns,nq,np:!!sp.attack+!!sp.cast};return ns}
+// sprite que se dibuja para tus unidades (team distinto de 1): el del aspecto equipado
+function aspectoSpr(id){const e=CUENTA.eq.aspectos[id];return e?spriteAspecto(id,e):null}
+const auraAspecto=id=>{const e=CUENTA.eq.aspectos[id];return e&&ESTILOS[e]&&ESTILOS[e].aura}
+function miniAspecto(id,est){const k=id+':'+est;if(MINI_ASP[k])return MINI_ASP[k];const sp=SPR[id];if(!sp)return portrait(id);
+  return MINI_ASP[k]=recolorear(sp.idle.img,ESTILOS[est].r).toDataURL()}
+// tablero equipado: escenario fijo para la Arena (lo usa themeIdx)
+const temaTablero=()=>CUENTA.eq.tablero&&TABLEROS[CUENTA.eq.tablero]?TABLEROS[CUENTA.eq.tablero].tema:null;
+
+// ---- perfil del menú: nivel, barra, título y marco ----
+function renderPerfilCuenta(){
+  const av=$('#perfilAv');if(av)av.className='marco-'+CUENTA.eq.marco;
+  const t=$('#perfilTit');if(t)t.textContent=(TITULOS[CUENTA.eq.titulo]||TITULOS.aprendiz).n;
+  const nv=$('#perfilNv');if(nv)nv.textContent=CUENTA.nivel;
+  const b=$('#perfilXp');if(b)b.style.width=CUENTA.xp/xpNivel(CUENTA.nivel)*100+'%';
+}
+// ---- ventana de la cuenta: progreso (pase) y tienda ----
+let cuentaTab='progreso',tiendaCat='aspectos',tiendaCh=null;
+function abrirCuenta(tab){cuentaTab=tab||'progreso';renderCuenta();$('#cuentaOv').hidden=false}
+function renderCuenta(){
+  document.querySelectorAll('#ctTabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===cuentaTab));
+  $('#ctAscuas').innerHTML=`<span class="ascua"></span> ${CUENTA.ascuas}`;
+  const box=$('#ctBody');
+  if(cuentaTab==='progreso'){
+    const N=CUENTA.nivel,niveles=Array.from({length:Math.max(30,N+3)-1},(_,i)=>i+2);
+    box.innerHTML=`<div class="ctPerfil"><img class="ctAv marco-${CUENTA.eq.marco}" src="${avatarImgBig(myAv||'zorro','#53c476')}" alt="">
+      <div class="ctDatos"><b>${myAv?AVN[myAv]:'Sin personaje'}</b><small>${(TITULOS[CUENTA.eq.titulo]||TITULOS.aprendiz).n}</small>
+      <div class="epBarra"><b>Nv ${N}</b><div class="xpCuenta"><i style="width:${CUENTA.xp/xpNivel(N)*100}%"></i></div><small>${CUENTA.xp}/${xpNivel(N)}</small></div>
+      <button class="btn" id="bCambiarPj">Cambiar de personaje</button></div></div>
+      <p class="diAyuda">Ganas experiencia de cuenta y ascuas en cada ronda que ganas, en cada fase y al terminar un nivel del modo Historia (aunque pierdas), y según tu puesto en la Arena. Cada nivel de cuenta trae una recompensa.</p>
+      <div class="pase">${niveles.map(n=>{const P=paseDe(n);return `<div class="paseNv${n<=N?' hecho':n===N+1?' sig':''}"><b>${n}</b>${P.map(id=>{const I=infoArt(id);return `<div class="paseArt" title="${I.n}">${I.ico}<small>${I.n}</small></div>`}).join('')}</div>`}).join('')}</div>`;
+    $('#bCambiarPj').onclick=()=>{$('#cuentaOv').hidden=true;abrirPerfil(false)};
+    const sig=box.querySelector('.paseNv.sig');if(sig)setTimeout(()=>sig.scrollIntoView({block:'nearest',inline:'center'}),50);
+    return}
+  // tienda
+  const cats=[['aspectos','Aspectos'],['tableros','Tableros'],['marcos','Marcos'],['titulos','Títulos']];
+  let h=`<div class="diTabs ctCats">${cats.map(([k,n])=>`<button data-c="${k}" aria-pressed="${k===tiendaCat}">${n}</button>`).join('')}</div>`;
+  const boton=(id,precio,pase,equipado)=>tiene(id)?(equipado?'<span class="ctEq">✓ Puesto</span>':`<button class="btn" data-eq="${id}">Poner</button>`)
+    :pase?`<span class="ctPase">Pase · nivel ${pase}</span>`:`<button class="btn ctComprar" data-buy="${id}" data-p="${precio}"${CUENTA.ascuas<precio?' disabled':''}><span class="ascua"></span> ${precio}</button>`;
+  if(tiendaCat==='aspectos'){
+    const ids=ALBUM.filter(id=>SPRITE_SRC[id]);if(!tiendaCh||!ids.includes(tiendaCh))tiendaCh=ids[0];
+    h+=`<div class="ctChs">${ids.map(id=>`<button class="ctCh${id===tiendaCh?' sel':''}" data-ch="${id}" title="${CH[id].name}"><img src="${portrait(id)}" alt=""><small>${Object.keys(ESTILOS).filter(e=>tiene('aspecto:'+id+':'+e)).length||''}</small></button>`).join('')}</div>
+      <div class="ctAsps">${[['',{n:'Original',p:0}],...Object.entries(ESTILOS)].map(([e,E])=>{const id='aspecto:'+tiendaCh+':'+e,eq=(CUENTA.eq.aspectos[tiendaCh]||'')===e;
+        const pase=Object.entries(PASE).find(([n,P])=>P.includes(id));
+        return `<div class="ctArt${eq?' eq':''}"><img class="artAspG${E.aura?' aura':''}" src="${e?miniAspecto(tiendaCh,e):albumImg(tiendaCh)}" alt=""><b>${CH[tiendaCh].name} ${e?E.n:''}</b>
+          ${e?boton(id,E.p,pase&&pase[0],eq):(eq?'<span class="ctEq">✓ Puesto</span>':`<button class="btn" data-quita="${tiendaCh}">Poner</button>`)}</div>`}).join('')}</div>`;
+  }else if(tiendaCat==='tableros'){
+    h+=`<p class="diAyuda">El tablero se usa en la Arena libre. En el modo Historia, cada mundo tiene sus tableros.</p><div class="ctGrid">`+
+      `<div class="ctArt${!CUENTA.eq.tablero?' eq':''}"><span class="artTabG" style="background:linear-gradient(135deg,#213b29,#5c4236 50%,#123547)"></span><b>Por etapas (original)</b>${!CUENTA.eq.tablero?'<span class="ctEq">✓ Puesto</span>':'<button class="btn" data-eq="tablero:">Poner</button>'}</div>`+
+      Object.entries(TABLEROS).map(([k,T])=>`<div class="ctArt${CUENTA.eq.tablero===k?' eq':''}"><span class="artTabG" style="${estiloTablero(k)}"></span><b>${T.n}</b>${boton('tablero:'+k,T.p,T.pase,CUENTA.eq.tablero===k)}</div>`).join('')+'</div>';
+  }else if(tiendaCat==='marcos'){
+    h+='<div class="ctGrid">'+Object.entries(MARCOS).map(([k,M])=>`<div class="ctArt${CUENTA.eq.marco===k?' eq':''}"><img class="artAvG marco-${k}" src="${avatarImgBig(myAv||'zorro','#53c476')}" alt=""><b>${M.n}</b>${boton('marco:'+k,M.p,M.pase,CUENTA.eq.marco===k)}</div>`).join('')+'</div>';
+  }else{
+    h+='<div class="ctGrid">'+Object.entries(TITULOS).map(([k,T])=>`<div class="ctArt${CUENTA.eq.titulo===k?' eq':''}"><span class="artTit">«${T.n}»</span>${boton('titulo:'+k,T.p,T.pase,CUENTA.eq.titulo===k)}</div>`).join('')+'</div>';
+  }
+  box.innerHTML=h;
+  box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{tiendaCat=b.dataset.c;renderCuenta()});
+  box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{tiendaCh=b.dataset.ch;renderCuenta()});
+  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p,id=b.dataset.buy;if(CUENTA.ascuas<p)return;CUENTA.ascuas-=p;darArt(id);equipar(id);sfx('buy');toast(`¡${infoArt(id).n} es tuyo!`)});
+  box.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>equipar(b.dataset.eq));
+  box.querySelectorAll('[data-quita]').forEach(b=>b.onclick=()=>{delete CUENTA.eq.aspectos[b.dataset.quita];cuentaSave();renderCuenta()});
+}
+function equipar(id){const [t,a,b]=id.split(':');
+  if(t==='marco')CUENTA.eq.marco=a;else if(t==='titulo')CUENTA.eq.titulo=a;else if(t==='tablero')CUENTA.eq.tablero=a||null;else if(t==='aspecto')CUENTA.eq.aspectos[a]=b;
+  cuentaSave();renderPerfilCuenta();renderCuenta()}
+document.querySelectorAll('#ctTabs button').forEach(b=>b.onclick=()=>{cuentaTab=b.dataset.t;renderCuenta()});
+$('#bCuentaOk').onclick=()=>{$('#cuentaOv').hidden=true;renderPerfilCuenta()};
+$('#bPerfil').onclick=()=>{audioInit();abrirCuenta('progreso')};$('#bTienda').onclick=()=>{audioInit();abrirCuenta('tienda')};
+renderPerfilCuenta();
+
+// ================= DIÁLOGOS DEL MODO HISTORIA =================
+// Los personajes aparecen en grande y te hablan (tú eres quien guarda el Crisol). Cada línea: [quién, texto].
+// quién = id de campeón (su sprite y su nombre) o 'narra' (sin retrato). Tocar: termina de escribir / pasa a la siguiente.
+// Cuándo salen: al entrar en un mundo (DLG_MUNDO), la primera vez que juegas un nivel (DLG_NIVEL), antes del jefe
+// y al vencerlo por primera vez (DLG_JEFE.antes / .despues). Lo ya visto se guarda en HIST.vistos.
+const DLG_MUNDO={
+ 1:[['crisol','¡Por fin! Llevo tres días esperando a que el Crisol eligiera a alguien… y te ha elegido a ti.'],
+    ['crisol','Soy Crisol, el mejor archimago del fuego que han visto estas tierras. Lo digo yo, pero es verdad.'],
+    ['tovo','No le hagas caso, siempre se presenta así. Yo soy Tovo, aprendiz de la Fragua.'],
+    ['tovo','La llama del Crisol se está apagando. Los monstruos salen del bosque y las fraguas de los lagos se enfrían.'],
+    ['crisol','Tú puedes llamar a los campeones y luchar a su lado. Empieza por el claro del bosque. Yo… supervisaré.']],
+ 2:[['draco','Me has vencido, así que te debo la verdad: yo no robaba la llama del Crisol. La protegía.'],
+    ['draco','Sus brasas se escapan por las grietas de la montaña y bajan a una caverna sin fondo.'],
+    ['crisol','¿Una caverna? Odio las cavernas. Humedad, oscuridad, murciélagos…'],
+    ['draco','Murciélagos, sí. Allí abajo reina Dracqueen, que bebe la luz del Crisol para no envejecer nunca.'],
+    ['tovo','Pues bajamos. Pero dicen que en la caverna no todos los campeones pueden pasar por todas partes.'],
+    ['draco','Escucha a quien conozca cada tramo. Y no me hagas quedar mal.']]};
+const DLG_NIVEL={
+ 1:[['tovo','Unos Roedines están mordiendo las raíces del claro. Son pequeños, pero muchos.'],['crisol','Y cuidado con la Kangmoth del risco: con su cría en la bolsa, pega el doble.']],
+ 2:[['brasa','¡Mi vieja fragua llena de bichos! Eso sí que no. ¿Me ayudas a echarlos?']],
+ 3:[['tovo','Los Roedines han hecho su nido junto al arroyo. Si los dejamos, mañana serán el doble.']],
+ 4:[['sombrio','…'],['sombrio','Los lobos cazan en la linde de noche. Yo cazo lobos. Si vienes, no hagas ruido.']],
+ 5:[['tovo','Hammerbrock, el héroe de la Fragua, ha cerrado las puertas. Solo abrirá a quien le gane.'],['crisol','Es una montaña con armadura. Te sugiero no estar delante cuando golpee.']],
+ 6:[['nerea','Las mareas de los lagos están revueltas. Mis amigos del agua no reconocen a nadie… ni siquiera a ti.']],
+ 7:[['fresno','Greta, la reina de las zarzas, ha cerrado el pinar. Las espinas crecen hacia dentro.']],
+ 8:[['musgo','Mmm… ¿eh? Ah, hola. Los árboles dicen que vienen colosos. Yo iba a echarme la siesta, pero vale.']],
+ 9:[['lira','¡Desde el mirador se ven caer las estrellas! Bueno, y los guardianes astrales, que no dejan pasar a nadie.']],
+ 10:[['nebula','La reina de las estrellas ha bajado del cielo. Camille no lucha por maldad: quiere saber si mereces la pena.']],
+ 11:[['martillo','La senda de las cumbres está llena de forjadores que no preguntan. Como yo.']],
+ 12:[['rama','Huellas de dos cabezas. Es Wolfbi, el alfa: muerde dos veces antes de que pestañees.']],
+ 13:[['kalima','El lago se ha helado en pleno verano. Algo roba el calor de estas montañas… y no es el invierno.']],
+ 14:[['ebano','Estas ruinas fueron un templo del Crisol. Lo que queda de su guardia ya no distingue amigos de enemigos.']],
+ 15:[['crisol','La cumbre. El Draco antiguo. Si alguien está robando la llama, tiene que ser él.'],['tovo','Crisol, te tiemblan las manos.'],['crisol','¡Es el frío!']],
+ 16:[['tovo','La boca de la caverna. Huele a goblin y a… ¿monedas?']],
+ 17:[['eclipse','Los murciélagos de Dracqueen vigilan este nido. Si uno escapa, ella sabrá que venimos.']],
+ 18:[['brasa','Esporas por todas partes. Una chispa de mis flechas y la galería entera sale volando.'],['tovo','Los de la Forja esperaremos fuera. Llévate a los demás, ¿vale?']],
+ 19:[['yunque','Un trol cobra peaje en el puente. Yo pago con martillazos.']],
+ 20:[['crisol','Un goblin con corona. Lo que me faltaba por ver.']],
+ 21:[['reygoblin','¡Mis minas! Los túneles son estrechos, ¿eh? Si entra alguien muy poderoso… ¡crac!, todo abajo.'],['crisol','Por una vez estoy de acuerdo con el goblin. Los legendarios se quedan fuera.']],
+ 22:[['vespa','¡Vagonetas sin frenos y arañas en el techo! ¿A que es divertido?']],
+ 23:[['abisal','Este lago no ha visto la luz en mil años. Lo que vive aquí abajo no la echa de menos.']],
+ 24:[['tovo','La veta es tan estrecha que solo pasamos los pequeños. ¡Por fin una ventaja!'],['titan','Yo vigilo la salida. Y no, no es que no quepa.']],
+ 25:[['kalima','Telarañas que brillan. La Reina Araña teje su palacio con seda y veneno.']],
+ 26:[['soberana','El Castillo carmesí. Ni una estrella brilla aquí dentro: Dracqueen se las ha bebido todas.']],
+ 27:[['lira','Sin luz no puedo cantar… ni disparar. Los astrales nos quedamos fuera esta vez.'],['nebula','Nos debes una historia cuando salgas.']],
+ 28:[['ceniza','Cuidado con los espejos: cada reflejo es un enemigo de verdad.']],
+ 29:[['reygoblin','¡Oigo música! Dracqueen siempre da una fiesta antes de cenar. Y la cena somos nosotros.']],
+ 30:[['crisol','Ahí está. La luz del Crisol brilla en su copa.'],['tovo','Es ahora o nunca. ¡Vamos!']]};
+const DLG_JEFE={
+ 1:{antes:[['matrona','¿Quién se acerca a mi risco? ¡Mi cría y yo te vamos a enseñar modales!']],
+    despues:[['matrona','Peleas con el corazón. Mi cría ya te ha cogido cariño… y yo también. Contad con nosotras.']]},
+ 5:{antes:[['titan','¿Vienes a por la llama? Demuéstralo. Nadie ha pasado nunca de mi escudo.']],
+    despues:[['titan','Hacía siglos que nadie me hacía retroceder. Mi martillo es tuyo.']]},
+ 7:{antes:[['espina','Mi pinar, mis reglas. Cada corte me hace más fuerte.']],
+    despues:[['espina','Peleas como una tormenta de verano. Me gusta. Mis espinas te seguirán.']]},
+ 10:{antes:[['soberana','Las estrellas me hablaron de ti. Veamos si mentían.']],
+    despues:[['soberana','No mentían. Mi luz te acompañará hasta el final del camino.']]},
+ 12:{antes:[['lobo','Grrrr… ¡GRAUUU!'],['tovo','Creo que quiere decir que esta es su guarida.']],
+    despues:[['lobo','…Grr.'],['tovo','Dice que ahora la guarida es de los dos. O que tiene hambre. Una de las dos cosas.']]},
+ 15:{antes:[['draco','Llevo mil años en esta cumbre. No sabes lo que estás haciendo, pequeña llama.']],
+    despues:[['draco','Basta. Eres más fuerte de lo que pensaba. Te acompañaré… y te contaré lo que de verdad pasa con el Crisol.']]},
+ 20:{antes:[['reygoblin','¡Alto ahí! Este es MI salón, MI oro y MI caverna. ¡Corte, a por ellos!']],
+    despues:[['reygoblin','Vale, vale… Me rindo. Pero si vamos a por Dracqueen, quiero mi parte del botín. ¡Toda!']]},
+ 25:{antes:[['reinaarana','Qué visita tan… apetecible. Quédate un rato. Para siempre, a ser posible.']],
+    despues:[['reinaarana','Mi telaraña era perfecta y la has roto. Tendré que tejer otra… a tu lado.']]},
+ 30:{antes:[['dracqueen','¡Cariño, qué entrada! Lástima que la función termine aquí. ¡Murciélagos, música!']],
+    despues:[['dracqueen','Ay… Me has robado el protagonismo, y eso no me lo había hecho nadie.'],['dracqueen','Está bien: la llama vuelve a casa. Pero yo voy contigo. Un espectáculo así no se repite.']]}};
+
+// ---- la escena ----
+let DLG=null;
+function visto(k){HIST.vistos=HIST.vistos||[];return HIST.vistos.includes(k)}
+function marcarVisto(k){HIST.vistos=HIST.vistos||[];if(!HIST.vistos.includes(k)){HIST.vistos.push(k);histSave(HIST)}}
+// lineas: [[quién, texto], …]; fondo: imagen opcional; fin: al terminar o saltar
+function dialogo(lineas,fin,fondo){
+  if(!lineas||!lineas.length){fin&&fin();return}
+  const ov=$('#dialogoOv');ov.querySelector('.dlgFondo').style.backgroundImage=fondo?`linear-gradient(rgba(4,6,10,.45),rgba(4,6,10,.8)),url(${fondo})`:'none';
+  const lados={};let n=0;lineas.forEach(([q])=>{if(!(q in lados))lados[q]=n++%2});
+  DLG={lineas,i:-1,fin,lados,timer:null};ov.hidden=false;dlgSiguiente();
+}
+function dlgSiguiente(){
+  const D=DLG;if(!D)return;
+  if(D.timer){clearInterval(D.timer);D.timer=null;$('#dlgTexto').textContent=D.lineas[D.i][1];return} // termina de escribir
+  D.i++;if(D.i>=D.lineas.length)return dlgCerrar();
+  const [q,t]=D.lineas[D.i],C=CH[q],pj=$('#dlgPj'),lado=D.lados[q]?'der':'izq';
+  if(q==='narra'){pj.hidden=true}
+  else{const src=SPRITE_SRC[q]?SPRITE_SRC[q].src:portrait(q);if(pj.dataset.q!==q){pj.dataset.q=q;pj.src=src;pj.classList.remove('entra');void pj.offsetWidth;pj.classList.add('entra')}pj.hidden=false}
+  pj.className=pj.className.replace(/\b(izq|der)\b/g,'').trim()+' '+lado;
+  const nb=$('#dlgNombre');nb.textContent=q==='narra'?'':C?C.name:q;nb.style.setProperty('--c',C?TRAITS[C.traits[0]].col:'#e9b44c');nb.hidden=q==='narra';
+  $('#dialogoOv .dlgCaja').className='dlgCaja '+lado;
+  const el=$('#dlgTexto');el.textContent='';let k=0;
+  D.timer=setInterval(()=>{k+=2;el.textContent=t.slice(0,k);if(k>=t.length){clearInterval(D.timer);D.timer=null}},28);
+  sfx('roll');
+}
+function dlgCerrar(){const D=DLG;if(!D)return;if(D.timer)clearInterval(D.timer);DLG=null;$('#dialogoOv').hidden=true;$('#dlgPj').dataset.q='';D.fin&&D.fin()}
+$('#dialogoOv').onclick=e=>{if(e.target.id==='bDlgSaltar')return;dlgSiguiente()};
+$('#bDlgSaltar').onclick=e=>{e.stopPropagation();dlgCerrar()};
+window.addEventListener('keydown',e=>{if(!DLG)return;if(e.key===' '||e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();dlgSiguiente()}else if(e.key==='Escape')dlgCerrar()},true);
+
+// ---- ganchos del modo Historia ----
+const fondoMundo=n=>{const I=MAPAS[mundoDe(n)+1];return I?I.src:null};
+// antes de jugar un nivel por primera vez
+function dialogoNivel(n,go){if(visto('n'+n)||!DLG_NIVEL[n])return go();marcarVisto('n'+n);dialogo(DLG_NIVEL[n],go,fondoMundo(n))}
+// al llegar a la ronda del jefe (una vez por nivel)
+function dialogoJefe(){if(!S||S.mode!=='historia')return;const n=S.story.nivel,R=storyRound(),J=DLG_JEFE[n];
+  if(!R||!R.jefe||!J||visto('j'+n))return;marcarVisto('j'+n);dialogo(J.antes,null,fondoMundo(n))}
+// al vencer al jefe por primera vez, antes de presentarlo como campeón nuevo
+function dialogoVictoria(n,go){const J=DLG_JEFE[n];if(!J||visto('v'+n))return go();marcarVisto('v'+n);dialogo(J.despues,go,fondoMundo(n))}
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
