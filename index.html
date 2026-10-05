@@ -866,6 +866,48 @@ body.en-combate .goldPill{display:none}
 .espRasgos{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}.espRasgos .tp b{display:inline}
 .espBanco{display:flex;gap:4px;justify-content:center;margin-top:8px}.espBanco img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:#1d2a33;opacity:.75}
 
+/* ===== tutorial (15k-tutorial.js) ===== */
+#tutFoco{position:fixed;z-index:48;pointer-events:none;border-radius:14px;display:none;transition:left .25s,top .25s,width .25s,height .25s;
+  box-shadow:0 0 0 9999px rgba(4,7,11,.62),0 0 0 3px #ffd98a,0 0 26px 8px rgba(255,196,80,.75);animation:tutLate 1.3s ease-in-out infinite}
+@keyframes tutLate{50%{box-shadow:0 0 0 9999px rgba(4,7,11,.62),0 0 0 5px #fff3c8,0 0 44px 16px rgba(255,214,120,.95)}}
+#tutFoco i{position:absolute;width:9px;height:9px;border-radius:50%;background:radial-gradient(#fff,#ffd98a 45%,transparent 70%);animation:tutChisp 1.6s linear infinite}
+#tutFoco i:nth-child(1){left:-4px;top:-4px}#tutFoco i:nth-child(2){right:-4px;top:-4px;animation-delay:.4s}#tutFoco i:nth-child(3){right:-4px;bottom:-4px;animation-delay:.8s}#tutFoco i:nth-child(4){left:-4px;bottom:-4px;animation-delay:1.2s}
+@keyframes tutChisp{0%,100%{transform:scale(.4);opacity:.3}50%{transform:scale(1.6);opacity:1}}
+.tutAnillo{position:fixed;z-index:48;pointer-events:none;border-radius:12px;box-shadow:0 0 0 3px #ffd98a,0 0 22px 6px rgba(255,196,80,.6);animation:tutAnillo 1.3s ease-in-out infinite}
+@keyframes tutAnillo{50%{box-shadow:0 0 0 4px #fff3c8,0 0 34px 10px rgba(255,214,120,.85)}}
+#tutFlecha{position:fixed;z-index:49;pointer-events:none;display:none;width:28px;text-align:center;font-size:28px;color:#ffd24a;text-shadow:0 0 10px rgba(255,180,40,.9),0 2px 3px #000;animation:tutBota .8s ease-in-out infinite}
+#tutFlecha.abajo{transform:rotate(180deg);animation-name:tutBotaA}
+@keyframes tutBota{50%{margin-top:10px}}@keyframes tutBotaA{50%{margin-top:-10px}}
+#tutCoach{position:fixed;left:50%;bottom:calc(var(--shopH,150px) + 14px);z-index:50;width:min(600px,94vw);display:none;gap:12px;align-items:flex-start;box-sizing:border-box;
+  padding:12px 14px;border-radius:16px;background:linear-gradient(180deg,#22303a,#141c22);border:2px solid #c9a23a;box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 24px rgba(255,190,70,.25);transform:translateX(-50%)}
+#tutCoach.abajo{bottom:auto;top:auto;bottom:calc(var(--shopH,150px) + 14px)}
+#tutCoach:not(.abajo){top:calc(var(--topH,60px) + 12px);bottom:auto}
+#tutCoach.ver{display:flex;animation:tutEntra .35s ease-out}
+@keyframes tutEntra{from{opacity:0;transform:translateX(-50%) translateY(14px) scale(.97)}to{opacity:1;transform:translateX(-50%)}}
+#tutPj{width:72px;height:72px;object-fit:cover;border-radius:12px;border:2px solid #c9a23a;background:#1d2a33;flex:none}
+.tutTx{flex:1;min-width:0}.tutTx b#tutNombre{font-family:var(--display);font-weight:400;font-size:19px}
+#tutTexto{margin:4px 0 8px;font-size:15px;line-height:1.4;color:#eae3cf}#tutTexto b{color:#ffd98a}
+.tutBtns{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+#tutSaltar{background:none;border:none;color:#8fa1ad;font-size:12px;text-decoration:underline;cursor:pointer;margin-right:auto}
+#tutHaz{font-size:13px;color:#ffd98a;animation:tutHaz 1.2s ease-in-out infinite}@keyframes tutHaz{50%{opacity:.45}}
+#tutOk{padding:6px 16px;font-size:15px}
+.tutChispa{position:fixed;z-index:51;width:8px;height:8px;margin:-4px;border-radius:50%;pointer-events:none;background:radial-gradient(#fff,#ffd24a 50%,transparent 70%);animation:tutVuela .75s ease-out forwards}
+@keyframes tutVuela{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.tutBien{position:fixed;z-index:51;pointer-events:none;transform:translate(-50%,-50%);font-family:var(--display);font-size:26px;color:#ffe08a;text-shadow:0 0 12px rgba(255,190,60,.9),0 2px 3px #000;animation:tutBien .9s ease-out forwards}
+@keyframes tutBien{from{opacity:0;transform:translate(-50%,-30%) scale(.7)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}to{opacity:0;transform:translate(-50%,-140%)}}
+@media (max-width:760px){#tutCoach{padding:9px 10px;gap:9px}#tutPj{width:50px;height:50px}#tutTexto{font-size:13.5px}.tutTx b#tutNombre{font-size:16px}}
+@media (max-height:520px){#tutCoach{width:min(520px,64vw);padding:6px 10px;gap:8px;border-radius:12px}#tutPj{width:40px;height:40px;border-radius:8px}
+  #tutTexto{font-size:12.5px;line-height:1.3;margin:2px 0 4px}.tutTx b#tutNombre{font-size:15px}#tutOk{padding:3px 12px;font-size:13px}
+  #tutCoach:not(.abajo){top:calc(var(--topH,50px) + 4px)}#tutCoach.abajo{bottom:calc(var(--shopH,150px) + 4px)}}
+
+/* ===== móvil en horizontal: aviso para girarlo (14-controles.js bloquea el giro donde se puede) ===== */
+#giraOv{display:none}
+@media (orientation:landscape) and (max-height:500px) and (pointer:coarse){
+  #giraOv{display:flex;position:fixed;inset:0;z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:radial-gradient(circle,#1d2a33,#070b0f);color:#f3dfae;text-align:center}
+  #giraOv b{font-family:var(--display);font-weight:400;font-size:28px}#giraOv small{color:#9fb2bd;font-size:15px}
+  .giraIco{font-size:56px;animation:gira 2.2s ease-in-out infinite}}
+@keyframes gira{0%,30%{transform:rotate(-90deg)}60%,100%{transform:rotate(0)}}
+
 </style>
 
 <div id="app">
@@ -969,7 +1011,7 @@ body.en-combate .goldPill{display:none}
       <li>Los rasgos compartidos activan <b>sinergias</b>. Los combates son automáticos: prepara bien tu formación.</li>
       <li>Atajos: <kbd>D</kbd> refrescar · <kbd>F</kbd> subir nivel · <kbd>E</kbd> vender la unidad bajo el cursor · <kbd>Espacio</kbd> luchar.</li>
     </ul>
-    <button class="big" id="bReglasOk">Entendido</button>
+    <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn" id="bTutorial">Repetir el tutorial</button><button class="big" id="bReglasOk">Entendido</button></div>
   </div>
 </div>
 
@@ -1140,6 +1182,8 @@ body.en-combate .goldPill{display:none}
   </div>
 </div>
 
+<div id="giraOv"><div class="giraIco">📱</div><b>Gira el móvil</b><small>Arena del Crisol se juega en vertical</small></div>
+
 <div id="ghost" hidden></div>
 
 <script>
@@ -1152,7 +1196,7 @@ const TRAITS={
  forja:{n:'Forja',kind:'Origen',col:'#e2703a',tiers:[2,4,6],vals:[20,45,80],d:v=>`Unidades de Forja: +${v} de armadura y resistencia mágica.`},
  marea:{n:'Marea',kind:'Origen',col:'#38a9cc',tiers:[2,4],vals:[4,10],d:v=>`Unidades de Marea: regeneran ${v} de maná por segundo.`},
  umbra:{n:'Siniestro',kind:'Origen',col:'#8f70dc',tiers:[2,4],vals:[20,50],d:v=>`Unidades siniestras: +${v}% de daño infligido.`},
- bosque:{n:'Bosque',kind:'Origen',col:'#62b04c',tiers:[2,4],vals:[5,10],d:v=>`Unidades de Bosque: regeneran un ${v}% de su vida máxima por segundo.`},
+ bosque:{n:'Bosque',kind:'Origen',col:'#62b04c',tiers:[2,4],vals:[3,6],d:v=>`Unidades de Bosque: regeneran un ${v}% de su vida máxima por segundo.`},
  astral:{n:'Astral',kind:'Origen',col:'#e3c455',tiers:[2,4],vals:[15,35],d:v=>`Todo el equipo: +${v}% de velocidad de ataque.`},
  tirador:{n:'Tirador',kind:'Clase',col:'#d7a15a',tiers:[2,3,4,5],vals:[15,30,55,75],d:v=>`Tiradores: +${v}% de velocidad de ataque.`},
  guardian:{n:'Guardián',kind:'Clase',col:'#7fa3b8',tiers:[2,4],vals:[150,400],d:v=>`Todo el equipo empieza el combate con un escudo de ${v}.`},
@@ -1673,7 +1717,7 @@ class Combat{
       if(!this.grid.has(k)&&out.length<n){const b=makeCreep(kind,f.team,nc,nr,m);b.summ=true;b.seed=Math.random()*6;this.f.push(b);this.grid.set(k,b);out.push(b);
         if(this.vis)this.emit(10,b.x,b.y-.4,{col:['#c9a8ff','#ff7aa8','#2a1d35'],sp:2,life:.5,glow:1})}}}
     out.forEach(b=>{if(b.jump)this.jump(b)});return out}
-  heal(t,amt,src){if(!t.alive)return;const h=Math.min(amt,t.maxHp-t.hp);t.hp+=h;if(src)src.healing+=h;if(h>1)this.text(t,'+'+Math.round(h),'#8be29f')}
+  heal(t,amt,src){if(!t.alive)return;if(this.prorroga)amt*=FATIGA;const h=Math.min(amt,t.maxHp-t.hp);t.hp+=h;if(src)src.healing+=h;if(h>1)this.text(t,'+'+Math.round(h),'#8be29f')}
   kill(t){
     t.alive=false;t.hp=0;this.grid.delete(key(t.c,t.r));
     if(t.hermandad)for(const h of this.f)if(h.alive&&h.hermandad&&h.team===t.team&&!h.furia){h.furia=true;h.asBonus+=.5;this.callout(h,'¡Furia!','#5ac8d8')}
@@ -1791,7 +1835,7 @@ class Combat{
       if(f.hasteT>0)f.hasteT-=dt;
       if(f.tshieldT>0){f.tshieldT-=dt;if(f.tshieldT<=0)f.tshield=0}
       if(f.regenMana&&f.ab)f.mana=Math.min(f.maxMana,f.mana+f.regenMana*dt);
-      if(f.regenPct&&f.hp<f.maxHp)f.hp=Math.min(f.maxHp,f.hp+f.maxHp*f.regenPct/100*dt);
+      if(f.regenPct&&f.hp<f.maxHp)f.hp=Math.min(f.maxHp,f.hp+f.maxHp*f.regenPct/100*dt*(this.prorroga?FATIGA:1));
       if(f.burnT>0){f.burnT-=dt;if((f.burnAcc=(f.burnAcc||0)+dt)>=.5){f.burnAcc-=.5;this.damage(f.burnSrc,f,f.burnDps*.5,'magic',false,{extra:1});if(this.vis&&f.alive)this.emit(3,f.x,f.y-.4,{col:f.burnCol==='v'?['#9be05a','#5fae3a']:['#ffb13a','#ff6a2a'],sp:.6,up:-1.2,life:.5,sz:.07,glow:1})}}else if(f.burnCol)f.burnCol=null; // quemadura o veneno
       if(f.pas.crecePod)f.ap+=f.pas.crecePod*dt;
       if(f.pas.quemaAura&&(f.quemaT=(f.quemaT||0)+dt)>=1){f.quemaT-=1;
@@ -1840,7 +1884,7 @@ class Combat{
   }
 }
 // prórroga (el combate va ×10) y ejecución, en segundos de combate
-const T_PRORROGA=40,T_EJECUCION=70;
+const T_PRORROGA=40,T_EJECUCION=70,FATIGA=.4; // fatiga: en la prórroga, curación y regeneración al 40 %
 function simulate(A,B){const cb=new Combat(A,B,false);let n=0;while(!cb.over&&n<2000){cb.step(1/20);n++}if(!cb.over){cb.over=true;cb.winner=-1}return cb}
 
 // ================= AI =================
@@ -3590,6 +3634,11 @@ window.addEventListener('keydown',e=>{
 function drawer(which){const b=document.body,open=which&&!b.classList.contains(which);b.classList.remove('showL','showP');if(open)b.classList.add(which);$('#scrim').hidden=!open}
 $('#bShopTab').onclick=()=>document.body.classList.toggle('ver-tienda');
 $('#bTraits').onclick=()=>drawer('showL');$('#bPlayers').onclick=()=>drawer('showP');$('#scrim').onclick=()=>drawer(null);
+// móvil: el juego se juega en vertical. Donde el navegador lo permite (pantalla completa o app instalada en Android) se bloquea
+// el giro; si no, #giraOv (CSS) pide volver a ponerlo en vertical. En tablets y ordenador no se toca.
+const esMovil=()=>matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<600;
+function bloquearVertical(){if(esMovil()&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(()=>{})}
+document.addEventListener('fullscreenchange',bloquearVertical);addEventListener('pointerdown',bloquearVertical,{once:true});bloquearVertical();
 if(document.fullscreenEnabled){const bf=$('#bFull');bf.hidden=false;bf.onclick=()=>{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else document.documentElement.requestFullscreen().catch(()=>{})};
   document.addEventListener('fullscreenchange',()=>setTimeout(layout,60))}
 let diff='normal',myAv=(()=>{try{const a=localStorage.getItem('crisol_avatar');return AVK.includes(a)?a:null}catch(e){return null}})();
@@ -3821,8 +3870,8 @@ const REGLAS={
 Object.entries(REGLAS).forEach(([n,r])=>{if(NIVELES[n-1])NIVELES[n-1].regla=r});
 // Ajuste de fuerza por nivel (multiplica la k de todos sus combates), calibrado con los aumentos activos y la curva
 // en dientes de sierra de docs/modo-historia.md («Dificultad»).
-const AJUSTE_K={1:1.118,2:1.165,3:1.151,4:1.041,5:1.153,6:1.19,7:1.081,8:1.13,9:1.17,10:1.17,11:1.117,12:1.115,14:1.117,15:1.168,
- 16:1.051,17:1.082,18:1.07,19:1.08,20:1.123,21:1.073,22:0.994,23:1.101,24:1.03,25:1.106,26:1.031,27:1.136,29:1.018,30:1.044};
+const AJUSTE_K={1:1.084,2:1.165,3:1.128,4:1.041,5:1.153,6:1.19,7:1.152,8:1.13,9:1.17,10:1.17,11:1.117,12:1.154,14:1.117,15:1.168,
+ 16:1.083,17:1.082,18:1.105,19:1.08,20:1.123,21:1.094,22:1.019,23:1.071,24:1.03,25:1.106,26:1.065,27:1.136,29:1.018,30:1.044};
 Object.entries(AJUSTE_K).forEach(([n,m])=>{const L=NIVELES[n-1];if(L)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
 function reglaOk(L,id){const R=L&&L.regla;if(!R)return true;if(R.sinRasgo&&CH[id].traits.includes(R.sinRasgo))return false;if(R.maxCoste&&CH[id].cost>R.maxCoste)return false;if(R.minCoste&&CH[id].cost<R.minCoste)return false;return true}
 // mazo con el que se juega un nivel: tu mazo sin los campeones que la regla prohíbe, completado (hasta 20) con otros de tu colección
@@ -5235,6 +5284,160 @@ function abrirEspia(p){if(!p)return;const T=traitCounts(p.board),activos=Object.
 $('#bEspiaOk').onclick=()=>{$('#espiaOv').hidden=true};$('#espiaOv').onclick=e=>{if(e.target.id==='espiaOv')$('#espiaOv').hidden=true};
 renderAvisoMisiones();
 
+// ================= TUTORIAL (nivel 1 de la Historia, la primera vez) =================
+// Crisol y Tovo te guían paso a paso según aparece cada cosa: carrusel, banquillo y tablero, luchar, combate, oro y
+// tienda, fusión a 2★, sinergias, objetos, aumentos, interés, nivel, refrescar, recompensas, vender, velocidad y fichas.
+// Cada paso señala su elemento: oscurece el resto de la pantalla, lo rodea con un anillo dorado que late, chispas y una
+// flecha. Los pasos con «hecho» esperan a que lo hagas; los demás, a «Entendido». Se puede saltar, y repetir desde
+// «Cómo se juega». Se guarda en HIST.tutorial (true = visto o saltado).
+const tutActivo=()=>!!(S&&S.mode==='historia'&&S.story&&S.story.nivel===1&&!HIST.tutorial);
+const enPlan=()=>S.phase==='planning';
+const tutHu=()=>H();
+// ---- objetivos en pantalla ----
+function rectEl(sel){const el=typeof sel==='string'?document.querySelector(sel):sel;if(!el||el.closest('[hidden]'))return null;const r=el.getBoundingClientRect();return r.width&&r.height?{x:r.left,y:r.top,w:r.width,h:r.height}:null}
+function rectLienzo(x,y,w,h){const r=$('#cv').getBoundingClientRect();return {x:r.left+M.ox+x,y:r.top+M.oy+y,w,h}}
+function rectUnidad(where,i){const [x,y]=posOf(where,i),s=M.size;return where==='bench'?rectLienzo(i*M.slot+3,M.benchY,M.slot-6,M.slot-2):rectLienzo(x-s*.9,y-s*1.9,s*1.8,s*2.6)}
+function rectCasilla(i){const [x,y]=posOf('board',i),s=M.size;return rectLienzo(x-s*.85,y-s*.95,s*1.7,s*1.9)}
+function rectTablero(todo){const s=M.size,y0=world(0,todo?0:4).y*s+M.pad-s,y1=world(0,7).y*s+M.pad+s;return rectLienzo(-s*.2,y0,M.W+s*.4,y1-y0)}
+function rectCarrusel(){const sp=carSpots();if(!sp.length)return null;const s=M.size,xs=sp.map(p=>p.x),ys=sp.map(p=>p.y);
+  return rectLienzo(Math.min(...xs)-s*1.2,Math.min(...ys)-s*2.2,Math.max(...xs)-Math.min(...xs)+s*2.4,Math.max(...ys)-Math.min(...ys)+s*3.5)}
+function rectUnion(sels){const R=sels.map(rectEl).filter(Boolean);if(!R.length)return null;const x=Math.min(...R.map(r=>r.x)),y=Math.min(...R.map(r=>r.y));
+  return {x,y,w:Math.max(...R.map(r=>r.x+r.w))-x,h:Math.max(...R.map(r=>r.y+r.h))-y}}
+const cartaDe=id=>{const j=(tutHu().shop||[]).indexOf(id);return j<0?null:document.querySelectorAll('#cards .card')[j]};
+const unidadDe=pred=>allUnits(tutHu()).find(o=>pred(o.u));
+const nombre=id=>CH[id]?CH[id].name:id;
+const estrecho=()=>innerWidth<760;
+// ---- preparación de la tienda para enseñar a fusionar y las sinergias ----
+function tutForzarTienda(){const hu=tutHu(),d=S.tut.d;if(d.forzada)return;d.forzada=true;
+  const prim=allUnits(hu)[0];if(!prim)return;const cid=prim.u.id;d.cid=cid;
+  const mazo=S.story.mazo||[],comp=mazo.filter(id=>id!==cid&&CH[id].cost<=2&&CH[id].traits.some(t=>CH[cid].traits.includes(t))).sort((a,b)=>CH[a].cost-CH[b].cost)[0];
+  if(comp){d.part=comp;d.rasgo=CH[comp].traits.find(t=>CH[cid].traits.includes(t))}
+  const poner=(j,id)=>{if(!id||!(S.pool[id]>0))return;if(hu.shop[j])S.pool[hu.shop[j]]++;S.pool[id]--;hu.shop[j]=id};
+  poner(0,cid);poner(1,cid);if(comp)poner(2,comp);
+  const falta=2*CH[cid].cost+(comp?CH[comp].cost:0);if(hu.gold<falta){hu.gold=falta;d.prestamo=true}
+  updateHUD()}
+// ---- pasos ----
+// quien: 'crisol' | 'tovo'; foco: devuelve una lista de rectángulos (el primero se ilumina y se señala); hecho: acción que lo completa
+const TUT_PASOS=[
+ {id:'hola',quien:'crisol',cuando:()=>S.phase==='carousel',texto:'¡Ya estás aquí! Antes de luchar, deja que el mejor archimago del fuego te enseñe cómo funciona el Crisol. Tovo ayudará… un poco.'},
+ {id:'carrusel',quien:'crisol',cuando:()=>S.phase==='carousel',foco:()=>[rectCarrusel()],hecho:()=>S.phase!=='carousel',
+  texto:'Estos campeones vagan por el claro buscando a quien seguir. El Crisol los llama hacia ti: <b>toca uno</b>. Se unirá a tu equipo y trae un objeto de regalo.'},
+ {id:'banquillo',quien:'tovo',cuando:enPlan,saltarSi:()=>boardCount(tutHu())>0,foco:()=>{const o=unidadDe(()=>true);return o?[rectUnidad(o.where,o.i),rectCasilla(3)]:[]},hecho:()=>boardCount(tutHu())>0,
+  texto:'Ese es tu <b>banquillo</b>: ahí esperan los campeones que aún no luchan. <b>Arrástralo</b> a una casilla de tu lado del claro.'},
+ {id:'tablero',quien:'tovo',cuando:enPlan,foco:()=>[rectTablero()],
+  texto:'Este es tu lado del claro. Solo luchan los campeones del <b>tablero</b>. Puedes arrastrarlos para cambiar la formación: los fuertes delante, los que disparan o lanzan hechizos, detrás.'},
+ {id:'contador',quien:'tovo',cuando:enPlan,foco:()=>[rectEl('#countTag'),rectEl('#lvlv')],
+  texto:'Este número te dice cuántos campeones tienes en el tablero y cuántos caben. Depende de tu <b>nivel</b>: cada ronda ganas experiencia y, con cada nivel, cabe uno más.'},
+ {id:'segundo',quien:'tovo',cuando:enPlan,saltarSi:()=>allUnits(tutHu()).length>=maxEq(tutHu()),foco:()=>[rectEl('#cards'),rectEl('.goldPill')],hecho:()=>allUnits(tutHu()).length>=2,
+  texto:()=>`¡Todavía cabe ${maxEq(tutHu())-boardCount(tutHu())===1?'otro campeón':'más campeones'}! Uno solo no aguantará mucho. Con tu <b>oro</b> puedes llamar a otro desde la <b>tienda</b>: <b>toca una carta</b> para comprarlo. El número de abajo es lo que cuesta.`},
+ {id:'segundoTablero',quien:'tovo',cuando:enPlan,saltarSi:()=>boardCount(tutHu())>=Math.min(2,maxEq(tutHu())),
+  foco:()=>{const o=allUnits(tutHu()).find(o=>o.where==='bench');const libre=[3,2,4,1,5].find(i=>!tutHu().board[i]);return o?[rectUnidad(o.where,o.i),rectCasilla(libre)]:[]},hecho:()=>boardCount(tutHu())>=2,
+  texto:'Y ahora, al tablero con él. Dos luchan mejor que uno.'},
+ {id:'luchar',quien:'crisol',cuando:enPlan,foco:()=>[rectEl('#bFight')],hecho:()=>S.phase==='combat',
+  texto:'Cuando quieras, pulsa <b>Luchar</b>. Los campeones pelean solos: tú decides quién va y dónde se coloca.'},
+ {id:'combate',quien:'tovo',cuando:()=>S.phase==='combat'&&S.combat&&S.combat.t>1.4,pausa:true,foco:()=>[rectTablero(true)],
+  texto:'¡Fíjate en las barras! La de arriba es la <b>vida</b> y la azul, el <b>maná</b>: se llena al golpear y al recibir golpes, y entonces el campeón lanza su <b>habilidad</b>.'},
+ {id:'oro',quien:'crisol',cuando:()=>enPlan()&&(S.stage>1||S.round>=3),foco:()=>[rectEl('.goldPill')],
+  texto:'Cada ronda te da <b>oro</b>: 3 en la primera fase y 5 después, más el interés. Bien usado, el oro gana más batallas que mi fuego… casi.'},
+ {id:'copias',quien:'tovo',cuando:()=>enPlan()&&(S.stage>1||S.round>=3),alPoner:tutForzarTienda,saltarSi:()=>allUnits(tutHu()).some(o=>o.u.star>=2),
+  foco:()=>{const d=S.tut.d;return [...document.querySelectorAll('#cards .card')].filter((c,j)=>tutHu().shop[j]===d.cid).map(rectEl)},hecho:()=>allUnits(tutHu()).some(o=>o.u.star>=2),
+  texto:()=>`Mira la tienda: hay dos copias más de <b>${nombre(S.tut.d.cid)}</b>. En la Fragua decimos que tres martillos golpean más fuerte que uno. <b>Compra las dos</b>.${S.tut.d.prestamo?' (Crisol te ha prestado unas monedas.)':''}`},
+ {id:'fusion',quien:'crisol',cuando:enPlan,foco:()=>{const o=unidadDe(u=>u.star>=2);return o?[rectUnidad(o.where,o.i)]:[]},
+  texto:'¡Ja! <b>Tres copias iguales se funden</b> en una sola más fuerte: dos estrellas. Y tres de dos estrellas forman una de <b>tres estrellas</b>. Eso ya es nivel archimago.'},
+ {id:'companero',quien:'tovo',cuando:()=>enPlan()&&S.tut.d.part,saltarSi:()=>!S.tut.d.part||allUnits(tutHu()).some(o=>o.u.id===S.tut.d.part),
+  foco:()=>[rectEl(cartaDe(S.tut.d.part))],hecho:()=>allUnits(tutHu()).some(o=>o.u.id===S.tut.d.part),
+  texto:()=>{const d=S.tut.d,T=TRAITS[d.rasgo];return `Algunos campeones se entienden mejor con otros en el campo de batalla. <b>${nombre(d.part)}</b> y <b>${nombre(d.cid)}</b> son de <b style="color:${T.col}">${T.n}</b>: juntos activan una <b>sinergia</b>. Compra a ${nombre(d.part)}.`}},
+ {id:'colocar',quien:'tovo',cuando:()=>enPlan()&&S.tut.d.part,saltarSi:()=>!S.tut.d.part||tutHu().board.some(u=>u&&u.id===S.tut.d.part),
+  foco:()=>{const o=unidadDe(u=>u.id===S.tut.d.part);return o?[rectUnidad(o.where,o.i),rectTablero()]:[]},hecho:()=>tutHu().board.some(u=>u&&u.id===S.tut.d.part),
+  texto:()=>`Ahora ponlo en el tablero junto a ${nombre(S.tut.d.cid)}: las sinergias solo cuentan a los que luchan.`},
+ {id:'sinergias',quien:'crisol',cuando:enPlan,foco:()=>[estrecho()?rectEl('#bTraits'):rectEl('#traitList .trait.on')||rectEl('#traitList')],
+  texto:()=>{const d=S.tut.d,T=d.rasgo&&TRAITS[d.rasgo];return `Aquí ves tus <b>sinergias</b>. Cuando juntas en el tablero tantos campeones de un rasgo como marca el número, todo el grupo gana su bonificación.${T?` ${T.n}, por ejemplo: ${T.d(T.vals[0])}`:''}${estrecho()?' Toca «Sinergias» para verlas.':''}`}},
+ {id:'objetos',quien:'tovo',cuando:()=>enPlan()&&tutHu().items.some(i=>!ITEMS[i].especial),saltarSi:()=>allUnits(tutHu()).some(o=>o.u.items.length),
+  foco:()=>[rectEl('#inv .item'),rectTablero()],hecho:()=>allUnits(tutHu()).some(o=>o.u.items.length),
+  texto:'Los monstruos sueltan <b>componentes</b>, y tu campeón del carrusel trajo uno. <b>Arrastra el objeto</b> encima de un campeón del tablero para equipárselo.'},
+ {id:'combinar',quien:'tovo',cuando:enPlan,foco:()=>[rectEl('#inv'),rectTablero()],hecho:()=>allUnits(tutHu()).some(o=>o.u.items.some(i=>ITEMS[i].full)),
+  texto:'Dos componentes en el mismo campeón se <b>forjan en un objeto completo</b>, mucho más fuerte. Cada campeón lleva como mucho tres. Cuando tengas otro componente, prueba a juntarlos.'},
+ {id:'diario',quien:'crisol',cuando:enPlan,foco:()=>[rectEl('#bDiario')],
+  texto:'¿No sabes qué forjar? El <b>diario de objetos</b> enseña cada receta y qué le va bien a cada uno de tus campeones.'},
+ {id:'interes',quien:'tovo',cuando:()=>enPlan()&&(S.stage>1||S.round>=5),foco:()=>[rectEl('.goldPill')],
+  texto:'Truco de la Fragua: por cada <b>10 de oro</b> que guardes, ganas <b>1 más</b> al empezar la ronda, hasta 5. A veces ahorrar es la mejor jugada.'},
+ {id:'nivel',quien:'tovo',cuando:enPlan,foco:()=>[rectEl('#bXP')],
+  texto:'Con 4 de oro compras <b>experiencia</b>. Más nivel significa más campeones en el tablero y cartas de más coste en la tienda.'},
+ {id:'refrescar',quien:'crisol',cuando:enPlan,foco:()=>[rectEl('#bRoll'),rectEl('#bLock')],
+  texto:'¿No te gusta lo que ofrece la tienda? <b>Refréscala</b> por 2 de oro. Y si algo te gusta pero aún no puedes pagarlo, <b>bloquéala</b> con el candado y te esperará.'},
+ {id:'vender',quien:'tovo',cuando:()=>enPlan()&&S.stage>=2,foco:()=>[rectEl('#cards')],
+  texto:'Si te sobra un campeón, <b>arrástralo a la tienda</b> para venderlo y recuperar su oro. Hace sitio en el banquillo.'},
+ {id:'velocidad',quien:'crisol',cuando:enPlan,foco:()=>[rectUnion(['#sp1','#sp2','#sp4'])],
+  texto:'Y si los combates te parecen lentos, <b>acelera</b>. Yo los veo a ×4, por supuesto.'},
+ {id:'ficha',quien:'tovo',cuando:enPlan,foco:()=>[rectTablero()],
+  texto:'Toca cualquier campeón, tuyo o enemigo, para ver su <b>ficha</b>: vida, habilidad, objetos y rasgos.'},
+ {id:'fin',quien:'crisol',cuando:enPlan,
+  texto:'Ya sabes todo lo que hay que saber… casi. Al final de este claro espera la <b>Kangmoth del risco</b>. Gana el nivel y el Crisol te dará <b>estrellas</b> según lo bien que lo hagas. ¡Yo superviso!'}];
+// momentos que interrumpen la secuencia, una vez cada uno
+const TUT_EVENTOS=[
+ {id:'aumento',quien:'crisol',cuando:()=>!$('#aumOv').hidden,foco:()=>[rectEl('#aumCartas')],hecho:()=>$('#aumOv').hidden,
+  texto:'¡Mi parte favorita! A mitad de cada fase el Crisol te ofrece un <b>aumento</b>: elige una mejora. Los más raros cambian la partida, pero salen poco.'},
+ {id:'recompensa',quien:'tovo',cuando:()=>!$('#rewardOv').hidden,foco:()=>[rectEl('#rewCards')],hecho:()=>$('#rewardOv').hidden,
+  texto:'¡Fase superada! Al final de cada fase eliges una <b>recompensa</b>: oro, experiencia, un objeto o un campeón.'}];
+// ---- interfaz ----
+let tutUI=null;
+function tutCrearUI(){if(tutUI)return tutUI;
+  const foco=document.createElement('div');foco.id='tutFoco';foco.innerHTML='<i></i><i></i><i></i><i></i>';
+  const flecha=document.createElement('div');flecha.id='tutFlecha';flecha.textContent='▼';
+  const coach=document.createElement('div');coach.id='tutCoach';
+  coach.innerHTML='<img id="tutPj" alt=""><div class="tutTx"><b id="tutNombre"></b><p id="tutTexto"></p><div class="tutBtns"><button id="tutSaltar">Saltar tutorial</button><span id="tutHaz">Hazlo para continuar</span><button class="big" id="tutOk">Entendido</button></div></div>';
+  document.body.append(foco,flecha,coach);
+  $('#tutOk').onclick=()=>tutCompletar(true);
+  $('#tutSaltar').onclick=()=>{HIST.tutorial=true;histSave(HIST);tutOcultar();if(S&&S.tut&&S.tut.pausa){S.pausa=false;S.tut.pausa=false}toast('Tutorial saltado. Puedes repetirlo desde «Cómo se juega»')};
+  return tutUI={foco,flecha,coach,extra:[]}}
+function tutOcultar(){if(!tutUI)return;tutUI.foco.style.display='none';tutUI.flecha.style.display='none';tutUI.coach.classList.remove('ver');tutUI.extra.forEach(e=>e.remove());tutUI.extra=[]}
+function tutMostrar(P){const U=tutCrearUI(),q=P.quien;
+  $('#tutPj').src=portrait(q);$('#tutNombre').textContent=CH[q].name;$('#tutNombre').style.color=TRAITS[CH[q].traits[0]].col;
+  $('#tutTexto').innerHTML=typeof P.texto==='function'?P.texto():P.texto;
+  $('#tutOk').style.display=P.hecho&&P.id!=='combinar'?'none':'';$('#tutHaz').style.display=P.hecho?'':'none';
+  U.coach.classList.remove('ver');void U.coach.offsetWidth;U.coach.classList.add('ver');sfx('roll')}
+// coloca foco, anillos, flecha y bocadillo cada fotograma (la interfaz y el lienzo se recolocan solos)
+function tutColocar(){if(!tutUI||!S||!S.tut||!S.tut.vis)return;const P=S.tut.vis,U=tutUI;
+  const R=(P.foco?P.foco():[]).filter(Boolean),r=R[0];
+  if(r){const m=8;Object.assign(U.foco.style,{display:'block',left:r.x-m+'px',top:r.y-m+'px',width:r.w+2*m+'px',height:r.h+2*m+'px'});
+    const arriba=r.y>140;Object.assign(U.flecha.style,{display:'block',left:r.x+r.w/2-14+'px',top:(arriba?r.y-46:r.y+r.h+12)+'px'});U.flecha.className=arriba?'':'abajo'}
+  else{U.foco.style.display='none';U.flecha.style.display='none'}
+  // anillos extra (sin oscurecer) para el resto de objetivos
+  while(U.extra.length<Math.max(0,R.length-1)){const e=document.createElement('div');e.className='tutAnillo';document.body.appendChild(e);U.extra.push(e)}
+  U.extra.forEach((e,k)=>{const q=R[k+1];if(!q){e.style.display='none';return}Object.assign(e.style,{display:'block',left:q.x-6+'px',top:q.y-6+'px',width:q.w+12+'px',height:q.h+12+'px'})});
+  // el bocadillo, en la mitad contraria al objetivo
+  const abajo=r?r.y+r.h/2<innerHeight*.5:false;U.coach.classList.toggle('abajo',abajo)}
+function tutCompletar(conBoton){const st=S&&S.tut;if(!st||!st.vis)return;const P=st.vis,r=tutUI&&tutUI.foco.style.display!=='none'?tutUI.foco.getBoundingClientRect():null;
+  if(P.ev)st.ev[P.id]=true;else st.i++;st.vis=null;if(st.pausa){S.pausa=false;st.pausa=false}tutOcultar();
+  if(!conBoton||P.hecho){sfx('levelup');if(r)tutDestello(r.left+r.width/2,r.top+r.height/2)}
+  if(P.id==='fin'){HIST.tutorial=true;histSave(HIST)}}
+function tutDestello(x,y){for(let k=0;k<14;k++){const e=document.createElement('i');e.className='tutChispa';const a=k/14*6.28,d=50+Math.random()*50;
+  e.style.left=x+'px';e.style.top=y+'px';e.style.setProperty('--dx',Math.cos(a)*d+'px');e.style.setProperty('--dy',Math.sin(a)*d+'px');document.body.appendChild(e);setTimeout(()=>e.remove(),750)}
+  const t=document.createElement('div');t.className='tutBien';t.textContent='¡Bien!';t.style.left=x+'px';t.style.top=y+'px';document.body.appendChild(t);setTimeout(()=>t.remove(),900)}
+// ---- bucle ----
+const TUT_TAPAN=['#dialogoOv','#mundoOv','#reglaOv','#storyOv','#pausaOv','#endOv','#diarioOv','#objOv','#fichaOv','#unlockOv','#subidaOv','#espiaOv','#cuentaOv'];
+function tutTick(){
+  if(!tutActivo()){if(tutUI&&tutUI.coach.classList.contains('ver'))tutOcultar();return}
+  const st=S.tut||(S.tut={i:0,vis:null,ev:{},d:{}});
+  if(TUT_TAPAN.some(s=>{const e=$(s);return e&&!e.hidden})){if(st.vis){tutOcultar();st.vis.oculto=true}return} // espera a que se cierren diálogos y menús
+  if(st.vis){const P=st.vis,ahora=S.stage*10+S.round;
+    if(P.hecho&&P.hecho())return tutCompletar(false);
+    if(ahora>(st.desde||ahora)+1)return tutCompletar(true); // si lo deja pasar dos rondas, seguimos
+    if(!P.cuando()){if(!P.hecho)return tutCompletar(true);if(!P.oculto){tutOcultar();P.oculto=true}return} // pasó su momento; las acciones esperan a la próxima ronda
+    if(P.oculto){P.oculto=false;tutMostrar(P)}
+    return}
+  for(const E of TUT_EVENTOS)if(!st.ev[E.id]&&E.cuando()){st.vis=Object.assign({ev:true},E);st.desde=S.stage*10+S.round;tutMostrar(st.vis);return}
+  if(!$('#aumOv').hidden||!$('#rewardOv').hidden)return;
+  if($('#banner').classList.contains('show'))return; // primero el cartel de la ronda
+  while(st.i<TUT_PASOS.length){const P=TUT_PASOS[st.i];if(P.cuando()&&P.alPoner)P.alPoner();if(P.cuando()&&P.saltarSi&&P.saltarSi()){st.i++;continue}break}
+  const P=TUT_PASOS[st.i];if(!P){HIST.tutorial=true;histSave(HIST);return}
+  if(!P.cuando())return;
+  st.vis=P;st.desde=S.stage*10+S.round;if(P.pausa&&!S.pausa){S.pausa=true;st.pausa=true}tutMostrar(P)}
+setInterval(()=>{try{tutTick()}catch(e){console.error('tutorial',e)}},200);
+(function tutBucle(){try{tutColocar()}catch(e){}requestAnimationFrame(tutBucle)})();
+// repetir desde «Cómo se juega»
+$('#bTutorial').onclick=()=>{HIST.tutorial=false;histSave(HIST);$('#reglasOv').hidden=true;toast('El tutorial empezará la próxima vez que juegues el nivel 1 del modo Historia')};
+
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
 const vel=cb=>cb.prorroga&&!cb.over?Math.max(10,S.speed||1):(S.speed||1); // en la prórroga el combate va ×10
@@ -5248,7 +5451,7 @@ function frame(now){
     if(cb&&S.phase==='combat'&&!S.pausa){
       if(!cb.over){
         if(cb.hitstop>0)cb.hitstop-=dt; // parón breve en críticos, habilidades de jefe y muertes
-        else{if(cb.prorroga&&!cb.avisoProrroga){cb.avisoProrroga=true;banner('¡Prórroga!','Combate ×10: si no termina, cae el equipo con menos vida')}
+        else{if(cb.prorroga&&!cb.avisoProrroga){cb.avisoProrroga=true;banner('¡Prórroga!','Combate ×10 y curación reducida: si no termina, cae el equipo con menos vida')}
           acc+=dt*vel(cb);while(acc>=1/30){cb.step(1/30);acc-=1/30;if(cb.over)break}}
         REND_A=cb.over?0:Math.min(1,acc*30)}
       else{REND_A=0;S.endT+=dt;if(S.endT>(cb.finale?1.7:1.1)&&!S.resolving){S.resolving=true;resolveCombat()}}
