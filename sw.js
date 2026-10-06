@@ -1,5 +1,5 @@
 // service worker de Arena del Crisol (lo genera tools/build.py)
-const CACHE='crisol-d23b808640';
+const CACHE='crisol-8b845d980d';
 self.addEventListener('install',e=>{self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('crisol-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{

@@ -3872,9 +3872,12 @@ const REGLAS={
 Object.entries(REGLAS).forEach(([n,r])=>{if(NIVELES[n-1])NIVELES[n-1].regla=r});
 // Ajuste de fuerza por nivel (multiplica la k de todos sus combates), calibrado con los aumentos activos y la curva
 // en dientes de sierra de docs/modo-historia.md («Dificultad»).
-const AJUSTE_K={1:1.084,2:1.165,3:1.128,4:0.677,5:1.153,6:1.19,7:1.152,8:1.13,9:1.17,10:1.17,11:1.117,12:1.154,14:1.117,15:1.168,
- 16:1.083,17:1.082,18:1.105,19:1.08,20:1.123,21:1.094,22:0.662,23:1.071,24:1.03,25:1.106,26:1.065,27:1.136,29:1.018,30:1.044};
+const AJUSTE_K={1:1.084,2:1.165,3:1.128,4:0.636,5:1.153,6:1.126,7:1.152,8:1.096,9:1.09,10:1.131,11:1.078,12:1.133,14:1.117,15:1.098,
+ 16:1.105,17:1.082,18:1.105,19:1.08,20:1.123,21:1.116,22:0.662,23:1.106,24:1.03,25:1.106,26:1.065,27:1.096,29:1.018,30:1.069};
 Object.entries(AJUSTE_K).forEach(([n,m])=>{const L=NIVELES[n-1];if(L)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
+// escalones suaves: el primer combate de las fases 3 y 4 (donde los rivales pasan a 2★ y con objetos) pesa un 15 % menos
+const SUAVE_FASE=.85;
+NIVELES.forEach(L=>{if(L.superv||L.turnos||L.fases.length<4)return;[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 function reglaOk(L,id){const R=L&&L.regla;if(!R)return true;if(R.sinRasgo&&CH[id].traits.includes(R.sinRasgo))return false;if(R.maxCoste&&CH[id].cost>R.maxCoste)return false;if(R.minCoste&&CH[id].cost<R.minCoste)return false;return true}
 // mazo con el que se juega un nivel: tu mazo sin los campeones que la regla prohíbe, completado (hasta 20) con otros de tu colección
 // que sí la cumplen, de más caro a más barato y sin pasar los límites por rasgo
