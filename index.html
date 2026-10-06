@@ -4771,7 +4771,7 @@ function renderCuenta(){
   const boton=(id,precio,pase,equipado)=>tiene(id)?(equipado?'<span class="ctEq">✓ Puesto</span>':`<button class="btn" data-eq="${id}">Poner</button>`)
     :pase?`<span class="ctPase">Pase · nivel ${pase}</span>`:`<button class="btn ctComprar" data-buy="${id}" data-p="${precio}"${CUENTA.ascuas<precio?' disabled':''}><span class="ascua"></span> ${precio}</button>`;
   if(tiendaCat==='aspectos'){
-    const ids=ALBUM.filter(id=>SPRITE_SRC[id]);if(!tiendaCh||!ids.includes(tiendaCh))tiendaCh=ids[0];
+    const ids=ALBUM.filter(id=>SPRITE_SRC[id]&&enAlbum(id));if(!tiendaCh||!ids.includes(tiendaCh))tiendaCh=ids[0];
     h+=`<div class="ctChs">${ids.map(id=>`<button class="ctCh${id===tiendaCh?' sel':''}" data-ch="${id}" title="${CH[id].name}"><img src="${portrait(id)}" alt=""><small>${Object.keys(ESTILOS).filter(e=>tiene('aspecto:'+id+':'+e)).length||''}</small></button>`).join('')}</div>
       <div class="ctAsps">${[['',{n:'Original',p:0}],...Object.entries(ESTILOS)].map(([e,E])=>{const id='aspecto:'+tiendaCh+':'+e,eq=(CUENTA.eq.aspectos[tiendaCh]||'')===e;
         const pase=Object.entries(PASE).find(([n,P])=>P.includes(id));
@@ -4958,6 +4958,8 @@ Object.assign(REGLAS,{
  46:{minRasgo:'astral',minN:2,t:'Al menos 2 Astrales contra el jefe',motivo:'Solo la luz puede romper la maldición de Morvane: en la ronda final necesitarás al menos 2 Astrales en el tablero.'}});
 NIVELES_M3.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n]});
 if(MUNDO3_ABIERTO)NIVELES.push(...NIVELES_M3);
+// cerrado: sus campeones no salen en el álbum ni en la tienda (ni como silueta)
+else ['orion','chipilin','varg','vidar','morvane'].forEach(id=>{const i=ALBUM.indexOf(id);if(i>=0)ALBUM.splice(i,1)});
 Object.assign(JEFES,{chipilin:{n:'Mano rápida',k:'robo',v:[380],mana:50},golemhueso:{n:'Temblor de huesos',k:'aoeSelf',v:[320],r:1,d:1,mana:70},
  varg:{n:'Muralla rúnica',k:'shield',v:[900],d:1.5,mana:60},vidar:{n:'Tormenta de hachas',k:'aoeSelf',v:[420],r:1,mana:60},
  morvane:{n:'Ejército de huesos',k:'necro',v:[420],n2:3,mana:70},morvaneoscuro:{n:'Llamarada maldita',k:'aoe',v:[520],r:1,mana:65}});
