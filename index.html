@@ -908,6 +908,27 @@ body.en-combate .goldPill{display:none}
   .giraIco{font-size:56px;animation:gira 2.2s ease-in-out infinite}}
 @keyframes gira{0%,30%{transform:rotate(-90deg)}60%,100%{transform:rotate(0)}}
 
+/* ===== Torre del Crisol (15l-torre.js) ===== */
+.torreCarta.bloq{filter:grayscale(.8);opacity:.7}
+.torreModal{max-width:760px;display:flex;gap:18px;align-items:stretch}
+.tDib{position:relative;width:200px;flex:none;display:flex;flex-direction:column;align-items:center}
+.tLlama{width:46px;height:56px;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#fff3c0,#ffb03a 40%,#e0501a 70%,transparent 72%);filter:drop-shadow(0 0 16px #ff9a3a);animation:tLlama 1.4s ease-in-out infinite alternate}
+@keyframes tLlama{to{transform:scale(1.08,1.15) translateY(-3px);filter:drop-shadow(0 0 26px #ffb03a)}}
+.tCol{width:150px;max-height:52vh;overflow-y:auto;scrollbar-width:none;border-left:3px solid #6a5226;border-right:3px solid #6a5226;background:repeating-linear-gradient(180deg,#2a2218 0 38px,#211b13 38px 40px);box-shadow:inset 0 0 18px rgba(0,0,0,.7)}
+.tCol::-webkit-scrollbar{display:none}
+.tPiso{position:relative;height:40px;display:flex;align-items:center;justify-content:center;color:#8f7a55;font-weight:700;font-size:13px}
+.tPiso.subido{color:#ffd98a;background:linear-gradient(90deg,transparent,rgba(255,190,80,.12),transparent)}
+.tPiso.eco i{position:absolute;right:8px;color:#8fd0ff;font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px #3aa0ff}
+.tYo{position:absolute;left:6px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:10px;color:#7dffb0;text-shadow:0 0 6px rgba(80,255,150,.6)}
+.tBase{width:186px;height:16px;background:#3a2d14;border:2px solid #6a5226;border-radius:4px}
+.tInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.tDatos{display:flex;gap:10px}.tDatos div{flex:1;background:#1f1a12;border:1px solid #3a2e18;border-radius:10px;padding:8px 10px}.tDatos small{display:block;color:var(--muted);font-size:12px}.tDatos b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--gold-hi)}
+.tMald{background:linear-gradient(90deg,#24142c,#1a1220);border:1px solid #6a3a88;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}.tMald small{color:#c9a0ff;font-size:12px;text-transform:uppercase;letter-spacing:.08em}.tMald b{color:#e8d0ff;font-size:16px}.tMald span{color:#c7b8d6;font-size:13px}
+.tReglas{margin:0;padding-left:18px;color:#c9d6dd;font-size:13px;line-height:1.45}
+#banner.torre .t{color:#ffd98a}#banner.torre{animation:tSube .9s ease-out}#banner.eco .t{color:#8fd0ff;text-shadow:0 0 16px #3aa0ff}
+@keyframes tSube{from{transform:translateY(calc(-50% + 40px));opacity:0}to{transform:translateY(-50%)}}
+@media (max-width:760px){.torreModal{flex-direction:column;align-items:center;gap:10px;max-height:calc(100vh - 20px);overflow-y:auto}.tDib{width:100%}.tLlama{width:34px;height:42px}.tCol{max-height:20vh}.tInfo{width:100%;gap:8px}.tReglas{font-size:12px}}
+
 </style>
 
 <div id="app">
@@ -981,6 +1002,7 @@ body.en-combate .goldPill{display:none}
     <button class="mpCarta grande" id="bStory"><div class="mpImg" id="mpImgHist"></div><div class="mpTxt"><b>Modo Historia</b><small id="mpHistSub">Mundos con jefes · tu mazo de campeones</small></div></button>
     <button class="mpCarta grande" id="bArena"><div class="mpImg" id="mpImgArena"></div><div class="mpTxt"><b>Arena libre</b><small id="bestTxt">8 jugadores · el último en pie gana</small></div></button>
     <div class="mpLado">
+      <button class="mpCarta album torreCarta" id="bTorre"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3c-4 5-6 8-3 12 2 3 6 2 6-1 3 3 2 7-3 9-6-1-8-6-6-10" fill="#ff9a3a" stroke="#ffd98a" stroke-width="1.5"/><path d="M22 22h20l-2 6h-16z" fill="#3a2d14" stroke="#e9b44c" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 28h16l3 30H21z" fill="#2a2110" stroke="#e9b44c" stroke-width="3" stroke-linejoin="round"/><rect x="29" y="34" width="6" height="8" rx="3" fill="#ffcf6a"/><rect x="29" y="47" width="6" height="8" rx="3" fill="#ffcf6a" opacity=".6"/></svg></div><div class="mpTxt"><b>Torre del Crisol</b><small id="torreSub">Sube piso a piso</small></div></button>
       <button class="mpCarta album" id="bTienda"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 24h44l-4 30H14z" fill="#3a2d14" stroke="#ffd98a" stroke-width="3" stroke-linejoin="round"/><path d="M22 24c0-8 4-13 10-13s10 5 10 13" fill="none" stroke="#e9b44c" stroke-width="3"/><path d="M32 30c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#ff8a3a"/></svg></div><div class="mpTxt"><b>Tienda</b><small>Aspectos, tableros y marcos</small></div></button>
       <button class="mpCarta album" id="bAlbum"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="8" width="34" height="46" rx="5" fill="#2a2110" stroke="#e9b44c" stroke-width="3" transform="rotate(-8 27 31)"/><rect x="20" y="8" width="34" height="46" rx="5" fill="#3a2d14" stroke="#ffd98a" stroke-width="3"/><path d="M37 18l3.4 7 7.6 1.1-5.5 5.4 1.3 7.6L37 35.5l-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#ffd98a"/></svg></div><div class="mpTxt"><b>Álbum</b><small id="mpAlbumSub">Tus campeones</small></div></button>
       <button class="mpCarta album" id="bObjetos"><div class="mpIcoAlbum"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 14c8-4 16-4 24 1v38c-8-5-16-5-24-1z" fill="#2a2110" stroke="#e9b44c" stroke-width="3" stroke-linejoin="round"/><path d="M56 14c-8-4-16-4-24 1v38c8-5 16-5 24-1z" fill="#3a2d14" stroke="#ffd98a" stroke-width="3" stroke-linejoin="round"/><path d="M44 21l4 4-9 9-2 5-3-3 5-2z" fill="#ffd98a"/><circle cx="20" cy="31" r="6" fill="#6fd0ff" stroke="#e9b44c" stroke-width="2"/></svg></div><div class="mpTxt"><b>Objetos</b><small>Diario y combinaciones</small></div></button>
@@ -1183,6 +1205,10 @@ body.en-combate .goldPill{display:none}
 </div>
 
 <div id="giraOv"><div class="giraIco">📱</div><b>Gira el móvil</b><small>Arena del Crisol se juega en vertical</small></div>
+
+<div class="overlay torreOv" id="torreOv" hidden>
+  <div class="modal torreModal" id="torreBody"></div>
+</div>
 
 <div id="ghost" hidden></div>
 
@@ -1983,8 +2009,8 @@ function aiTurn(p,opp){
 // ================= FLOW =================
 function roundType(s,r){if(S&&S.mode==='historia')return s===1&&r===1?'carousel':'pve'; // Historia: 1-1 carrusel, el resto combates diseñados
   if(s===1)return r===1?'carousel':'pve';if(r===4)return 'carousel';if(r===7)return 'pve';return 'pvp'}
-function roundsIn(s){return S&&S.mode==='historia'?(NIVELES[S.story.nivel-1].nr||6):s===1?4:7}
-const nFases=()=>S&&S.mode==='historia'?NIVELES[S.story.nivel-1].fases.length:4; // fases del nivel de Historia
+function roundsIn(s){return S&&S.mode==='historia'?(S.story.torre?(s===1?6:5):nivelActual().nr||6):s===1?4:7} // Torre: 6 rondas en la 1.ª fase (carrusel) y 5 en las demás
+const nFases=()=>S&&S.mode==='historia'?(S.story.torre?9999:nivelActual().fases.length):4; // fases del nivel de Historia
 function incomeFor(p){
   if(S.stage===1)return 3;
   const interest=Math.min(p.intMax||5,Math.floor(p.gold/10)),s=Math.abs(p.streak);
@@ -2024,7 +2050,7 @@ function startCombat(){
   if(!S||S.phase!=='planning')return;
   if(S.mode==='multi'&&S.type==='pvp')return multiListo(); // 15d-multi.js
   const hu=H();autofill(hu);hideInfo();
-  const RG=S.mode==='historia'&&NIVELES[S.story.nivel-1].regla;
+  const RG=S.mode==='historia'&&nivelActual().regla;
   if(RG&&RG.minRasgo&&storyRound()&&storyRound().jefe){const n=traitCounts(hu.board)[RG.minRasgo]||0;if(n<RG.minN){toast(`Contra el jefe necesitas al menos ${RG.minN} campeones ${TRAITS[RG.minRasgo].n} en el tablero (tienes ${n})`);return}} // la regla vale en la ronda del jefe
   let enemy;
   if(S.type==='pve')enemy=enemyTeam(1);
@@ -2743,6 +2769,7 @@ function drawUnit(x,y,o){
   if(o.glow){ctx.strokeStyle=`rgba(255,217,138,${o.glow})`;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,fy,s*(.5+(1.3-o.glow)*.4)*sc,s*(.2+(1.3-o.glow)*.15)*sc,0,0,Math.PI*2);ctx.stroke()}
   // figure
   ctx.save();ctx.translate(x,fy);
+  if(o.eco){ctx.filter='grayscale(1) sepia(1) hue-rotate(165deg) saturate(2.6) brightness(1.15)';ctx.globalAlpha*=.88} // eco de jefe (Torre del Crisol)
   if(o.dead){ctx.globalAlpha*=Math.max(0,1-o.dead);if(!tieneMarioneta(typeof o.creep==='string'?o.creep:o.id))ctx.rotate(o.dead*1.35*(o.face||1))} // la marioneta cae sola
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
@@ -3195,7 +3222,7 @@ function draw(){
       if(f.move){const m=f.move,k0=Math.min(1,m.t+REND_A*(1/30)/m.dur),k=k0*k0*(3-2*k0);x=(m.fx+(m.tx-m.fx)*k)*s;y=(m.fy+(m.ty-m.fy)*k)*s-Math.sin(k0*Math.PI)*s*.12} // entre pasos: suave y con saltito
       if(f.anim>0&&f.range<=1){const k=Math.sin((1-f.anim)*Math.PI)*.22;x+=(f.ax*s-x)*k;y+=(f.ay*s-y)*k}
       if(giro){ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI);ctx.translate(-x,-y)} // cada figura, derecha
-      drawUnit(x,y,{scale:f.jefe?1.3:1,id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:(f.face||1)*(giro?-1:1),t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
+      drawUnit(x,y,{scale:f.jefe?1.3:1,eco:f.eco,id:f.id,aim:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range,look:f.look,creep:f.creep?f.id:null,col:f.col,col2:f.col2,cost:f.cost,star:f.star,items:f.items,face:(f.face||1)*(giro?-1:1),t:now,seed:f.seed,walk:!!f.move,atk:f.anim,cast:(f.castFx||0)/.5,flash:f.flash,dead:f.alive?0:Math.min(1,f.deadT*1.6),
         st:f,wind:f.alive&&!f.move&&f.stunT<=0&&f.target&&f.target.alive&&hexDist(f.c,f.r,f.target.c,f.target.r)<=f.range?Math.max(0,Math.min(1,1-f.atkCd/.4)):0,bars:f.alive,team:giro?1-f.team:f.team,hpF:f.hp/f.maxHp,maxHp:f.maxHp,shieldF:(f.shield+f.tshield)/f.maxHp,mana:f.ab?f.mana/f.maxMana:null,stun:f.alive&&f.stunT>0&&!(f.frozenT>0),sel:S.selF===f});
       if(f.alive)drawAuras(f,x,y,s,now);
       if(giro)ctx.restore();
@@ -3203,7 +3230,7 @@ function draw(){
     drawParticles(cb,s);drawProjectiles(cb,s);drawFx(cb,s);
   }else if(S.phase==='carousel'&&S.carOpts){drawCarousel(now)
   }else{
-    if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawUnit(f.x*s,f.y*s,{scale:f.jefe?1.3:1,creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
+    if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawUnit(f.x*s,f.y*s,{scale:f.jefe?1.3:1,eco:f.eco,creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
     hu.board.forEach((u,i)=>{if(!u||isHidden('board',i))return;const r=Math.floor(i/7),c=i%7,w=world(c,4+r);drawUnit(w.x*s,w.y*s,unitOpts(u,{face:c>3?-1:1,sel:S.sel&&S.sel.where==='board'&&S.sel.i===i}))});
   }
   ctx.restore();
@@ -3384,7 +3411,7 @@ function updateHUD(){
   if(!S)return;const hu=H(),pl=S.phase==='planning';
   // en combate la tienda se esconde (queda una pestaña); al volver a preparar, reaparece
   const enc=S.phase==='combat'||S.phase==='result';document.body.classList.toggle('en-combate',enc);if(!enc)document.body.classList.remove('ver-tienda');
-  const hist=S.mode==='historia';$('#stageTit').textContent=hist?`Nivel ${S.story.nivel} · Fase ${S.stage}`:'Ronda';
+  const hist=S.mode==='historia';$('#stageTit').textContent=hist?(S.story.torre?`Torre · Piso ${pisoActual()}`:`Nivel ${S.story.nivel} · Fase ${S.stage}`):'Ronda';
   $('#stageLbl').textContent=hist?`${S.round}/${roundsIn(S.stage)}`:`${S.stage}-${S.round}`;
   const pips=$('#pips');pips.innerHTML='';
   for(let r=1;r<=roundsIn(S.stage);r++){const d=document.createElement('i');d.className='pip '+roundType(S.stage,r)+(r<S.round?' done':r===S.round?' cur':'');d.title=({pvp:'Combate contra jugador',pve:'Monstruos',carousel:'Carrusel'})[roundType(S.stage,r)];pips.appendChild(d)}
@@ -3451,7 +3478,10 @@ function updateHUD(){
   }
   // players
   const pl2=$('#plist');pl2.innerHTML='';
-  if(S.mode==='historia'){ // progreso del nivel en lugar de la lista de jugadores
+  if(S.mode==='historia'&&S.story.torre){const R=storyRound(),T=torreDatos(),M=torreMaldicion(); // Torre del Crisol (15l-torre.js)
+    pl2.innerHTML=`<li class="me"><span></span><span class="pn">Torre del Crisol · Piso ${pisoActual()}</span><span></span></li><li><span></span><span class="pn">Récord: piso ${T.mejor}</span><span></span></li><li><span></span><span class="pn" style="white-space:normal">Maldición: ${M.n}</span><span></span></li>`
+      +(R&&S.phase!=='over'?`<li class="opp"><span></span><span class="pn" style="white-space:normal">${R.eco?'Eco de jefe':'Rival'}: ${R.n.replace(' (eco)','')}</span><span></span></li>`:'');
+  }else if(S.mode==='historia'){ // progreso del nivel en lugar de la lista de jugadores
     const L=NIVELES[S.story.nivel-1],R=storyRound();
     pl2.innerHTML=`<li class="me"><span></span><span class="pn">Nivel ${L.n} · ${L.nombre}</span><span></span></li>`+Array.from({length:nFases()},(_,i)=>i+1).map(f=>`<li class="${f<S.stage?'dead':f===S.stage?'opp':''}"><span></span><span class="pn">Fase ${f}${f===nFases()&&!L.superv?' · jefe':''}</span><span class="phv">${f<S.stage?'✓':f===S.stage?S.round+'/'+roundsIn(f):''}</span></li>`).join('')
       +(R&&S.phase!=='over'?`<li><span></span><span class="pn" style="white-space:normal">${R.jefe?'Jefe':'Rival'}: ${R.n}</span><span></span></li>`:'');
@@ -3668,7 +3698,7 @@ document.querySelectorAll('#diffSeg button').forEach(b=>b.ondblclick=()=>$('#bSt
 document.querySelectorAll('#diffSeg button').forEach(b=>b.onclick=()=>{diff=b.dataset.d;document.querySelectorAll('#diffSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
 function begin(){audioInit();document.body.classList.remove('historia');newGame(diff);dmgCb=null;renderDmg();$('#startOv').hidden=true;$('#endOv').hidden=true;layout();beginRound()}
 $('#bStart').onclick=()=>{$('#arenaOv').hidden=true;begin()};$('#bArena').onclick=()=>{audioInit();$('#arenaOv').hidden=false};$('#bArenaVolver').onclick=()=>{$('#arenaOv').hidden=true};
-function backToMenu(){$('#endOv').hidden=true;$('#storyOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();document.body.classList.remove('en-combate','ver-tienda','historia');showBest();renderPerfil()}
+function backToMenu(){if(typeof pintaCartaTorre==='function')setTimeout(pintaCartaTorre,0);$('#endOv').hidden=true;$('#storyOv').hidden=true;$('#startOv').hidden=false;S=null;hideInfo();document.body.classList.remove('en-combate','ver-tienda','historia');showBest();renderPerfil()}
 $('#bAgain').onclick=backToMenu;
 // modo Historia (15-historia.js)
 $('#bStory').onclick=()=>{audioInit();openStory()};
@@ -3873,7 +3903,7 @@ Object.entries(REGLAS).forEach(([n,r])=>{if(NIVELES[n-1])NIVELES[n-1].regla=r});
 // Ajuste de fuerza por nivel (multiplica la k de todos sus combates), calibrado con los aumentos activos y la curva
 // en dientes de sierra de docs/modo-historia.md («Dificultad»).
 const AJUSTE_K={1:1.084,2:1.165,3:1.128,4:0.636,5:1.153,6:1.126,7:1.152,8:1.096,9:1.09,10:1.131,11:1.078,12:1.133,14:1.117,15:1.098,
- 16:1.105,17:1.082,18:1.105,19:1.08,20:1.123,21:1.116,22:0.662,23:1.106,24:1.03,25:1.106,26:1.065,27:1.096,29:1.018,30:1.069};
+ 16:1.05,17:1.082,18:1.127,19:1.053,20:1.123,21:1.123,22:0.662,23:1.106,24:1.03,25:1.086,26:1.065,27:1.118,29:1.018,30:1.005};
 Object.entries(AJUSTE_K).forEach(([n,m])=>{const L=NIVELES[n-1];if(L)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
 // escalones suaves: el primer combate de las fases 3 y 4 (donde los rivales pasan a 2★ y con objetos) pesa un 15 % menos
 const SUAVE_FASE=.85;
@@ -3937,7 +3967,8 @@ function histSave(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h))}catch(
 let HIST=histLoad();
 
 // ---- rivales de la ronda ----
-function storyRound(){const L=NIVELES[S.story.nivel-1];return L.fases[S.stage-1][S.round-1]}
+const nivelActual=()=>S.story.torre?TORRE.L:NIVELES[S.story.nivel-1]; // la Torre del Crisol (15l-torre.js) se juega como un nivel infinito
+function storyRound(){if(S.story.torre)torreAsegura(S.stage);const L=nivelActual();return L.fases[S.stage-1][S.round-1]}
 function storyRoundName(){const R=S.mode==='historia'&&storyRound();return R?(R.jefe?'Jefe: ':'')+R.n:''}
 function enemyTeam(team){return S.mode==='historia'?storyTeam(team):creepTeam(team)}
 function storyTeam(team){
@@ -3950,7 +3981,7 @@ function storyTeam(team){
     if(R.jefe&&JEFES[e.m]&&(e.jefe||!R.u.some(x=>x.jefe))){const J=JEFES[e.m];f.jefe=true;f.name+=JEFAS.includes(e.m)?' (jefa)':' (jefe)';f.ab={n:J.n,k:J.k,v:J.v,r:J.r,d:J.d,h:J.h,n2:J.n2,heal:J.heal};f.maxMana=J.mana;f.mana=0}
     out.push(f);
   }
-  const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=NIVELES[S.story.nivel-1].premio;
+  const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=nivelActual().premio;
   if(R.jefe)for(const f of all)if(!f.creep&&f.id===premio&&f.star===3&&!f.jefe){f.jefe=true;f.name+=' (jefe)'} // campeón jefe // k: fuerza del combate (calibrada con simulaciones; ver docs/modo-historia.md)
   for(const f of all){f.maxHp*=k;f.hp=f.maxHp;f.ad*=k;if(!f.creep)f.ap+=(k-1)*100}
   return all;
@@ -3990,7 +4021,7 @@ function storyLost(){
 function endScreen(title,sub,place,btn,fn){
   $('#endPlace').textContent=place;$('#endPlace').classList.remove('corto');$('#endTitle').textContent=title;$('#endSub').textContent=sub;
   $('#bAgain').textContent=btn;$('#bAgain').onclick=()=>{$('#endOv').hidden=true;fn()};
-  $('#bMenu').hidden=false;$('#endOv').hidden=false;
+  $('#bMenu').hidden=false;$('#bMenu').textContent='Niveles';$('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};$('#endOv').hidden=false;
 }
 
 // ---- presentación al desbloquear un campeón: rayos de luz, el campeón en grande y su ficha al lado ----
@@ -4960,6 +4991,10 @@ Object.assign(REGLAS,{
  43:{sinRasgo:'umbra',t:'Sin campeones Siniestros',motivo:'Las campanas de la torre llaman a las sombras: los Siniestros no deben oírlas.'},
  46:{minRasgo:'astral',minN:2,t:'Al menos 2 Astrales contra el jefe',motivo:'Solo la luz puede romper la maldición de Morvane: en la ronda final necesitarás al menos 2 Astrales en el tablero.'}});
 NIVELES_M3.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n]});
+// fuerza: ajuste por nivel (calibrado con la curva del Mundo 3: empieza tranquilo y acaba en el 20 %) y escalones suaves
+const AJUSTE_K3={31:1.021,32:1.042,33:0.76,34:1.045,36:1.01,38:1.055,39:0.71,40:1.04,42:1.03,43:1.084,44:1.055,45:1.06,46:1.025};
+NIVELES_M3.forEach(L=>{const m=AJUSTE_K3[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000});
+  if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 if(MUNDO3_ABIERTO)NIVELES.push(...NIVELES_M3);
 // cerrado: sus campeones no salen en el álbum ni en la tienda (ni como silueta)
 else ['orion','chipilin','varg','vidar','morvane'].forEach(id=>{const i=ALBUM.indexOf(id);if(i>=0)ALBUM.splice(i,1)});
@@ -5212,7 +5247,7 @@ function aumAscenso(hu){const cambios=[];
 const maxEq=p=>p.level+(p.plazaExtra||0);
 // ¿toca aumento en esta ronda? (una vez por ronda)
 function tocaAumento(){if(!S||!S.players)return false;
-  if(S.mode==='historia'){const L=NIVELES[S.story.nivel-1];if(L.turnos)return false;return S.round===(L.nr===4?3:4)}
+  if(S.mode==='historia'){const L=nivelActual();if(L.turnos)return false;return S.round===(L.nr===4?3:4)}
   return S.stage>=2&&S.stage<=4&&S.round===2}
 function ofrecerAumento(){
   if(!tocaAumento())return;const k=S.stage+'-'+S.round;S.aumHechos=S.aumHechos||{};if(S.aumHechos[k])return;S.aumHechos[k]=true;
@@ -5248,13 +5283,13 @@ function guardarEstrellas(n,e){HIST.estrellas=HIST.estrellas||{};const antes=est
 function estrellasNivel(){const pc=(S.perfectas||0)/Math.max(1,S.combates||1);return pc>=.6?3:pc>=.3?2:1}
 // ---- misiones ----
 const MISIONES_D={rondaHist:{t:'Gana {n} rondas del modo Historia',n:10},nivelHist:{t:'Supera {n} niveles del modo Historia',n:2},arenaTop4:{t:'Queda entre los 4 primeros en la Arena',n:1},
- aumento:{t:'Elige {n} aumentos',n:3},compra:{t:'Compra {n} campeones',n:15},tresEstrellas:{t:'Consigue un campeón de 3★',n:1},estrellas:{t:'Gana {n} estrellas en la Historia',n:3}};
+ aumento:{t:'Elige {n} aumentos',n:3},compra:{t:'Compra {n} campeones',n:15},tresEstrellas:{t:'Consigue un campeón de 3★',n:1},estrellas:{t:'Gana {n} estrellas en la Historia',n:3},torrePiso:{t:'Sube {n} pisos en la Torre del Crisol',n:10}};
 const MISIONES_S={nivelHist:{t:'Supera {n} niveles del modo Historia',n:8},rondaHist:{t:'Gana {n} rondas del modo Historia',n:50},arenaGana:{t:'Gana una partida de la Arena (1.º)',n:1},
- estrellas:{t:'Gana {n} estrellas en la Historia',n:8},aumento:{t:'Elige {n} aumentos',n:12},amigos:{t:'Juega {n} partidas en la Arena con amigos',n:2}};
+ estrellas:{t:'Gana {n} estrellas en la Historia',n:8},aumento:{t:'Elige {n} aumentos',n:12},amigos:{t:'Juega {n} partidas en la Arena con amigos',n:2},torrePiso:{t:'Sube {n} pisos en la Torre del Crisol',n:40}};
 const PREMIO_MISION={d:{xp:50,asc:40},s:{xp:150,asc:120}};
 function hoy(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function semana(){const d=new Date(),t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),dia=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-dia);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+'-S'+Math.ceil(((t-y)/864e5+1)/7)}
-function misiones(){const M=CUENTA.misiones=CUENTA.misiones||{};const elige=(cat,k)=>shuffle(Object.keys(cat)).slice(0,k).map(id=>({id,p:0,c:false}));
+function misiones(){const M=CUENTA.misiones=CUENTA.misiones||{};const elige=(cat,k)=>shuffle(Object.keys(cat).filter(id=>id!=='torrePiso'||(typeof HIST!=='undefined'&&HIST&&HIST.hechos&&HIST.hechos.includes(15)))).slice(0,k).map(id=>({id,p:0,c:false}));
   if(M.dia!==hoy()){M.dia=hoy();M.d=elige(MISIONES_D,3)}if(M.sem!==semana()){M.sem=semana();M.s=elige(MISIONES_S,3)}return M}
 function misionEvento(tipo,n){const M=misiones();let cambio=false;
   for(const [lista,cat] of [[M.d,MISIONES_D],[M.s,MISIONES_S]])for(const m of lista){if(m.id!==tipo||m.p>=cat[m.id].n)continue;m.p=Math.min(cat[m.id].n,m.p+(n||1));cambio=true;
@@ -5444,6 +5479,85 @@ setInterval(()=>{try{tutTick()}catch(e){console.error('tutorial',e)}},200);
 (function tutBucle(){try{tutColocar()}catch(e){}requestAnimationFrame(tutBucle)})();
 // repetir desde «Cómo se juega»
 $('#bTutorial').onclick=()=>{HIST.tutorial=false;histSave(HIST);$('#reglasOv').hidden=true;toast('El tutorial empezará la próxima vez que juegues el nivel 1 del modo Historia')};
+
+// ================= TORRE DEL CRISOL (modo infinito) =================
+// Se abre al completar el nivel 15. Una subida: empiezas de cero (carrusel en el piso 0) y cada piso es un combate;
+// si pierdes, se acaba y te quedas con el piso al que llegaste. Reutiliza el motor de la Historia: S.story.torre=true
+// y nivelActual() devuelve TORRE.L, un «nivel» cuyas fases (5 pisos cada una; la primera, 6 con el carrusel) se
+// generan al llegar. Los rivales salen de combates de la Historia (más fuertes cuanto más alto) y cada 10 pisos hay un
+// eco de jefe. Cada semana la torre es la misma para todos (semilla) y tiene una maldición. Récord en HIST.torre.
+const TORRE={L:null};
+const TORRE_K=1.0,TORRE_CREC=1.13,TORRE_ECO=.36;              // fuerza: base, crecimiento por fase desde la 5.ª y jefes
+const TORRE_ECOS=[15,20,25,30];                               // niveles de cuyos jefes salen los ecos (Draco, Rey Goblin, Reina Araña, Dracqueen)
+const TORRE_TEMAS=[0,8,9,1,2,3,4,5,6,7];                      // el escenario cambia cada 2 fases (sube por la torre)
+const MALDICIONES=[
+ {id:'regenera',n:'Raíces malditas',d:'Los rivales regeneran un 2 % de su vida por segundo.'},
+ {id:'robustos',n:'Piel de piedra',d:'Los rivales tienen un 25 % más de vida.'},
+ {id:'furia',n:'Furia de la torre',d:'Los rivales atacan un 20 % más rápido.'},
+ {id:'sinAum',n:'Torre silenciosa',d:'Esta semana no hay aumentos.'}];
+const HITOS_TORRE=[[10,60],[25,150],[50,300],[100,600]];     // [piso, ascuas] la primera vez que lo alcanzas
+const torreDesbloqueada=()=>!!(HIST&&HIST.hechos&&HIST.hechos.includes(15));
+const enTorre=()=>!!(S&&S.story&&S.story.torre);
+function torreSemilla(){let h=7;for(const ch of semana())h=(h*31+ch.charCodeAt(0))>>>0;return h}
+const torreMaldicion=()=>MALDICIONES[torreSemilla()%MALDICIONES.length];
+const pisoDe=(s,r)=>s===1?r-1:5*(s-1)+r;
+const pisoActual=()=>enTorre()?pisoDe(S.stage,S.round):0;
+const torreK=s=>TORRE_K*Math.pow(TORRE_CREC,Math.max(0,s-4));
+function torreDatos(){HIST.torre=HIST.torre||{mejor:0,hitos:[],semana:'',mejorSem:0};const T=HIST.torre;if(T.semana!==semana()){T.semana=semana();T.mejorSem=0}return T}
+// ---- generación de pisos ----
+const fuentesTorre=piso=>NIVELES.slice(0,piso<=20?15:30).filter(L=>!L.superv&&!L.turnos&&L.fases.length>=4);
+function torreFase(s){const rr=srand(torreSemilla()+s*97),n=s===1?6:5,fila=[],F=Math.min(4,s);
+  for(let r=1;r<=n;r++){if(s===1&&r===1){fila.push(null);continue}
+    const piso=pisoDe(s,r);
+    if(piso%10===0){const nv=TORRE_ECOS[(piso/10-1)%TORRE_ECOS.length],R=NIVELES[nv-1].fases[3][5];
+      fila.push(Object.assign({},R,{n:R.n+' (eco)',jefe:true,eco:true,k:R.k*TORRE_ECO*torreK(s)*Math.min(1,.55+s*.15)}))}
+    else{const fu=fuentesTorre(piso),L=fu[Math.floor(rr()*fu.length)];let idx=s===1?r-1:r;if(F===4&&idx===5)idx=4; // la misma posición dentro de la fase (sin el jefe del nivel)
+      const R=L.fases[F-1][idx];
+      fila.push(Object.assign({},R,{k:R.k*torreK(s)}))}}
+  return fila}
+function torreAsegura(s){const L=TORRE.L;while(L.fases.length<s)L.fases.push(torreFase(L.fases.length+1));S.story.tema=TORRE_TEMAS[Math.floor((s-1)/2)%TORRE_TEMAS.length]}
+// ---- empezar y terminar ----
+function torreEmpezar(){audioInit();S=null;TORRE.L={n:0,nombre:'Torre del Crisol',tema:0,premio:null,regla:null,torre:true,nr:5,fases:[]};
+  newGame('normal',{nivel:0,tema:0,mazo:HIST.mazo.slice(),torre:true});torreAsegura(1);torreDatos();
+  document.body.classList.add('historia');dmgCb=null;renderDmg();
+  ['#startOv','#storyOv','#deckOv','#endOv','#rewardOv','#torreOv'].forEach(s=>$(s).hidden=true);layout();beginRound()}
+function torreFin(){const piso=Math.max(0,pisoActual()-1),T=torreDatos(),record=piso>T.mejor;S.phase='over';sfx('over');updateHUD();
+  if(record)T.mejor=piso;if(piso>T.mejorSem)T.mejorSem=piso;
+  let asc=Math.round(piso*4),xp=piso*10;const nuevos=HITOS_TORRE.filter(([p])=>piso>=p&&!T.hitos.includes(p));nuevos.forEach(([p,a])=>{T.hitos.push(p);asc+=a});histSave(HIST);
+  mostrarCobro(xp,asc);
+  endScreen(record?'¡Nuevo récord!':'Fin de la subida',`Has llegado al piso ${piso} de la Torre del Crisol.`+(nuevos.length?` Hito superado: piso ${nuevos[nuevos.length-1][0]}.`:'')+` Récord: piso ${T.mejor} · esta semana: ${T.mejorSem}.`,
+    `Piso ${piso}`,'Volver a subir',torreEmpezar);
+  $('#bMenu').textContent='Menú';$('#bMenu').onclick=()=>{S=null;hideInfo();backToMenu()}}
+// ---- ganchos en el motor de la Historia ----
+const _storyTeam=storyTeam;
+storyTeam=function(team){const t=_storyTeam(team);if(!enTorre())return t;const R=storyRound(),M=torreMaldicion();
+  for(const f of t){if(R&&R.eco&&f.jefe)f.eco=true;
+    if(M.id==='robustos'){f.maxHp*=1.25;f.hp=f.maxHp}else if(M.id==='regenera')f.regenPct=(f.regenPct||0)+2;else if(M.id==='furia')f.as*=1.2}
+  return t};
+const _tocaAumento=tocaAumento;tocaAumento=()=>enTorre()&&torreMaldicion().id==='sinAum'?false:_tocaAumento();
+const _storyLost=storyLost;storyLost=()=>enTorre()?torreFin():_storyLost();
+const _beginRound=beginRound;
+beginRound=function(){_beginRound();if(!enTorre()||S.phase!=='planning')return;const R=storyRound(),p=pisoActual();
+  if(R&&R.eco)banner(`Piso ${p}`,'¡Eco de jefe! '+R.n.replace(' (eco)',''),'torre eco');else banner(`Piso ${p}`,R?R.n:'','torre');
+  if(p>1)misionEvento('torrePiso')};
+// ---- pantalla de la torre (dibujada por código mientras no haya ilustración) ----
+function abrirTorre(){HIST=histLoad();if(!torreDesbloqueada()){toast('La Torre del Crisol se abre al completar el nivel 15 del modo Historia');return}
+  const T=torreDatos(),M=torreMaldicion(),alto=Math.max(30,Math.ceil((T.mejor+10)/10)*10);
+  const pisos=Array.from({length:alto/5+1},(_,i)=>alto-i*5).map(p=>`<div class="tPiso${p%10===0&&p>0?' eco':''}${p<=T.mejor?' subido':''}"><span>${p}</span>${p%10===0&&p>0?'<i>eco</i>':''}${p===Math.floor(T.mejor/5)*5&&T.mejor>0?'<b class="tYo">récord '+T.mejor+'</b>':''}</div>`).join('');
+  $('#torreBody').innerHTML=`<div class="tDib"><div class="tLlama"></div><div class="tCol">${pisos}</div><div class="tBase"></div></div>
+    <div class="tInfo"><h2>Torre del Crisol</h2><p class="sub">Sube piso a piso con un solo equipo. Cada piso es un combate; si caes, la subida termina.</p>
+      <div class="tDatos"><div><small>Tu récord</small><b>Piso ${T.mejor}</b></div><div><small>Esta semana</small><b>Piso ${T.mejorSem}</b></div></div>
+      <div class="tMald"><small>Maldición de la semana</small><b>${M.n}</b><span>${M.d}</span></div>
+      <ul class="tReglas"><li>Cada 5 pisos eliges una recompensa, y a mitad de cada tramo, un aumento.</li><li>Cada 10 pisos, el <b>eco de un jefe</b> que ya venciste.</li><li>La torre es la misma para todos esta semana: compara tu piso con tus amigos.</li>
+      <li>Hitos: ${HITOS_TORRE.map(([p,a])=>`${T.hitos.includes(p)?'✓ ':''}piso ${p} (+${a})`).join(' · ')}</li></ul>
+      <div class="row" style="justify-content:center;gap:10px"><button class="btn" id="bTorreVolver">Volver</button><button class="big" id="bTorreSubir">Empezar subida</button></div></div>`;
+  $('#bTorreVolver').onclick=()=>{$('#torreOv').hidden=true;$('#startOv').hidden=false};$('#bTorreSubir').onclick=torreEmpezar;
+  $('#startOv').hidden=true;$('#torreOv').hidden=false;
+  const col=$('#torreBody .tCol'),yo=col.querySelector('.tYo');if(yo)yo.scrollIntoView({block:'center'});else col.scrollTop=col.scrollHeight}
+$('#bTorre').onclick=abrirTorre;
+function pintaCartaTorre(){const b=$('#bTorre');if(!b)return;HIST=HIST||histLoad();const ok=torreDesbloqueada();b.classList.toggle('bloq',!ok);
+  $('#torreSub').textContent=ok?`Récord: piso ${torreDatos().mejor}`:'Se abre al completar el nivel 15'}
+pintaCartaTorre();
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
