@@ -397,8 +397,15 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 @media (max-width:760px){
   .overlay.unlock{place-items:start center;overflow:auto}
   .ulWrap{flex-direction:column;gap:10px;padding:10px 0 20px}
-  .ulHero{height:34vh}
-  .ulRays,.ulFlash{left:50%}.ulRays{top:22%}
+  .ulHero{height:clamp(110px,24dvh,230px)}
+  .ulRays,.ulFlash{left:50%}.ulRays{top:15%}
+  .ulWrap{gap:4px;padding:6px 0 8px;min-height:100%;justify-content:center}
+  .ulCard{padding:12px 14px 12px;gap:5px;font-size:13px}
+  .ulCard h2{font-size:28px}
+  .ulTraits p{font-size:12px;line-height:1.3}
+  .ulStats{grid-template-columns:repeat(4,auto);gap:2px 8px;font-size:12px}
+  .ulCard .abil{font-size:12.5px;padding:8px 10px;line-height:1.3;margin-bottom:2px}.ulCard .abil small{font-size:10.5px}
+  .ulCard .big{margin-top:2px;padding-block:9px}
   .unlock.play .ulCard{animation-name:ulCardUp}
 }
 @media (prefers-reduced-motion:reduce){.unlock.play .ulRays,.unlock.play .ulHero,.unlock.play .ulCard{animation:none;opacity:1}.ulSparks{display:none}}
