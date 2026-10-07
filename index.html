@@ -794,12 +794,13 @@ body.en-combate .goldPill{display:none}
 .tnQuien{display:flex;align-items:center;gap:8px}.tnQuien img{width:44px;height:44px;border-radius:50%;background:#1d2a33;object-fit:cover}.tnQuien b{color:var(--gold-hi)}.tnQuien small{color:var(--muted);margin-left:4px}
 .tnAyuda{color:#bfae8a;font-size:14px;font-style:italic}
 .tnLog{width:min(320px,38vw);font-size:13px;color:#c9d6dd;overflow:hidden}.tnLog div:first-child{color:#fff}
+#tnPremioOv{z-index:35}
 .tnObjs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
 .tnObj{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;color:var(--text)}
 .tnObj small{font-size:11.5px;color:var(--muted)}.tnObj.sel{border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.35)}
 .tnPara{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}.tnPara .btn{display:flex;align-items:center;gap:6px}.tnPara img{width:28px;height:28px;border-radius:50%;object-fit:cover}
 .tnFinEq{display:flex;gap:14px;justify-content:center;margin:12px 0}.tnFinEq div{display:flex;flex-direction:column;align-items:center;gap:3px}.tnFinEq img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#1d2a33}.tnFinEq b{color:var(--gold-hi)}
-@media (max-width:760px){.tnPanel{flex-direction:column;min-height:0}.tnLog{width:auto;max-height:54px}.tnObjs{grid-template-columns:1fr}}
+@media (max-width:760px){.tnPanel{flex-direction:column;min-height:0}.tnLog{width:auto;max-height:54px}.tnObj{padding:8px 4px}.tnObj b{font-size:13px}.tnObj small{font-size:10.5px}}
 #bTnVel[aria-pressed="true"]{border-color:var(--gold-hi);color:var(--gold-hi)}
 /* ===== duelo (prueba) ===== */
 .mpLado #bDuelo{border-color:#6a2f2f}
@@ -5072,6 +5073,7 @@ function tnFasesNivel(n){const D=TN_NIVELES[n],rr=srand(n*77),ks=Object.keys(D.m
   elige=()=>{let v=rr()*tot;return ks.find(k=>(v-=D.mons[k])<0)||ks[0]};
   return TN_ESCALA.map(x0=>{const x=x0*(D.f||1);return [[[elige(),x],[elige(),x],[elige(),x*.9]],[[elige(),x*1.1],[elige(),x*1.1],[elige(),x]],D.jefe.map(([m,k])=>[m,k*x])]})}
 let TN=null;
+const tnTras=(fn,ms)=>{const yo=TN;setTimeout(()=>{if(TN===yo&&!TN.fin)fn()},tnT(ms))};
 const tnNivelStar=l=>l>=7?3:l>=4?2:1,tnXpNec=l=>60+40*l,tnT=ms=>ms/((TN&&TN.vel)||1);
 // ---- elegir equipo (de tu mazo para el nivel) ----
 function tnAbrirNivel(n){HIST=histLoad();const L=NIVELES[n-1];let vel=1;try{vel=+localStorage.getItem('crisol_vel_tn')||1}catch(e){}
@@ -5109,8 +5111,8 @@ function tnSiguienteTurno(){
   if(!TN.cola.length)TN.cola=tnTodos().sort((a,b)=>tnS(b).vel-tnS(a).vel); // nueva ronda: por velocidad
   const u=TN.cola.shift();if(!u.vivo)return tnSiguienteTurno();
   TN.turno=u;
-  if(u.aturdido){u.aturdido=0;tnTexto(u,'Aturdido','#ffe27a');tnLog(`${u.nombre} está aturdido y pierde el turno.`);return setTimeout(tnSiguienteTurno,tnT(700))}
-  if(u.lado===1)return setTimeout(()=>tnIA(u),tnT(650));
+  if(u.aturdido){u.aturdido=0;tnTexto(u,'Aturdido','#ffe27a');tnLog(`${u.nombre} está aturdido y pierde el turno.`);return tnTras(tnSiguienteTurno,700)}
+  if(u.lado===1)return tnTras(()=>tnIA(u),650);
   tnPanel();
 }
 function tnPanel(){const u=TN.turno,lleno=u.mana>=100;
@@ -5143,10 +5145,10 @@ function tnHacer(u,accion,t){
       else if(ab.k==='haste'){TN.cola.unshift(u);tnTexto(u,'¡Otro turno!','#ffd98a')}
       else{const tg=t||enemigos[0];tnDano(u,tg,v*(ab.k==='execute'&&tg.hp<tnS(tg).hp*.4?2:1),'magic');if(ab.k==='stun'&&tg.vivo)tg.aturdido=1;if(ab.k==='doble'&&tg.vivo)tnDano(u,tg,v*.6,'magic')}
       tnLog(`${u.nombre} usa ${u.creep?'su golpe especial':ab.n}.`)}
-    setTimeout(tnSiguienteTurno,tnT(650))};
+    tnTras(tnSiguienteTurno,650)};
   // animación: los cuerpo a cuerpo van hasta el objetivo; los de distancia disparan
   const rango=u.creep?(CREEPS[u.id].range>1):CH[u.id].range>1;
-  TN.anim={u,t:t||enemigos[0],tipo:accion,rango,t0:performance.now(),dur:tnT(rango?480:520)};setTimeout(golpe,tnT(rango?360:260));
+  TN.anim={u,t:t||enemigos[0],tipo:accion,rango,t0:performance.now(),dur:tnT(rango?480:520)};tnTras(golpe,rango?360:260);
 }
 function tnVictoria(){TN.fin=true;sfx('win');misionEvento('rondaHist');maestriaGana(TN.equipo.filter(u=>u.vivo).map(u=>u.id));TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
   const vivos=TN.equipo.filter(u=>u.vivo),xp=40+TN.fase*15+(TN.combate===2?40:0);const subidas=[];
@@ -5183,7 +5185,7 @@ function tnPos(u,W,H){const lista=u.lado===0?TN.equipo:TN.rivales,i=lista.indexO
 // fondo ilustrado del nivel (assets/menu/turnos<n>.webp, lo incrusta build.py en MENU_IMG); sin él, degradado del escenario
 const TN_FONDO={};function tnFondo(n){const k='turnos'+n;if(!MENU_IMG[k])return null;if(!TN_FONDO[k]){const im=new Image();im.src=MENU_IMG[k];TN_FONDO[k]=im}return TN_FONDO[k].complete&&TN_FONDO[k].naturalWidth?TN_FONDO[k]:null}
 function tnDibujar(now){if(!TN||$('#tnOv').hidden)return;const cv=$('#tnCv'),r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);
-  if(cv.width!==Math.round(r.width*dpr)){cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr)}const g=cv.getContext('2d'),W=r.width,H=r.height;g.setTransform(dpr,0,0,dpr,0,0);
+  if(cv.width!==Math.round(r.width*dpr)||cv.height!==Math.round(r.height*dpr)){cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr)}const g=cv.getContext('2d'),W=r.width,H=r.height;g.setTransform(dpr,0,0,dpr,0,0);
   const th=THEMES[NIVELES[TN.nivel-1]?NIVELES[TN.nivel-1].tema:0],V=tnVertical(W,H),horiz=V?.3:.62,fo=tnFondo(TN.nivel);
   if(fo){const k=Math.max(W/fo.naturalWidth,H/fo.naturalHeight),w=fo.naturalWidth*k,h=fo.naturalHeight*k;g.drawImage(fo,(W-w)/2,(H-h)*(V?.6:.5),w,h);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,0,W,H)}
   else{const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,th.sky[0]);gr.addColorStop(horiz,th.sky[1]);gr.addColorStop(horiz,th.pa);gr.addColorStop(1,shade(th.pa,.4));g.fillStyle=gr;g.fillRect(0,0,W,H);
