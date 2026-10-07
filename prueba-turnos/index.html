@@ -5371,11 +5371,12 @@ const TN_TUT=[
 const TN_TUT_EV=[
  {id:'carga',quien:'crisol',cuando:()=>tnMiTurno()&&!!tnJefeCarga(),foco:()=>{const j=tnJefeCarga();return j?[tnRectUnidad(j)]:[]},
   texto:'¡Atención! El jefe va a <b>cargar un golpe enorme</b>: lo prepara un turno y lo suelta en el siguiente. Si recibe mucho daño mientras carga (mira la barra naranja), <b>se rompe</b> y pierde el turno. Si no llegas, protege a quien vaya a recibirlo.'},
- {id:'premio',quien:'tovo',cuando:()=>!$('#tnPremioOv').hidden,foco:()=>[rectEl('#tnPremio .tnObjs')],hecho:()=>$('#tnPremioOv').hidden,
-  texto:'¡Victoria! Tras cada combate eliges un <b>objeto</b> y a quién dárselo. Cada campeón lleva hasta tres. A nivel 4 y 7, su habilidad mejora.'}];
+ {id:'premio',quien:'tovo',cuando:()=>!$('#tnPremioOv').hidden,foco:()=>[rectEl('#tnPremio .tnPara')||rectEl('#tnPremio .tnObjs')],hecho:()=>$('#tnPremioOv').hidden,
+  clave:()=>!!rectEl('#tnPremio .tnPara'),
+  texto:()=>rectEl('#tnPremio .tnPara')?'Ahora <b>toca a quién dárselo</b>. Cada campeón lleva hasta tres objetos.':'¡Victoria! Tras cada combate eliges un <b>objeto</b> para uno de tus campeones. Toca el que quieras. A nivel 4 y 7, su habilidad mejora.'}];
 function tnTutTick(){const T=TN&&TN.tut;if(!T||TN.sim)return;
-  if(T.vis){const P=T.vis;if(P.hecho&&P.hecho())tnTutCompletar();return}
-  for(const E of TN_TUT_EV)if(!T.ev[E.id]&&E.cuando()){T.vis=Object.assign({ev:true},E);tutMostrar(T.vis);return}
+  if(T.vis){const P=T.vis;if(P.hecho&&P.hecho())return tnTutCompletar();if(P.clave){const k=P.clave();if(k!==P.k0){P.k0=k;tutMostrar(P)}}return}
+  for(const E of TN_TUT_EV)if(!T.ev[E.id]&&E.cuando()){T.vis=Object.assign({ev:true},E);if(E.clave)T.vis.k0=E.clave();tutMostrar(T.vis);return}
   while(TN_TUT[T.i]&&TN_TUT[T.i].saltarSi&&TN_TUT[T.i].saltarSi())T.i++;
   const P=TN_TUT[T.i];if(!P||!P.cuando())return;T.vis=P;tutMostrar(P)}
 function tnTutCompletar(){const T=TN&&TN.tut;if(!T||!T.vis)return;const P=T.vis;if(P.ev)T.ev[P.id]=true;else T.i++;T.vis=null;tutOcultar();if(P.hecho)sfx('levelup');
