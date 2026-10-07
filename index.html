@@ -537,11 +537,11 @@ body.historia #players,body.historia #bPlayers{display:none}
 body.historia .stage .lbl{text-transform:none;letter-spacing:.02em}
 
 /* ===== menú principal ===== */
-.overlay.menuPrin{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,2.5vh,26px);padding:14px 16px 24px;background:#07090c;backdrop-filter:none;overflow:auto}
+.overlay.menuPrin{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:clamp(10px,2.5vh,26px);padding:70px 16px 24px;background:#07090c;backdrop-filter:none;overflow:auto}
 .mpFondo{position:fixed;inset:0;background:center/cover no-repeat;filter:brightness(.6) saturate(1.1);z-index:-1}
 .menuPrin::after{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 35%,rgba(233,140,40,.18),transparent 60%),linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.65))}
 .mpTop{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
-.menuPrin .mpLogo{margin-top:56px}
+.menuPrin .mpLogo{margin-top:auto}.menuPrin>:last-child{margin-bottom:auto} /* centrado si cabe; si no, empieza bajo el perfil y se desplaza */
 .mpPerfil{display:flex;align-items:center;gap:8px;background:rgba(15,22,28,.75);border:1px solid #3a4f5c;border-radius:30px;padding:4px 14px 4px 4px;color:var(--text)}
 .mpPerfil:hover{border-color:var(--gold-hi)}
 .mpPerfil img{width:42px;height:42px;object-fit:contain;border-radius:50%;background:#1d2a33}
