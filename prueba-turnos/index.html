@@ -814,9 +814,15 @@ body.en-combate .goldPill{display:none}
 .tnGrid .dk.ver{box-shadow:0 0 0 2px #8cc8ff}
 .tnLog{width:min(320px,38vw);font-size:13px;color:#c9d6dd;overflow:hidden}.tnLog div:first-child{color:#fff}
 #tnPremioOv{z-index:35}
-.tnObjs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.tnObjs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
 .tnObj{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;color:var(--text)}
-.tnObj small{font-size:11.5px;color:var(--muted)}.tnObj.sel{border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.35)}
+.tnObj small{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}.tnObj b{overflow-wrap:anywhere}#tnPremio{box-sizing:border-box;max-width:min(640px,100%)}.tnObj.sel{border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.35)}
+.tnEqObj{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.tnPara1{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--text);opacity:.75;pointer-events:none}
+.tnPara1 img{width:34px;height:34px;border-radius:50%;object-fit:cover}.tnPara1 b{font-size:13px}.tnPara1>span{display:flex;gap:3px}
+.tnHueco{display:inline-block;width:26px;height:26px;border:1px dashed #3a4f5c;border-radius:6px}
+.tnEqObj.elige .tnPara1:not([disabled]){opacity:1;pointer-events:auto;border-color:var(--gold-hi);box-shadow:0 0 10px rgba(255,190,90,.3)}.tnPara1[disabled]{opacity:.45}
+.tnSusObj{display:flex;gap:3px;margin-left:6px}
 .tnPara{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}.tnPara .btn{display:flex;align-items:center;gap:6px}.tnPara img{width:28px;height:28px;border-radius:50%;object-fit:cover}
 .tnFinEq{display:flex;gap:14px;justify-content:center;margin:12px 0}.tnFinEq div{display:flex;flex-direction:column;align-items:center;gap:3px}.tnFinEq img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#1d2a33}.tnFinEq b{color:var(--gold-hi)}
 @media (max-width:760px){.tnGrid{max-height:40vh}.tnBtns{width:100%}.tnBtns .big{flex:1;padding:7px 4px;font-size:15px}.tnPanel{flex-direction:column;height:212px;min-height:0;padding:8px 10px;gap:6px;overflow:hidden;box-sizing:border-box}.tnTurnos{padding:3px 8px}.tnLog{width:auto;max-height:36px;font-size:12px;line-height:18px}.tnAcciones{gap:6px;align-content:flex-start}.tnAyuda{font-size:12.5px}.tnQuien img{width:36px;height:36px}.tnObj{padding:8px 4px}.tnObj b{font-size:13px}.tnObj small{font-size:10.5px}}
@@ -1184,7 +1190,7 @@ body.en-combate .goldPill{display:none}
 <div class="overlay" id="tnElegirOv" hidden>
   <div class="modal wide">
     <div class="row" style="justify-content:space-between;align-items:center"><div><div class="lbl">Combate por turnos</div><h2 style="margin:0"><span id="tnElegirTit"></span> <span class="best" id="tnCuenta"></span></h2></div><span style="display:flex;gap:8px"><button class="big alt" id="bTnVolver">Volver</button><button class="big" id="bTnEmpezar" disabled>Empezar</button></span></div>
-    <p class="sub" style="margin:6px 0 10px">Este nivel se juega por turnos. Elige 3 campeones de tu mazo: sin oro ni tienda, ganan experiencia, suben de nivel y reciben objetos. 4 fases de 3 combates, con un jefe al final de cada una.</p>
+    <p class="sub" style="margin:6px 0 10px">Este nivel se juega por turnos. Elige 3 campeones de tu mazo: sin oro ni tienda, ganan experiencia, suben de nivel y reciben objetos. 3 fases de 3 combates, con un jefe al final de cada una. <b style="color:var(--gold-hi)">Aquí las sinergias no cuentan</b>: importan la vida, el daño, la habilidad y los objetos de cada uno.</p>
     <div id="tnGrid" class="tnGrid"></div>
     <div id="tnFicha" class="tnFicha"></div>
   </div>
@@ -5077,7 +5083,7 @@ function transformacionMorvane(){
   $('#bTransfOk').onclick=()=>{ov.hidden=true;renderMap(true);toast('Ha aparecido un nivel oculto en el mapa: El corazón maldito')}}
 
 // ================= NIVELES POR TURNOS DEL MODO HISTORIA =================
-// Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 4 fases
+// Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 3 fases
 // de 3 combates (el último de cada fase, un jefe). Sin economía: los campeones ganan experiencia y suben de nivel (más
 // estadísticas; a nivel 4 y 7 su habilidad sube como 2★ y 3★) y tras cada victoria eliges un objeto para uno de ellos.
 // Vista lateral: tus campeones a un lado y los rivales al otro. En tu turno: ataque (carga maná), habilidad (con el
@@ -5087,12 +5093,12 @@ function transformacionMorvane(){
 // si reciben el 15 % de su vida mientras cargan, o si los aturden. ×1/×2: velocidad de las animaciones y turnos rivales.
 // Rivales de cada nivel: TN_NIVELES[n] = {mons: {monstruo: peso}, jefe: [[monstruo, mult], ...]} (escalan por fase)
 const TN_NIVELES={ // f: fuerza base de los rivales del nivel
- 13:{mons:{roedin:2,escupidor:2,lobo:1},jefe:[['lobo',1.1],['roedin',1]],f:1.28},
- 28:{mons:{goblin:2,murcielago:2,arana:1},jefe:[['trol',.9],['hondero',1]],f:1.06},
+ 13:{mons:{roedin:2,escupidor:2,lobo:1},jefe:[['lobo',1.1],['roedin',1]],f:1.63},
+ 28:{mons:{goblin:2,murcielago:2,arana:1},jefe:[['trol',.9],['hondero',1]],f:1.4},
  37:{mons:{esqueleto:2,necrofago:2,espectro:1},jefe:[['golemhueso',.55],['esqueleto',1]]},
  41:{mons:{espectro:3,necrofago:1,esqueleto:1},jefe:[['espectro',3.2],['espectro',1],['espectro',1]],f:.7}};
-const TN_ESCALA=[1,1.8,2.5,2.95],TN_JEFE=[1,.78,.95,1.05]; // fuerza de los rivales por fase, y extra del jefe de cada fase
-let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2-4, más suave
+const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
+let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
 const TN_CARGA={lobo:['Mordisco brutal',0],trol:['Pisotón',1],golemhueso:['Derrumbe',1],espectro:['Grito helado',1],hondero:['Pedrada certera',0]};
 const TN_PRORROGA=12; // desde esta ronda de un combate, el daño sube un 25 % por ronda (ningún combate se eterniza)
@@ -5136,11 +5142,18 @@ function tnPapel(u){const k=u.ab.k;
 // ---- unidades ----
 function tnCampeon(id){const f=makeFighter({uid:0,id,star:1,items:[]},0,0,4,{});
   return {id,nombre:CH[id].name,lado:0,nivel:1,xp:0,base:{hp:f.maxHp,ad:f.ad,ar:f.ar,mr:f.mr,as:f.as},items:[],ab:CH[id].ab,hp:f.maxHp,mana:0,escudo:0,vivo:true,role:CH[id].role,traits:CH[id].traits,guarda:null}}
-function tnStats(u){const k=1+(u.nivel-1)*.12,s={hp:u.base.hp*k,ad:u.base.ad*k,ar:u.base.ar+(u.nivel-1)*2,mr:u.base.mr+(u.nivel-1)*2,ap:0,vel:u.base.as,crit:.05};
-  for(const it of u.items){const I=ITEMS[it].s||{};if(I.hp)s.hp+=I.hp;if(I.ad)s.ad+=I.ad;if(I.ar)s.ar+=I.ar;if(I.mr)s.mr+=I.mr;if(I.ap)s.ap+=I.ap;if(I.as)s.vel*=1+I.as;if(I.crit)s.crit+=I.crit}
+function tnStats(u){const k=1+(u.nivel-1)*.12,s={hp:u.base.hp*k,ad:u.base.ad*k,ar:u.base.ar+(u.nivel-1)*2,mr:u.base.mr+(u.nivel-1)*2,ap:0,vel:u.base.as,crit:.05,mana:0};
+  for(const it of u.items){const I=ITEMS[it].s||{};if(I.hp)s.hp+=I.hp;if(I.ad)s.ad+=I.ad;if(I.ar)s.ar+=I.ar;if(I.mr)s.mr+=I.mr;if(I.ap)s.ap+=I.ap;if(I.as)s.vel*=1+I.as;if(I.crit)s.crit+=I.crit;if(I.mana)s.mana+=I.mana}
   return s}
 function tnRival(m,x){const c=makeCreep(m,1,0,0,x);return {id:m,creep:true,nombre:c.name,lado:1,nivel:1,stats:{hp:c.maxHp,ad:c.ad,ar:c.ar,mr:c.mr,ap:0,vel:c.as,crit:.05},hp:c.maxHp,mana:0,escudo:0,vivo:true,col:c.col,nt:0,int:null,carga:null}}
 const tnS=u=>u.creep?u.stats:tnStats(u);
+// pasivas de los objetos completos que funcionan en los turnos (las demás solo dan sus estadísticas)
+const TN_PASIVA={robo:v=>`Se cura el ${pc(v)} % del daño que hace`,omni:v=>`Se cura el ${pc(v)} % del daño que hace`,espinas:v=>`Devuelve el ${pc(v)} % del daño que recibe`,
+  regenVida:v=>`Recupera un ${v*3} % de vida al empezar su turno`,escudoIni:v=>`Empieza cada combate con un escudo del ${pc(v)} % de su vida`,critDmg:v=>`Sus críticos hacen un ${pc(v)} % más`,
+  esquiva:v=>`${pc(v)} % de esquivar cada golpe`,verdugo:v=>`+${pc(v)} % de daño a rivales con menos de la mitad de vida`,dmg:v=>`+${pc(v)} % de daño`,
+  escudoHab:v=>`Al usar la habilidad, gana un escudo de ${v}`,recarga:v=>`Tras usar la habilidad, recupera ${v} de maná`};
+const tnPas=(u,k)=>u.creep?0:u.items.reduce((a,it)=>a+((ITEMS[it].p||{})[k]||0),0);
+function tnDescObj(it){const I=ITEMS[it],k=I.p&&Object.keys(I.p)[0],st=statText(I.s).replace('vel. de ataque','velocidad (actúa antes)');return st+(k&&TN_PASIVA[k]?'. '+TN_PASIVA[k](I.p[k]):'')+'.'}
 // habilidades que no necesitan objetivo (área, curas, escudos…)
 const TN_AREA=['aoe','aoeSelf','volley','chain','rayoDiagonal','murcielagos','necro','telarana','aliento'],TN_APOYO=['heal','teamHeal','shield','materno','arenga','haste'];
 const tnHabSinObjetivo=ab=>TN_AREA.includes(ab.k)||TN_APOYO.includes(ab.k);
@@ -5162,10 +5175,10 @@ function tnEmpezar(){$('#tnElegirOv').hidden=true;audioInit();TN.fases=tnFasesNi
 function tnVel(v){TN.vel=v;$('#bTnVel').textContent='×'+v;$('#bTnVel').setAttribute('aria-pressed',v>1);try{localStorage.setItem('crisol_vel_tn',v)}catch(e){}}
 function tnSiguienteCombate(){
   const grupo=TN.fases[TN.fase][TN.combate];TN.rivales=grupo.map(([m,x])=>tnRival(m,x));if(TN.combate===2)TN.rivales[0].jefe=true;
-  TN.equipo.forEach(u=>{u.mana=Math.min(u.mana,40);u.escudo=0;u.aturdido=0;u.guarda=null});
+  TN.equipo.forEach(u=>{const S2=tnStats(u);u.mana=Math.min(100,Math.min(u.mana,40)+S2.mana);u.escudo=S2.hp*tnPas(u,'escudoIni');u.aturdido=0;u.guarda=null});
   TN.cola=[];TN.ronda=0;TN.turno=null;TN.fx=[];TN.anim=null;TN.fin=false;TN.accion=null;TN.rivales.forEach(tnPlanear);
   tnLog(`Fase ${TN.fase+1} · combate ${TN.combate+1}${TN.combate===2?' · ¡jefe!':''}`);
-  if(!TN.sim)$('#tnTit').textContent=`Fase ${TN.fase+1}/4 · ${TN.combate===2?'Jefe':'Combate '+(TN.combate+1)+'/3'}`;
+  if(!TN.sim)$('#tnTit').textContent=`Fase ${TN.fase+1}/${TN_ESCALA.length} · ${TN.combate===2?'Jefe':'Combate '+(TN.combate+1)+'/3'}`;
   tnSiguienteTurno();
 }
 function tnTodos(){return TN.equipo.concat(TN.rivales).filter(u=>u.vivo)}
@@ -5176,7 +5189,7 @@ function tnSiguienteTurno(){
   if(!TN.equipo.some(u=>u.vivo))return tnDerrota();
   if(!TN.cola.some(u=>u.vivo)){TN.cola=tnOrden();TN.ronda++;if(TN.ronda===TN_PRORROGA)tnLog('¡Prórroga! Desde ahora, cada ronda los golpes duelen más.')}
   const u=TN.cola.shift();if(!u.vivo)return tnSiguienteTurno();
-  TN.turno=u;if(u.lado===0)u.guarda=null;tnBarra();
+  TN.turno=u;if(u.lado===0){u.guarda=null;const rg=tnPas(u,'regenVida');if(rg&&u.hp<tnS(u).hp){const h=Math.min(tnS(u).hp-u.hp,tnS(u).hp*rg*.03);u.hp+=h;tnTexto(u,'+'+Math.round(h),'#8be29f')}}tnBarra();
   if(u.aturdido){u.aturdido=0;tnTexto(u,'Aturdido','#ffe27a');tnLog(`${u.nombre} está aturdido y pierde el turno.`);
     return tnTras(()=>{if(u.lado===1){u.nt++;tnPlanear(u)}tnSiguienteTurno()},700)}
   if(u.lado===1){if(!TN.sim)$('#tnAcciones').innerHTML=`<div class="tnQuien riv"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Turno rival</small></div>`;return tnTras(()=>tnIA(u),650)}
@@ -5188,7 +5201,7 @@ function tnBarra(){const el=$('#tnTurnos');if(!el||!TN||TN.sim)return;const ahor
   el.innerHTML='<small>Turnos</small>'+ahora.map((u,i)=>f(u,i===0&&u===TN.turno)).join('')+'<i class="tnSep">siguiente ronda</i><span class="tnSig">'+tnOrden().map(u=>f(u,false)).join('')+'</span>'}
 // ---- tu turno ----
 function tnPanel(){const u=TN.turno,lleno=u.mana>=100;if(TN.sim)return TN.sim.juega(u);
-  $('#tnAcciones').innerHTML=`<div class="tnQuien"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Nivel ${u.nivel}</small></div>
+  $('#tnAcciones').innerHTML=`<div class="tnQuien"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Nivel ${u.nivel}</small><span class="tnSusObj">${u.items.map(it=>`<span data-it="${it}" title="${ITEMS[it].n}: ${tnDescObj(it)}">${itemBox(it,'','width:24px;height:24px')}</span>`).join('')}</span></div>
     <div class="tnBtns"><button class="big" id="bTnAtk">Ataque<small>+34 maná</small></button>
     <button class="big ${lleno?'':'alt'}" id="bTnHab"${lleno?'':' disabled'}>${u.ab.n}<small>${lleno?'¡Lista!':Math.floor(u.mana)+'/100 maná'}</small></button>
     <button class="big alt" id="bTnProt">Proteger<small>−60 % de daño</small></button></div>
@@ -5196,6 +5209,7 @@ function tnPanel(){const u=TN.turno,lleno=u.mana>=100;if(TN.sim)return TN.sim.ju
   $('#bTnAtk').onclick=()=>{TN.accion='atk';tnElegirObjetivo()};
   $('#bTnHab').onclick=()=>{TN.accion='hab';if(tnHabSinObjetivo(u.ab))return tnHacer(u,'hab',null);tnElegirObjetivo()};
   $('#bTnProt').onclick=()=>{TN.accion='prot';tnElegirObjetivo()};
+  $('#tnAcciones').querySelectorAll('.tnSusObj [data-it]').forEach(e=>e.onclick=()=>{$('#tnAyuda').innerHTML=`<b>${ITEMS[e.dataset.it].n}:</b> ${tnDescObj(e.dataset.it)}`});
   tnAyuda()}
 function tnAyuda(){const u=TN.turno,a=TN.accion,el=$('#tnAyuda');if(!el)return;
   el.innerHTML=a==='atk'?`<b>Toca a un rival</b> para atacarlo (${Math.round(tnS(u).ad)} de daño antes de su armadura).`
@@ -5224,12 +5238,18 @@ function tnIA(u){u.nt++;if(!u.int||(u.int.k==='golpe'&&!u.carga))tnPlanear(u);co
     TN.anim={u,t:u,tipo:'hab',rango:true,t0:performance.now(),dur:tnT(700)};tnPlanear(u);tnBarra();return tnTras(tnSiguienteTurno,850)}
   tnHacer(u,I.k,I.area?null:tnReal(tnVivo(I.t)))}
 // daño con defensas, escudo y Proteger; rompe la carga de un jefe
-function tnDano(src,t,amt,tipo,crit){const S2=tnS(t),def=tipo==='magic'?S2.mr:S2.ar;let a=amt*100/(100+Math.max(0,def))*tnProrroga();if(crit)a*=1.5;if(t.guarda)a*=1-TN_PROT;
+function tnDano(src,t,amt,tipo,crit){const S2=tnS(t),def=tipo==='magic'?S2.mr:S2.ar;
+  if(tnPas(t,'esquiva')&&rnd()<tnPas(t,'esquiva')){tnTexto(t,'Esquiva','#cfe0ea');return 0}
+  let a=amt*100/(100+Math.max(0,def))*tnProrroga()*(1+tnPas(src,'dmg'));if(crit)a*=1.5+tnPas(src,'critDmg');if(t.guarda)a*=1-TN_PROT;
+  if(tnPas(src,'verdugo')&&t.hp<S2.hp*.5)a*=1+tnPas(src,'verdugo');
   let r=a;if(t.escudo>0){const s=Math.min(t.escudo,r);t.escudo-=s;r-=s}t.hp-=r;t.mana=Math.min(100,t.mana+10);
   tnTexto(t,Math.round(a)+(crit?'!':''),crit?'#ffd98a':tipo==='magic'?'#cfa6ff':'#ffffff');t.golpe=1;
-  if(t.hp<=0){t.hp=0;t.vivo=false;t.int=null;t.carga=null;t.guarda=null;tnLog(`${t.nombre} cae.`);tnSfx('death');tnBarra()}
-  else{tnSfx(crit?'crit':'hit');if(t.carga){t.carga.dano+=a;if(t.carga.dano>=t.carga.umbral)tnRomper(t)}}
+  const robo=tnPas(src,'robo')+tnPas(src,'omni');if(robo&&src.vivo)src.hp=Math.min(tnS(src).hp,src.hp+a*robo);
+  if(t.hp<=0)tnMuere(t);
+  else{tnSfx(crit?'crit':'hit');if(t.carga){t.carga.dano+=a;if(t.carga.dano>=t.carga.umbral)tnRomper(t)}
+    const esp=tnPas(t,'espinas');if(esp&&src!==t&&src.vivo){const d=a*esp;src.hp-=d;tnTexto(src,Math.round(d),'#c0c0c0');if(src.hp<=0)tnMuere(src)}}
   return a}
+function tnMuere(t){t.hp=0;t.vivo=false;t.int=null;t.carga=null;t.guarda=null;tnLog(`${t.nombre} cae.`);tnSfx('death');tnBarra()}
 function tnRomper(t){t.carga=null;t.aturdido=1;tnPlanear(t);tnTexto(t,'¡Carga rota!','#ffe27a');tnLog(`¡${t.nombre} pierde la concentración: carga rota!`);tnSfx('crit')}
 function tnHacer(u,accion,t){
   TN.accion=null;if(u.lado===0){TN.acciones++;if(!TN.sim)$('#tnAcciones').querySelectorAll('button').forEach(b=>b.disabled=true)}
@@ -5249,6 +5269,7 @@ function tnHacer(u,accion,t){
       else if(ab.k==='haste'){TN.cola.unshift(u);tnTexto(u,'¡Otro turno!','#ffd98a')}
       else{const tg=t&&t.vivo?t:enemigos[0];tnDano(u,tg,v*(ab.k==='execute'&&tg.hp<tnS(tg).hp*.4?2:1),'magic');
         if(ab.k==='stun'&&tg.vivo){tg.aturdido=1;if(tg.carga)tnRomper(tg)}if(ab.k==='doble'&&tg.vivo)tnDano(u,tg,v*.6,'magic')}
+      if(!u.creep){if(tnPas(u,'escudoHab'))u.escudo+=tnPas(u,'escudoHab');if(tnPas(u,'recarga'))u.mana=Math.min(100,tnPas(u,'recarga'))}
       tnLog(`${u.nombre} usa ${u.creep?'su golpe especial':ab.n}.`)}
     if(u.lado===1)tnPlanear(u);tnBarra();
     tnTras(tnSiguienteTurno,650)};
@@ -5259,20 +5280,20 @@ function tnHacer(u,accion,t){
 function tnVictoria(){TN.fin=true;
   if(!TN.sim){sfx('win');misionEvento('rondaHist');maestriaGana(TN.equipo.filter(u=>u.vivo).map(u=>u.id))}
   TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
-  const xp=40+TN.fase*15+(TN.combate===2?40:0);const subidas=[];
+  const xp=55+TN.fase*20+(TN.combate===2?50:0);const subidas=[];
   TN.equipo.forEach(u=>{u.xp+=u.vivo?xp:Math.round(xp/2);while(u.xp>=tnXpNec(u.nivel)){u.xp-=tnXpNec(u.nivel);u.nivel++;subidas.push(`${u.nombre} sube a nivel ${u.nivel}`)}
     u.vivo=true;u.hp=Math.max(u.hp,tnStats(u).hp*(u.hp>0?0:.4));u.hp=Math.min(tnStats(u).hp,u.hp+tnStats(u).hp*.35)}); // recupera un 35 % (los caídos vuelven con un 40 %)
-  const ultimo=TN.fase===3&&TN.combate===2;
+  const ultimo=TN.fase===TN_ESCALA.length-1&&TN.combate===2;
   if(ultimo)return tnFinal(true);
-  const opciones=shuffle(TN.fase>=1?Object.keys(ITEMS).filter(k=>ITEMS[k].full):ITEM_IDS.slice()).slice(0,3);
+  const opciones=shuffle(Object.keys(ITEMS).filter(k=>ITEMS[k].full&&!ITEMS[k].especial)).slice(0,3);
   const seguir=()=>{if(!TN.sim)$('#tnPremioOv').hidden=true;TN.combate++;if(TN.combate>2){TN.combate=0;TN.fase++;TN.equipo.forEach(u=>u.hp=tnStats(u).hp)}tnSiguienteCombate()};
   if(TN.sim){const it=TN.sim.objeto(opciones),u=it&&TN.equipo.filter(x=>x.items.length<3).sort((a,b)=>a.items.length-b.items.length)[0];if(u)u.items.push(it);return seguir()}
   $('#tnPremio').innerHTML=`<h2>¡Victoria!</h2><p class="sub">+${xp} de experiencia${subidas.length?' · '+subidas.join(' · '):''}</p>
-    <p class="sub">Elige un objeto y a quién dárselo:</p><div class="tnObjs">${opciones.map(it=>`<button class="tnObj" data-it="${it}">${itemBox(it,'','width:48px;height:48px')}<b>${ITEMS[it].n}</b><small>${ITEMS[it].d}</small></button>`).join('')}</div>
-    <div class="tnPara" hidden>${TN.equipo.map((u,i)=>`<button class="btn" data-u="${i}"${u.items.length>=3?' disabled':''}><img src="${portrait(u.id)}" alt="">${u.nombre} (${u.items.length}/3)</button>`).join('')}</div>
+    <p class="sub">Elige un objeto y a quién dárselo. Debajo, lo que ya lleva cada uno:</p><div class="tnObjs">${opciones.map(it=>`<button class="tnObj" data-it="${it}">${itemBox(it,'','width:48px;height:48px')}<b>${ITEMS[it].n}</b><small>${tnDescObj(it)}</small></button>`).join('')}</div>
+    <div class="tnEqObj">${TN.equipo.map((u,i)=>`<button class="tnPara1" data-u="${i}"${u.items.length>=3?' disabled':''}><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><span>${[0,1,2].map(k=>u.items[k]?itemBox(u.items[k],'','width:26px;height:26px'):'<i class="tnHueco"></i>').join('')}</span></button>`).join('')}</div>
     <button class="btn" id="bTnSinObj" style="margin-top:10px">${TN.equipo.every(u=>u.items.length>=3)?'Todos llevan 3 objetos: seguir':'No quiero ninguno'}</button>`;
   $('#tnPremioOv').hidden=false;let elegido=null;
-  $('#tnPremio').querySelectorAll('[data-it]').forEach(b=>b.onclick=()=>{elegido=b.dataset.it;$('#tnPremio').querySelectorAll('.tnObj').forEach(x=>x.classList.toggle('sel',x===b));$('#tnPremio .tnPara').hidden=false});
+  $('#tnPremio').querySelectorAll('[data-it]').forEach(b=>b.onclick=()=>{elegido=b.dataset.it;$('#tnPremio').querySelectorAll('.tnObj').forEach(x=>x.classList.toggle('sel',x===b));$('#tnPremio .tnEqObj').classList.add('elige')});
   $('#tnPremio').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{if(!elegido)return;TN.equipo[+b.dataset.u].items.push(elegido);seguir()});$('#bTnSinObj').onclick=seguir;
 }
 function tnDerrota(){TN.fin=true;tnSfx('lose');tnFinal(false)}
@@ -5283,7 +5304,7 @@ function tnFinal(gana){const n=TN.nivel,L=NIVELES[n-1],g=TN.ganado,fase=TN.fase+
     const est=guardarEstrellas(n,TN.equipo.filter(u=>u.vivo).length||1);misionEvento('nivelHist'); // estrellas: campeones en pie al final
     const B=primera?GANA.nivel1:GANA.nivelRep;mostrarCobro(g.xp+B[0],g.asc+B[1]+est.bonus);sfx('over');
     endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')} · ${TN.equipo.filter(u=>u.vivo).length} de 3 en pie.`,pintaEstrellas(est.e),'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)})}
-  else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de 4.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
+  else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de ${TN_ESCALA.length}.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
 function tnLog(t){if(TN&&TN.sim)return;const l=$('#tnLog');if(!l)return;l.innerHTML=`<div>${t}</div>`+l.innerHTML;while(l.children.length>5)l.lastChild.remove()}
 function tnTexto(u,s,col){if(TN.sim)return;const now=performance.now(),dy=TN.fx.filter(f=>f.u===u&&now-f.t0<350).length;TN.fx.push({u,s,col,t0:now,dy})}
 // ---- dibujo (vista lateral) ----
@@ -5359,6 +5380,8 @@ function tnRectGrupo(L){const R=L.filter(u=>u.vivo).map(tnRectUnidad);if(!R.leng
 const tnJefeCarga=()=>TN.rivales.find(r=>r.vivo&&(r.carga||(r.int&&r.int.k==='carga')));
 const TN_TUT=[
  {id:'hola',quien:'crisol',cuando:tnMiTurno,texto:'Este claro se juega <b>por turnos</b>. Ni tienda ni oro: tus tres campeones luchan por orden y tú decides qué hace cada uno. Aquí gana quien piensa, no quien corre.'},
+ {id:'sinergias',quien:'tovo',cuando:tnMiTurno,
+  texto:'Ojo: aquí las <b>sinergias no cuentan</b>. Da igual de qué rasgo sea cada uno: lo que importa es su vida, su daño, su <b>habilidad</b> y los <b>objetos</b> que le des.'},
  {id:'turnos',quien:'tovo',cuando:tnMiTurno,foco:()=>[rectEl('#tnTurnos')],texto:'Arriba está el <b>orden de turnos</b>: los más rápidos actúan antes. El de borde dorado es quien actúa ahora, y lo que va tras la raya es la ronda siguiente.'},
  {id:'intencion',quien:'crisol',cuando:tnMiTurno,foco:()=>[tnRectGrupo(TN.rivales)],
   texto:'Lo mejor de los turnos: ves lo que <b>planea cada rival</b>. Debajo de cada uno pone a quién atacará y cuánto daño hará. Los tuyos amenazados llevan la cuenta en rojo, y una calavera si el golpe los tumbaría.'},
@@ -5373,9 +5396,9 @@ const TN_TUT=[
 const TN_TUT_EV=[
  {id:'carga',quien:'crisol',cuando:()=>tnMiTurno()&&!!tnJefeCarga(),foco:()=>{const j=tnJefeCarga();return j?[tnRectUnidad(j)]:[]},
   texto:'¡Atención! El jefe va a <b>cargar un golpe enorme</b>: lo prepara un turno y lo suelta en el siguiente. Si recibe mucho daño mientras carga (mira la barra naranja), <b>se rompe</b> y pierde el turno. Si no llegas, protege a quien vaya a recibirlo.'},
- {id:'premio',quien:'tovo',cuando:()=>!$('#tnPremioOv').hidden,foco:()=>[rectEl('#tnPremio .tnPara')||rectEl('#tnPremio .tnObjs')],hecho:()=>$('#tnPremioOv').hidden,
-  clave:()=>!!rectEl('#tnPremio .tnPara'),
-  texto:()=>rectEl('#tnPremio .tnPara')?'Ahora <b>toca a quién dárselo</b>. Cada campeón lleva hasta tres objetos.':'¡Victoria! Tras cada combate eliges un <b>objeto</b> para uno de tus campeones. Toca el que quieras. A nivel 4 y 7, su habilidad mejora.'}];
+ {id:'premio',quien:'tovo',cuando:()=>!$('#tnPremioOv').hidden,foco:()=>[rectEl('#tnPremio .tnEqObj.elige')||rectEl('#tnPremio .tnObjs')],hecho:()=>$('#tnPremioOv').hidden,
+  clave:()=>!!rectEl('#tnPremio .tnEqObj.elige'),
+  texto:()=>rectEl('#tnPremio .tnEqObj.elige')?'Ahora <b>toca a quién dárselo</b>. Debajo de cada uno ves los objetos que ya lleva (hasta tres).':'¡Victoria! Tras cada combate eliges un <b>objeto</b> para uno de tus campeones. Toca el que quieras. A nivel 4 y 7, su habilidad mejora.'}];
 function tnTutTick(){const T=TN&&TN.tut;if(!T||TN.sim)return;
   if(T.vis){const P=T.vis;if(P.hecho&&P.hecho())return tnTutCompletar();if(P.clave){const k=P.clave();if(k!==P.k0){P.k0=k;tutMostrar(P)}}return}
   for(const E of TN_TUT_EV)if(!T.ev[E.id]&&E.cuando()){T.vis=Object.assign({ev:true},E);if(E.clave)T.vis.k0=E.clave();tutMostrar(T.vis);return}
@@ -5408,7 +5431,7 @@ function tnBot(u,listo){const R=TN.rivales.filter(x=>x.vivo),E=TN.equipo.filter(
   if(!rompe&&(llega.get(u)||0)>=u.hp*.4)return tnHacer(u,'prot',u);
   if(rompe)return tnHacer(u,'atk',jc);
   const mata=R.find(r=>r.hp<=dano(u,r));return tnHacer(u,'atk',mata||bajo)}
-function tnSimular(n,N,listo,equipo){HIST=HIST||histLoad();const mazo=mazoNivel(n,HIST.mazo,HIST.col);let gana=0,atascos=0;const cae=[0,0,0,0],donde={};
+function tnSimular(n,N,listo,equipo){HIST=HIST||histLoad();const mazo=mazoNivel(n,HIST.mazo,HIST.col);let gana=0,atascos=0;const cae=[0,0,0],donde={};
   for(let k=0;k<N;k++){let res=false;const eleg=equipo||shuffle(mazo.slice()).slice(0,3);
     TN={nivel:n,elegidos:eleg,vel:1,mazo,ganado:{xp:0,asc:0},sim:{cola:[],juega:u=>tnBot(u,listo),objeto:op=>op[0],fin:g=>{res=g}}};
     TN.fases=tnFasesNivel(n);TN.equipo=eleg.map(tnCampeon);TN.fase=0;TN.combate=0;TN.acciones=0;tnSiguienteCombate();
