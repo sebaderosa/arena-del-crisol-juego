@@ -5329,7 +5329,7 @@ function tnTexto(u,s,col){if(TN.sim)return;const now=performance.now(),dy=TN.fx.
 const tnVertical=(W,H)=>H>W*1.05;
 const tnTam=(W,H)=>tnVertical(W,H)?Math.min(W*.2,H*.13):Math.min(H*.17,W*.1);
 function tnPos(u,W,H){const lista=u.lado===0?TN.equipo:TN.rivales,i=lista.indexOf(u),n=lista.length;
-  if(tnVertical(W,H)){const P=u.lado===0?[[.36,.8],[.7,.84],[.18,.66]]:n===1?[[.6,.42]]:n===2?[[.72,.43],[.3,.35]]:[[.7,.42],[.36,.36],[.86,.27]],q=P[i%P.length];return [W*q[0],H*q[1]]}
+  if(tnVertical(W,H)){const P=u.lado===0?[[.4,.83],[.74,.87],[.15,.72]]:n===1?[[.58,.48]]:n===2?[[.72,.5],[.32,.45]]:[[.72,.5],[.38,.46],[.86,.42]],q=P[i%P.length];return [W*q[0],H*q[1]]}
   const base=H*.74,dep=[0,.07,-.07][i%3]*H,x=u.lado===0?W*(.14+i*.12):W*(.84-i*.16);return [x,base+dep*(n>1?1:0)]}
 // fondo ilustrado del nivel (assets/menu/turnos<n>.webp, lo incrusta build.py en MENU_IMG); sin él, degradado del escenario
 const TN_FONDO={};function tnFondo(n){const k='turnos'+n;if(!MENU_IMG[k])return null;if(!TN_FONDO[k]){const im=new Image();im.src=MENU_IMG[k];TN_FONDO[k]=im}return TN_FONDO[k].complete&&TN_FONDO[k].naturalWidth?TN_FONDO[k]:null}
@@ -5339,7 +5339,7 @@ function tnCartel(g,x,y,txt,col,s,fondo){g.font=`700 ${Math.max(11,s*.155)}px 'B
   g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,x,y+h/2+.5);g.textBaseline='alphabetic';return h}
 function tnDibujar(now){if(!TN||$('#tnOv').hidden)return;const cv=$('#tnCv'),r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);
   if(cv.width!==Math.round(r.width*dpr)||cv.height!==Math.round(r.height*dpr)){cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr)}const g=cv.getContext('2d'),W=r.width,H=r.height;g.setTransform(dpr,0,0,dpr,0,0);
-  const th=THEMES[NIVELES[TN.nivel-1]?NIVELES[TN.nivel-1].tema:0],V=tnVertical(W,H),horiz=V?.3:.62,fo=tnFondo(TN.nivel);
+  const th=THEMES[NIVELES[TN.nivel-1]?NIVELES[TN.nivel-1].tema:0],V=tnVertical(W,H),horiz=V?.4:.62,fo=tnFondo(TN.nivel);
   if(fo){const k=Math.max(W/fo.naturalWidth,H/fo.naturalHeight),w=fo.naturalWidth*k,h=fo.naturalHeight*k;g.drawImage(fo,(W-w)/2,(H-h)*(V?.6:.5),w,h);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,0,W,H)}
   else{const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,th.sky[0]);gr.addColorStop(horiz,th.sky[1]);gr.addColorStop(horiz,th.pa);gr.addColorStop(1,shade(th.pa,.4));g.fillStyle=gr;g.fillRect(0,0,W,H);
     g.fillStyle='rgba(0,0,0,.25)';for(let i=0;i<9;i++){g.beginPath();g.ellipse(W*(i/8),H*(horiz+.02),W*.09,H*.02,0,0,7);g.fill()}}
