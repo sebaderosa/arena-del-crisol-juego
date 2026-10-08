@@ -799,15 +799,33 @@ body.en-combate .goldPill{display:none}
 .tnAcciones{display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap}
 .tnAcciones .big{display:flex;flex-direction:column;align-items:center;line-height:1.1}.tnAcciones .big small{font-size:11px;opacity:.85}
 .tnQuien{display:flex;align-items:center;gap:8px}.tnQuien img{width:44px;height:44px;border-radius:50%;background:#1d2a33;object-fit:cover}.tnQuien b{color:var(--gold-hi)}.tnQuien small{color:var(--muted);margin-left:4px}
-.tnAyuda{color:#bfae8a;font-size:14px;font-style:italic}
+.tnQuien.riv b{color:#ff9a8a}.tnAyuda{color:#d8c9a6;font-size:13.5px;flex-basis:100%;line-height:1.3}.tnAyuda b{color:var(--gold-hi)}
+.tnBtns{display:flex;gap:8px}.tnAcciones .big.sel{outline:2px solid #ffd98a;outline-offset:2px}
+.tnTurnos{display:flex;gap:4px;align-items:center;padding:4px 10px;background:rgba(10,15,20,.94);border-bottom:1px solid var(--line);overflow:hidden;min-height:44px;white-space:nowrap}
+.tnTurnos>small{color:var(--muted);font-size:11px;margin-right:4px;text-transform:uppercase;letter-spacing:.05em}
+.tnT{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid #53c476;overflow:hidden;background:#1d2a33}.tnT img{width:100%;height:100%;object-fit:cover;display:block}
+.tnT.riv{border-color:#e0605b}.tnT.ya{width:38px;height:38px;border-color:#ffd98a;box-shadow:0 0 10px rgba(255,217,138,.8)}
+.tnSep{font-size:10.5px;color:var(--muted);font-style:normal;padding-left:6px;margin-left:4px;border-left:1px solid var(--line)}
+.tnSig{display:flex;gap:3px;opacity:.55}.tnSig .tnT{width:24px;height:24px}
+.tnFicha{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:10px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;min-height:64px;font-size:13px}
+.tnFicha>img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#1d2a33;flex:0 0 auto}
+.tnFiCab{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tnFiCab>b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--gold-hi)}
+.tnFiStats{color:#c6d3da;margin:4px 0;font-size:12.5px}.tnFiStats b{color:#fff}.tnFiHab small,.tnFiPapel{color:var(--muted)}.tnFiPapel{margin-top:3px}.tnFiPapel b{color:#cfe0ea}
+.tnGrid .dk.ver{box-shadow:0 0 0 2px #8cc8ff}
 .tnLog{width:min(320px,38vw);font-size:13px;color:#c9d6dd;overflow:hidden}.tnLog div:first-child{color:#fff}
 #tnPremioOv{z-index:35}
-.tnObjs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.tnObjs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
 .tnObj{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;color:var(--text)}
-.tnObj small{font-size:11.5px;color:var(--muted)}.tnObj.sel{border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.35)}
+.tnObj small{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}.tnObj b{overflow-wrap:anywhere}#tnPremio{box-sizing:border-box;max-width:min(640px,100%)}.tnObj.sel{border-color:var(--gold-hi);box-shadow:0 0 12px rgba(255,190,90,.35)}
+.tnEqObj{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.tnPara1{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:6px 4px;color:var(--text);opacity:.75;pointer-events:none}
+.tnPara1 img{width:34px;height:34px;border-radius:50%;object-fit:cover}.tnPara1 b{font-size:13px}.tnPara1>span{display:flex;gap:3px}
+.tnHueco{display:inline-block;width:26px;height:26px;border:1px dashed #3a4f5c;border-radius:6px}
+.tnEqObj.elige .tnPara1:not([disabled]){opacity:1;pointer-events:auto;border-color:var(--gold-hi);box-shadow:0 0 10px rgba(255,190,90,.3)}.tnPara1[disabled]{opacity:.45}
+.tnSusObj{display:flex;gap:3px;margin-left:6px}
 .tnPara{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}.tnPara .btn{display:flex;align-items:center;gap:6px}.tnPara img{width:28px;height:28px;border-radius:50%;object-fit:cover}
 .tnFinEq{display:flex;gap:14px;justify-content:center;margin:12px 0}.tnFinEq div{display:flex;flex-direction:column;align-items:center;gap:3px}.tnFinEq img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#1d2a33}.tnFinEq b{color:var(--gold-hi)}
-@media (max-width:760px){.tnPanel{flex-direction:column;min-height:0}.tnLog{width:auto;max-height:54px}.tnObj{padding:8px 4px}.tnObj b{font-size:13px}.tnObj small{font-size:10.5px}}
+@media (max-width:760px){.tnGrid{max-height:40vh}.tnBtns{width:100%}.tnBtns .big{flex:1;padding:7px 4px;font-size:15px}.tnPanel{flex-direction:column;height:212px;min-height:0;padding:8px 10px;gap:6px;overflow:hidden;box-sizing:border-box}.tnTurnos{padding:3px 8px}.tnLog{width:auto;max-height:36px;font-size:12px;line-height:18px}.tnAcciones{gap:6px;align-content:flex-start}.tnAyuda{font-size:12.5px}.tnQuien img{width:36px;height:36px}.tnObj{padding:8px 4px}.tnObj b{font-size:13px}.tnObj small{font-size:10.5px}}
 #bTnVel[aria-pressed="true"]{border-color:var(--gold-hi);color:var(--gold-hi)}
 /* ===== duelo (prueba) ===== */
 .mpLado #bDuelo{border-color:#6a2f2f}
@@ -1172,13 +1190,15 @@ body.en-combate .goldPill{display:none}
 <div class="overlay" id="tnElegirOv" hidden>
   <div class="modal wide">
     <div class="row" style="justify-content:space-between;align-items:center"><div><div class="lbl">Combate por turnos</div><h2 style="margin:0"><span id="tnElegirTit"></span> <span class="best" id="tnCuenta"></span></h2></div><span style="display:flex;gap:8px"><button class="big alt" id="bTnVolver">Volver</button><button class="big" id="bTnEmpezar" disabled>Empezar</button></span></div>
-    <p class="sub" style="margin:6px 0 10px">Este nivel se juega por turnos. Elige 3 campeones de tu mazo: sin oro ni tienda, ganan experiencia, suben de nivel y reciben objetos. 4 fases de 3 combates, con un jefe al final de cada una.</p>
+    <p class="sub" style="margin:6px 0 10px">Este nivel se juega por turnos. Elige 3 campeones de tu mazo: sin oro ni tienda, ganan experiencia, suben de nivel y reciben objetos. 3 fases de 3 combates, con un jefe al final de cada una. <b style="color:var(--gold-hi)">Aquí las sinergias no cuentan</b>: importan la vida, el daño, la habilidad y los objetos de cada uno.</p>
     <div id="tnGrid" class="tnGrid"></div>
+    <div id="tnFicha" class="tnFicha"></div>
   </div>
 </div>
 
 <div class="overlay tnOv" id="tnOv" hidden>
   <div class="tnTop"><b id="tnTit"></b><span style="display:flex;gap:8px"><button class="btn" id="bTnVel" aria-pressed="false" title="Velocidad">×1</button><button class="btn" id="bTnRendirse">Rendirse</button></span></div>
+  <div id="tnTurnos" class="tnTurnos"></div>
   <canvas id="tnCv"></canvas>
   <div class="tnPanel"><div id="tnAcciones" class="tnAcciones"></div><div id="tnLog" class="tnLog"></div></div>
 </div>
@@ -5063,134 +5083,242 @@ function transformacionMorvane(){
   $('#bTransfOk').onclick=()=>{ov.hidden=true;renderMap(true);toast('Ha aparecido un nivel oculto en el mapa: El corazón maldito')}}
 
 // ================= NIVELES POR TURNOS DEL MODO HISTORIA =================
-// Algunos niveles (L.turnos: 37 y 41 del Mundo 3) se juegan distinto: eliges 3 campeones de tu mazo y recorres 4 fases
+// Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 3 fases
 // de 3 combates (el último de cada fase, un jefe). Sin economía: los campeones ganan experiencia y suben de nivel (más
 // estadísticas; a nivel 4 y 7 su habilidad sube como 2★ y 3★) y tras cada victoria eliges un objeto para uno de ellos.
-// Vista lateral: tus campeones a la izquierda y los rivales a la derecha. En tu turno: ataque básico (carga maná)
-// o habilidad (con el maná lleno), y tocas al rival. ×1/×2: velocidad de las animaciones y turnos rivales.
+// Vista lateral: tus campeones a un lado y los rivales al otro. En tu turno: ataque (carga maná), habilidad (con el
+// maná lleno) o Proteger (recibes con un 60 % menos de daño los golpes dirigidos a un compañero, o te defiendes tú).
+// Estrategia: cada rival enseña su intención (a quién atacará y cuánto daño hará) y la barra de arriba, el orden de
+// turnos. Los jefes preparan cada 3 turnos un golpe cargado que avisan un turno antes; se rompe (y pierden el turno)
+// si reciben el 15 % de su vida mientras cargan, o si los aturden. ×1/×2: velocidad de las animaciones y turnos rivales.
 // Rivales de cada nivel: TN_NIVELES[n] = {mons: {monstruo: peso}, jefe: [[monstruo, mult], ...]} (escalan por fase)
 const TN_NIVELES={ // f: fuerza base de los rivales del nivel
- 13:{mons:{roedin:2,escupidor:2,lobo:1},jefe:[['lobo',1.1],['roedin',1]],f:1.07},
- 28:{mons:{goblin:2,murcielago:2,arana:1},jefe:[['trol',.9],['hondero',1]],f:.94},
+ 13:{mons:{roedin:2,escupidor:2,lobo:1},jefe:[['lobo',1.1],['roedin',1]],f:1.63},
+ 28:{mons:{goblin:2,murcielago:2,arana:1},jefe:[['trol',.9],['hondero',1]],f:1.4},
  37:{mons:{esqueleto:2,necrofago:2,espectro:1},jefe:[['golemhueso',.55],['esqueleto',1]]},
  41:{mons:{espectro:3,necrofago:1,esqueleto:1},jefe:[['espectro',3.2],['espectro',1],['espectro',1]],f:.7}};
-const TN_ESCALA=[1,1.6,2.3,3.1];
-// los 3 combates de cada fase: 3 rivales, luego 3 algo más fuertes, y el jefe con su escolta
-function tnFasesNivel(n){const D=TN_NIVELES[n],rr=srand(n*77),ks=Object.keys(D.mons),tot=ks.reduce((a,k)=>a+D.mons[k],0),
-  elige=()=>{let v=rr()*tot;return ks.find(k=>(v-=D.mons[k])<0)||ks[0]};
-  return TN_ESCALA.map(x0=>{const x=x0*(D.f||1);return [[[elige(),x],[elige(),x],[elige(),x*.9]],[[elige(),x*1.1],[elige(),x*1.1],[elige(),x]],D.jefe.map(([m,k])=>[m,k*x])]})}
+const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
+let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
+// golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
+const TN_CARGA={lobo:['Mordisco brutal',0],trol:['Pisotón',1],golemhueso:['Derrumbe',1],espectro:['Grito helado',1],hondero:['Pedrada certera',0]};
+const TN_PRORROGA=12; // desde esta ronda de un combate, el daño sube un 25 % por ronda (ningún combate se eterniza)
+const tnProrroga=()=>1+Math.max(0,(TN.ronda||0)-TN_PRORROGA+1)*.25;
+let TN_CARGA_K=[3,1.5],TN_ROTURA=.15,TN_PROT=.6; // daño del golpe cargado (×daño, a uno / a todos), vida que lo rompe y daño que evita Proteger
+const tnCargaDe=u=>TN_CARGA[u.id]||['Golpe demoledor',0];
+// los 3 combates de cada fase: 2 rivales, luego 2 algo más fuertes, y el jefe solo
+function tnFasesNivel(n){const D=TN_NIVELES[n],rr=srand(n*77),ks=Object.keys(D.mons),tot=ks.reduce((a,k)=>a+D.mons[k],0),jm=D.jefe[0][0],
+  uno=x=>{let v=rr()*tot;const m=ks.find(k=>(v-=D.mons[k])<0)||ks[0];return [m,m===jm?x*.7:x]}; // los del monstruo del jefe, más flojos que él
+  return TN_ESCALA.map((x0,i)=>{const x=x0*(D.f||1);const y=x*TN_DOS,y1=y*(i?TN_SUAVE:1);return [[uno(y1),uno(y1*.9)],[uno(y*1.1),uno(y)],[[jm,D.jefe[0][1]*x*TN_JEFE[i]*TN_SOLO]]]})}
 let TN=null;
-const tnTras=(fn,ms)=>{const yo=TN;setTimeout(()=>{if(TN===yo&&!TN.fin)fn()},tnT(ms))};
+// temporizador ligado a la partida: no se ejecuta si has salido o empezado otra (en la simulación, al instante)
+const tnTras=(fn,ms)=>{const yo=TN;if(TN&&TN.sim)return void TN.sim.cola.push(fn);setTimeout(()=>{if(TN===yo&&!TN.fin)fn()},tnT(ms))};
+const tnSfx=k=>{if(!(TN&&TN.sim))sfx(k)};
 const tnNivelStar=l=>l>=7?3:l>=4?2:1,tnXpNec=l=>60+40*l,tnT=ms=>ms/((TN&&TN.vel)||1);
 // ---- elegir equipo (de tu mazo para el nivel) ----
 function tnAbrirNivel(n){HIST=histLoad();const L=NIVELES[n-1];let vel=1;try{vel=+localStorage.getItem('crisol_vel_tn')||1}catch(e){}
-  TN={nivel:n,elegidos:[],vel,mazo:mazoNivel(n,HIST.mazo,HIST.col),ganado:{xp:0,asc:0}};
+  TN={nivel:n,elegidos:[],ver:null,vel,mazo:mazoNivel(n,HIST.mazo,HIST.col),ganado:{xp:0,asc:0}};
   ['#storyOv','#endOv','#startOv'].forEach(x=>$(x).hidden=true);$('#tnElegirTit').textContent=`Nivel ${n} · ${L.nombre}`;tnRenderElegir();$('#tnElegirOv').hidden=false}
 function tnRenderElegir(){
   const ids=TN.mazo.slice().sort((a,b)=>CH[a].cost-CH[b].cost);
-  $('#tnGrid').innerHTML=ids.map(id=>{const C=CH[id],on=TN.elegidos.includes(id);return `<button class="dk${on?' on':''}" data-id="${id}"><div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(id)}" alt=""></div><span>${C.name}</span><div class="tps">${C.traits.map(traitPill).join('')}</div></button>`}).join('');
-  $('#tnGrid').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const id=b.dataset.id,E=TN.elegidos;if(E.includes(id))E.splice(E.indexOf(id),1);else if(E.length<3)E.push(id);tnRenderElegir()});
+  $('#tnGrid').innerHTML=ids.map(id=>{const C=CH[id],on=TN.elegidos.includes(id);return `<button class="dk${on?' on':''}${TN.ver===id?' ver':''}" data-id="${id}"><div class="cg" style="border-color:${COST_COL[C.cost-1]}"><img src="${portrait(id)}" alt=""></div><span>${C.name}</span><div class="tps">${C.traits.map(traitPill).join('')}</div></button>`}).join('');
+  $('#tnGrid').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const id=b.dataset.id,E=TN.elegidos;if(E.includes(id))E.splice(E.indexOf(id),1);else if(E.length<3)E.push(id);TN.ver=id;
+    const y=$('#tnGrid').scrollTop;tnRenderElegir();$('#tnGrid').scrollTop=y});
   $('#tnCuenta').textContent=`${TN.elegidos.length}/3`;$('#bTnEmpezar').disabled=TN.elegidos.length!==3;
+  tnFichaElegir();
 }
+// ficha del último campeón tocado: lo que hace en los combates por turnos
+function tnFichaElegir(){const el=$('#tnFicha'),id=TN.ver;if(!el)return;
+  if(!id){el.innerHTML='<p class="sub" style="margin:0">Toca un campeón para elegirlo y ver qué hace en los combates por turnos.</p>';return}
+  const C=CH[id],u=tnCampeon(id),s=tnStats(u);
+  el.innerHTML=`<img src="${portrait(id)}" alt=""><div style="flex:1;min-width:0"><div class="tnFiCab"><b>${C.name}</b>${roleTag(C.role)}<span class="tps">${C.traits.map(traitPill).join('')}</span></div>
+    <div class="tnFiStats">Vida <b>${Math.round(s.hp)}</b> · Daño <b>${Math.round(s.ad)}</b> · Armadura <b>${Math.round(s.ar)}</b> · Res. mágica <b>${Math.round(s.mr)}</b> · Velocidad <b>${s.vel.toFixed(2)}</b></div>
+    <div class="tnFiHab"><b>${C.ab.n}</b> <small>(con el maná lleno)</small>: ${tnDescHab(u)}</div><div class="tnFiPapel">${tnPapel(u)}</div></div>`}
+function tnPapel(u){const k=u.ab.k;
+  if(u.role==='tank')return 'Mucha vida y defensa: ideal para <b>Proteger</b> a los demás.';
+  if(TN_APOYO.includes(k))return 'Apoyo: mantiene en pie al equipo.';
+  if(TN_AREA.includes(k))return 'Golpea a todos los rivales a la vez: muy bueno contra grupos.';
+  if(k==='stun')return 'Aturde: puede <b>romper la carga</b> de un jefe.';
+  return 'Mucho daño a un solo rival: bueno para acabar con el más peligroso o romper la carga de un jefe.'}
 // ---- unidades ----
 function tnCampeon(id){const f=makeFighter({uid:0,id,star:1,items:[]},0,0,4,{});
-  return {id,nombre:CH[id].name,lado:0,nivel:1,xp:0,base:{hp:f.maxHp,ad:f.ad,ar:f.ar,mr:f.mr,as:f.as},items:[],ab:CH[id].ab,hp:f.maxHp,mana:0,escudo:0,vivo:true,role:CH[id].role,traits:CH[id].traits}}
-function tnStats(u){const k=1+(u.nivel-1)*.12,s={hp:u.base.hp*k,ad:u.base.ad*k,ar:u.base.ar+(u.nivel-1)*2,mr:u.base.mr+(u.nivel-1)*2,ap:0,vel:u.base.as,crit:.05};
-  for(const it of u.items){const I=ITEMS[it].s||{};if(I.hp)s.hp+=I.hp;if(I.ad)s.ad+=I.ad;if(I.ar)s.ar+=I.ar;if(I.mr)s.mr+=I.mr;if(I.ap)s.ap+=I.ap;if(I.as)s.vel*=1+I.as;if(I.crit)s.crit+=I.crit}
+  return {id,nombre:CH[id].name,lado:0,nivel:1,xp:0,base:{hp:f.maxHp,ad:f.ad,ar:f.ar,mr:f.mr,as:f.as},items:[],ab:CH[id].ab,hp:f.maxHp,mana:0,escudo:0,vivo:true,role:CH[id].role,traits:CH[id].traits,guarda:null}}
+function tnStats(u){const k=1+(u.nivel-1)*.12,s={hp:u.base.hp*k,ad:u.base.ad*k,ar:u.base.ar+(u.nivel-1)*2,mr:u.base.mr+(u.nivel-1)*2,ap:0,vel:u.base.as,crit:.05,mana:0};
+  for(const it of u.items){const I=ITEMS[it].s||{};if(I.hp)s.hp+=I.hp;if(I.ad)s.ad+=I.ad;if(I.ar)s.ar+=I.ar;if(I.mr)s.mr+=I.mr;if(I.ap)s.ap+=I.ap;if(I.as)s.vel*=1+I.as;if(I.crit)s.crit+=I.crit;if(I.mana)s.mana+=I.mana}
   return s}
-function tnRival(m,x){const c=makeCreep(m,1,0,0,x);return {id:m,creep:true,nombre:c.name,lado:1,nivel:1,stats:{hp:c.maxHp,ad:c.ad,ar:c.ar,mr:c.mr,ap:0,vel:c.as,crit:.05},hp:c.maxHp,mana:0,escudo:0,vivo:true,col:c.col}}
+function tnRival(m,x){const c=makeCreep(m,1,0,0,x);return {id:m,creep:true,nombre:c.name,lado:1,nivel:1,stats:{hp:c.maxHp,ad:c.ad,ar:c.ar,mr:c.mr,ap:0,vel:c.as,crit:.05},hp:c.maxHp,mana:0,escudo:0,vivo:true,col:c.col,nt:0,int:null,carga:null}}
 const tnS=u=>u.creep?u.stats:tnStats(u);
+// pasivas de los objetos completos que funcionan en los turnos (las demás solo dan sus estadísticas)
+const TN_PASIVA={robo:v=>`Se cura el ${pc(v)} % del daño que hace`,omni:v=>`Se cura el ${pc(v)} % del daño que hace`,espinas:v=>`Devuelve el ${pc(v)} % del daño que recibe`,
+  regenVida:v=>`Recupera un ${v*3} % de vida al empezar su turno`,escudoIni:v=>`Empieza cada combate con un escudo del ${pc(v)} % de su vida`,critDmg:v=>`Sus críticos hacen un ${pc(v)} % más`,
+  esquiva:v=>`${pc(v)} % de esquivar cada golpe`,verdugo:v=>`+${pc(v)} % de daño a rivales con menos de la mitad de vida`,dmg:v=>`+${pc(v)} % de daño`,
+  escudoHab:v=>`Al usar la habilidad, gana un escudo de ${v}`,recarga:v=>`Tras usar la habilidad, recupera ${v} de maná`};
+const tnPas=(u,k)=>u.creep?0:u.items.reduce((a,it)=>a+((ITEMS[it].p||{})[k]||0),0);
+function tnDescObj(it){const I=ITEMS[it],k=I.p&&Object.keys(I.p)[0],st=statText(I.s).replace('vel. de ataque','velocidad (actúa antes)');return st+(k&&TN_PASIVA[k]?'. '+TN_PASIVA[k](I.p[k]):'')+'.'}
+// habilidades que no necesitan objetivo (área, curas, escudos…)
+const TN_AREA=['aoe','aoeSelf','volley','chain','rayoDiagonal','murcielagos','necro','telarana','aliento'],TN_APOYO=['heal','teamHeal','shield','materno','arenga','haste'];
+const tnHabSinObjetivo=ab=>TN_AREA.includes(ab.k)||TN_APOYO.includes(ab.k);
+const tnValHab=u=>u.ab.v[tnNivelStar(u.nivel)-1]*(1+tnS(u).ap/100);
+function tnDescHab(u){const k=u.ab.k,v=Math.round(tnValHab(u));
+  if(TN_AREA.includes(k))return `${Math.round(v*.65)} de daño mágico a todos los rivales.`;
+  if(k==='heal')return `Se cura ${v} de vida.`;
+  if(k==='teamHeal'||k==='materno')return `Cura ${Math.round(v*.7)} de vida a todo el equipo.`;
+  if(k==='shield'||k==='arenga')return `Escudo de ${v} al compañero más herido.`;
+  if(k==='haste')return 'Vuelve a actuar enseguida (turno extra).';
+  if(k==='stun')return `${v} de daño mágico a un rival y lo aturde: pierde su próximo turno.`;
+  if(k==='execute')return `${v} de daño mágico a un rival; el doble si le queda menos del 40 % de vida.`;
+  if(k==='doble')return `${v} y luego ${Math.round(v*.6)} de daño mágico a un rival.`;
+  return `${v} de daño mágico a un rival.`}
 // ---- la partida ----
-function tnEmpezar(){$('#tnElegirOv').hidden=true;audioInit();TN.fases=tnFasesNivel(TN.nivel);TN.equipo=TN.elegidos.map(tnCampeon);TN.fase=0;TN.combate=0;tnVel(TN.vel);$('#tnOv').hidden=false;tnSiguienteCombate()}
+function tnEmpezar(){$('#tnElegirOv').hidden=true;audioInit();TN.fases=tnFasesNivel(TN.nivel);TN.equipo=TN.elegidos.map(tnCampeon);TN.fase=0;TN.combate=0;TN.acciones=0;
+  if(!HIST.tutTurnos)TN.tut={i:0,vis:null,ev:{}};
+  tnVel(TN.vel);$('#tnOv').hidden=false;tnSiguienteCombate()}
 function tnVel(v){TN.vel=v;$('#bTnVel').textContent='×'+v;$('#bTnVel').setAttribute('aria-pressed',v>1);try{localStorage.setItem('crisol_vel_tn',v)}catch(e){}}
 function tnSiguienteCombate(){
-  const grupo=TN.fases[TN.fase][TN.combate];TN.rivales=grupo.map(([m,x])=>tnRival(m,x));
-  TN.equipo.forEach(u=>{u.mana=Math.min(u.mana,40);u.escudo=0;u.aturdido=0});
-  TN.cola=[];TN.turno=null;TN.fx=[];TN.anim=null;TN.fin=false;TN.objetivo=null;tnLog(`Fase ${TN.fase+1} · combate ${TN.combate+1}${TN.combate===2?' · ¡jefe!':''}`);
-  $('#tnTit').textContent=`Fase ${TN.fase+1}/4 · ${TN.combate===2?'Jefe':'Combate '+(TN.combate+1)+'/3'}`;
+  const grupo=TN.fases[TN.fase][TN.combate];TN.rivales=grupo.map(([m,x])=>tnRival(m,x));if(TN.combate===2)TN.rivales[0].jefe=true;
+  TN.equipo.forEach(u=>{const S2=tnStats(u);u.mana=Math.min(100,Math.min(u.mana,40)+S2.mana);u.escudo=S2.hp*tnPas(u,'escudoIni');u.aturdido=0;u.guarda=null});
+  TN.cola=[];TN.ronda=0;TN.turno=null;TN.fx=[];TN.anim=null;TN.fin=false;TN.accion=null;TN.rivales.forEach(tnPlanear);
+  tnLog(`Fase ${TN.fase+1} · combate ${TN.combate+1}${TN.combate===2?' · ¡jefe!':''}`);
+  if(!TN.sim)$('#tnTit').textContent=`Fase ${TN.fase+1}/${TN_ESCALA.length} · ${TN.combate===2?'Jefe':'Combate '+(TN.combate+1)+'/3'}`;
   tnSiguienteTurno();
 }
 function tnTodos(){return TN.equipo.concat(TN.rivales).filter(u=>u.vivo)}
+const tnOrden=()=>tnTodos().sort((a,b)=>tnS(b).vel-tnS(a).vel); // cada ronda, por velocidad
 function tnSiguienteTurno(){
   if(TN.fin)return;
   if(!TN.rivales.some(u=>u.vivo))return tnVictoria();
   if(!TN.equipo.some(u=>u.vivo))return tnDerrota();
-  if(!TN.cola.length)TN.cola=tnTodos().sort((a,b)=>tnS(b).vel-tnS(a).vel); // nueva ronda: por velocidad
+  if(!TN.cola.some(u=>u.vivo)){TN.cola=tnOrden();TN.ronda++;if(TN.ronda===TN_PRORROGA)tnLog('¡Prórroga! Desde ahora, cada ronda los golpes duelen más.')}
   const u=TN.cola.shift();if(!u.vivo)return tnSiguienteTurno();
-  TN.turno=u;
-  if(u.aturdido){u.aturdido=0;tnTexto(u,'Aturdido','#ffe27a');tnLog(`${u.nombre} está aturdido y pierde el turno.`);return tnTras(tnSiguienteTurno,700)}
-  if(u.lado===1)return tnTras(()=>tnIA(u),650);
+  TN.turno=u;if(u.lado===0){u.guarda=null;const rg=tnPas(u,'regenVida');if(rg&&u.hp<tnS(u).hp){const h=Math.min(tnS(u).hp-u.hp,tnS(u).hp*rg*.03);u.hp+=h;tnTexto(u,'+'+Math.round(h),'#8be29f')}}tnBarra();
+  if(u.aturdido){u.aturdido=0;tnTexto(u,'Aturdido','#ffe27a');tnLog(`${u.nombre} está aturdido y pierde el turno.`);
+    return tnTras(()=>{if(u.lado===1){u.nt++;tnPlanear(u)}tnSiguienteTurno()},700)}
+  if(u.lado===1){if(!TN.sim)$('#tnAcciones').innerHTML=`<div class="tnQuien riv"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Turno rival</small></div>`;return tnTras(()=>tnIA(u),650)}
   tnPanel();
 }
-function tnPanel(){const u=TN.turno,lleno=u.mana>=100;
-  $('#tnAcciones').innerHTML=`<div class="tnQuien"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Nivel ${u.nivel}</small></div>
-    <button class="big" id="bTnAtk">Ataque</button><button class="big ${lleno?'':'alt'}" id="bTnHab"${lleno?'':' disabled'} title="${u.ab.n}: ${abilDesc(u.ab,tnNivelStar(u.nivel))}">${u.ab.n}<small>${lleno?'¡Lista!':Math.floor(u.mana)+'/100 maná'}</small></button>
-    <span class="tnAyuda">${TN.accion?'Toca a un rival':'Elige una acción'}</span>`;
-  $('#bTnAtk').onclick=()=>{TN.accion='atk';tnElegirObjetivo()};$('#bTnHab').onclick=()=>{TN.accion='hab';if(tnHabSinObjetivo(u.ab))return tnHacer(u,'hab',null);tnElegirObjetivo()};
-}
-function tnElegirObjetivo(){$('#tnAcciones .tnAyuda').textContent='Toca a un rival';const vivos=TN.rivales.filter(r=>r.vivo);if(vivos.length===1)tnHacer(TN.turno,TN.accion,vivos[0])}
-// habilidades que no necesitan objetivo (área, curas, escudos…)
-const TN_AREA=['aoe','aoeSelf','volley','chain','rayoDiagonal','murcielagos','necro','telarana','aliento'],TN_APOYO=['heal','teamHeal','shield','materno','arenga','haste'];
-const tnHabSinObjetivo=ab=>TN_AREA.includes(ab.k)||TN_APOYO.includes(ab.k);
-function tnIA(u){const obj=TN.equipo.filter(x=>x.vivo).sort((a,b)=>a.hp-b.hp)[0];if(!obj)return tnSiguienteTurno();
-  const especial=u.mana>=100;tnHacer(u,especial?'hab':'atk',obj)}
-// daño con defensas y escudo
-function tnDano(src,t,amt,tipo,crit){const S2=tnS(t),def=tipo==='magic'?S2.mr:S2.ar;let a=amt*100/(100+Math.max(0,def));if(crit)a*=1.5;
+// barra con el orden de turnos: los que quedan en esta ronda y, tras la raya, la siguiente
+function tnBarra(){const el=$('#tnTurnos');if(!el||!TN||TN.sim)return;const ahora=[TN.turno].concat(TN.cola).filter(u=>u&&u.vivo);
+  const f=(u,ya)=>`<span class="tnT ${u.lado?'riv':'eq'}${ya?' ya':''}" title="${u.nombre}"><img src="${portrait(u.id)}" alt="${u.nombre}"></span>`;
+  el.innerHTML='<small>Turnos</small>'+ahora.map((u,i)=>f(u,i===0&&u===TN.turno)).join('')+'<i class="tnSep">siguiente ronda</i><span class="tnSig">'+tnOrden().map(u=>f(u,false)).join('')+'</span>'}
+// ---- tu turno ----
+function tnPanel(){const u=TN.turno,lleno=u.mana>=100;if(TN.sim)return TN.sim.juega(u);
+  $('#tnAcciones').innerHTML=`<div class="tnQuien"><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><small>Nivel ${u.nivel}</small><span class="tnSusObj">${u.items.map(it=>`<span data-it="${it}" title="${ITEMS[it].n}: ${tnDescObj(it)}">${itemBox(it,'','width:24px;height:24px')}</span>`).join('')}</span></div>
+    <div class="tnBtns"><button class="big" id="bTnAtk">Ataque<small>+34 maná</small></button>
+    <button class="big ${lleno?'':'alt'}" id="bTnHab"${lleno?'':' disabled'}>${u.ab.n}<small>${lleno?'¡Lista!':Math.floor(u.mana)+'/100 maná'}</small></button>
+    <button class="big alt" id="bTnProt">Proteger<small>−60 % de daño</small></button></div>
+    <div class="tnAyuda" id="tnAyuda"></div>`;
+  $('#bTnAtk').onclick=()=>{TN.accion='atk';tnElegirObjetivo()};
+  $('#bTnHab').onclick=()=>{TN.accion='hab';if(tnHabSinObjetivo(u.ab))return tnHacer(u,'hab',null);tnElegirObjetivo()};
+  $('#bTnProt').onclick=()=>{TN.accion='prot';tnElegirObjetivo()};
+  $('#tnAcciones').querySelectorAll('.tnSusObj [data-it]').forEach(e=>e.onclick=()=>{$('#tnAyuda').innerHTML=`<b>${ITEMS[e.dataset.it].n}:</b> ${tnDescObj(e.dataset.it)}`});
+  tnAyuda()}
+function tnAyuda(){const u=TN.turno,a=TN.accion,el=$('#tnAyuda');if(!el)return;
+  el.innerHTML=a==='atk'?`<b>Toca a un rival</b> para atacarlo (${Math.round(tnS(u).ad)} de daño antes de su armadura).`
+    :a==='hab'?`<b>Toca a un rival</b>. ${tnDescHab(u)}`
+    :a==='prot'?'<b>Toca a un compañero</b>: hasta tu próximo turno recibes tú sus golpes con un 60 % menos de daño. Tócate para defenderte.'
+    :`<b>${u.ab.n}:</b> ${tnDescHab(u)}`;
+  [['atk','#bTnAtk'],['hab','#bTnHab'],['prot','#bTnProt']].forEach(([k,s])=>{const b=$(s);if(b)b.classList.toggle('sel',a===k)})}
+function tnElegirObjetivo(){tnAyuda();
+  if(TN.accion==='prot'){const vivos=TN.equipo.filter(r=>r.vivo);if(vivos.length===1)tnHacer(TN.turno,'prot',vivos[0]);return}
+  const vivos=TN.rivales.filter(r=>r.vivo);if(vivos.length===1)tnHacer(TN.turno,TN.accion,vivos[0])}
+// ---- los rivales: intención visible y la cumplen ----
+const tnElige=v=>rnd()<.6?v.slice().sort((a,b)=>a.hp-b.hp)[0]:v[Math.floor(rnd()*v.length)];
+function tnPlanear(u){const vivos=TN.equipo.filter(x=>x.vivo);if(!u.vivo||!vivos.length){u.int=null;return}
+  if(u.carga){u.int={k:'golpe',t:u.carga.t,area:u.carga.area};return}
+  if(u.jefe&&u.nt%3===2){const C=tnCargaDe(u);u.int={k:'carga',t:C[1]?null:tnElige(vivos),area:!!C[1]};return}
+  u.int={k:u.mana>=100?'hab':'atk',t:tnElige(vivos)}}
+// si su objetivo cayó, va a por el de menos vida; si alguien lo protege, el golpe va al protector
+const tnVivo=t=>t&&t.vivo?t:TN.equipo.filter(x=>x.vivo).sort((a,b)=>a.hp-b.hp)[0];
+const tnReal=t=>t&&(TN.equipo.find(x=>x.vivo&&x!==t&&x.guarda===t)||t);
+const tnBlancos=I=>I.area?TN.equipo.filter(x=>x.vivo):[tnReal(tnVivo(I.t))].filter(Boolean);
+function tnPrev(u,I,t){if(!I||!t||I.k==='carga')return 0;const S2=tnS(u),T=tnS(t),mag=I.k==='hab';
+  const base=I.k==='golpe'?S2.ad*TN_CARGA_K[I.area?1:0]:mag?S2.ad*2.2:S2.ad;let a=base*100/(100+Math.max(0,mag?T.mr:T.ar))*tnProrroga();if(t.guarda)a*=1-TN_PROT;return Math.round(a)}
+function tnIA(u){u.nt++;if(!u.int||(u.int.k==='golpe'&&!u.carga))tnPlanear(u);const I=u.int;if(!I)return tnSiguienteTurno();
+  if(I.k==='carga'){const C=tnCargaDe(u);u.carga={t:I.t,area:I.area,dano:0,umbral:tnS(u).hp*TN_ROTURA,n:C[0]};tnTexto(u,'¡Prepara '+C[0]+'!','#ffb347');tnSfx('cast');
+    tnLog(`${u.nombre} prepara ${C[0]}${I.area?' contra todo tu equipo':' contra '+tnVivo(I.t).nombre}. ¡Rómpelo o protégete!`);
+    TN.anim={u,t:u,tipo:'hab',rango:true,t0:performance.now(),dur:tnT(700)};tnPlanear(u);tnBarra();return tnTras(tnSiguienteTurno,850)}
+  tnHacer(u,I.k,I.area?null:tnReal(tnVivo(I.t)))}
+// daño con defensas, escudo y Proteger; rompe la carga de un jefe
+function tnDano(src,t,amt,tipo,crit){const S2=tnS(t),def=tipo==='magic'?S2.mr:S2.ar;
+  if(tnPas(t,'esquiva')&&rnd()<tnPas(t,'esquiva')){tnTexto(t,'Esquiva','#cfe0ea');return 0}
+  let a=amt*100/(100+Math.max(0,def))*tnProrroga()*(1+tnPas(src,'dmg'));if(crit)a*=1.5+tnPas(src,'critDmg');if(t.guarda)a*=1-TN_PROT;
+  if(tnPas(src,'verdugo')&&t.hp<S2.hp*.5)a*=1+tnPas(src,'verdugo');
   let r=a;if(t.escudo>0){const s=Math.min(t.escudo,r);t.escudo-=s;r-=s}t.hp-=r;t.mana=Math.min(100,t.mana+10);
   tnTexto(t,Math.round(a)+(crit?'!':''),crit?'#ffd98a':tipo==='magic'?'#cfa6ff':'#ffffff');t.golpe=1;
-  if(t.hp<=0){t.hp=0;t.vivo=false;tnLog(`${t.nombre} cae.`);sfx('death')}else sfx(crit?'crit':'hit');return a}
+  const robo=tnPas(src,'robo')+tnPas(src,'omni');if(robo&&src.vivo)src.hp=Math.min(tnS(src).hp,src.hp+a*robo);
+  if(t.hp<=0)tnMuere(t);
+  else{tnSfx(crit?'crit':'hit');if(t.carga){t.carga.dano+=a;if(t.carga.dano>=t.carga.umbral)tnRomper(t)}
+    const esp=tnPas(t,'espinas');if(esp&&src!==t&&src.vivo){const d=a*esp;src.hp-=d;tnTexto(src,Math.round(d),'#c0c0c0');if(src.hp<=0)tnMuere(src)}}
+  return a}
+function tnMuere(t){t.hp=0;t.vivo=false;t.int=null;t.carga=null;t.guarda=null;tnLog(`${t.nombre} cae.`);tnSfx('death');tnBarra()}
+function tnRomper(t){t.carga=null;t.aturdido=1;tnPlanear(t);tnTexto(t,'¡Carga rota!','#ffe27a');tnLog(`¡${t.nombre} pierde la concentración: carga rota!`);tnSfx('crit')}
 function tnHacer(u,accion,t){
-  TN.accion=null;$('#tnAcciones').innerHTML='';const S2=tnS(u),st=tnNivelStar(u.nivel),enemigos=(u.lado===0?TN.rivales:TN.equipo).filter(x=>x.vivo),aliados=(u.lado===0?TN.equipo:TN.rivales).filter(x=>x.vivo);
+  TN.accion=null;if(u.lado===0){TN.acciones++;if(!TN.sim)$('#tnAcciones').querySelectorAll('button').forEach(b=>b.disabled=true)}
+  const S2=tnS(u),st=tnNivelStar(u.nivel),enemigos=(u.lado===0?TN.rivales:TN.equipo).filter(x=>x.vivo),aliados=(u.lado===0?TN.equipo:TN.rivales).filter(x=>x.vivo);
   const golpe=()=>{
     if(accion==='atk'){const crit=rnd()<S2.crit;tnDano(u,t,S2.ad,'phys',crit);u.mana=Math.min(100,u.mana+34);tnLog(`${u.nombre} ataca a ${t.nombre}.`)}
-    else{u.mana=0;const ab=u.creep?{k:TN.combate===2&&u===TN.rivales[0]?'aoe':'nuke',v:[S2.ad*2.2]}:u.ab,v=(u.creep?ab.v[0]:ab.v[st-1])*(1+S2.ap/100);
-      tnTexto(u,u.creep?'¡Golpe especial!':ab.n,'#ffd98a');sfx('cast');
+    else if(accion==='prot'){u.guarda=t;u.mana=Math.min(100,u.mana+20);tnTexto(t,t===u?'¡En guardia!':'Protegido','#9fd3ff');tnSfx('cast');
+      tnLog(t===u?`${u.nombre} se pone en guardia.`:`${u.nombre} protege a ${t.nombre}.`)}
+    else if(accion==='golpe'){const C=u.carga;u.carga=null;tnTexto(u,C.n+'!','#ff9a5a');tnSfx('cast');TN.flash=.6;
+      if(C.area)enemigos.forEach(e=>tnDano(u,e,S2.ad*TN_CARGA_K[1],'phys'));else tnDano(u,t,S2.ad*TN_CARGA_K[0],'phys');tnLog(`${u.nombre} suelta ${C.n}.`)}
+    else{u.mana=0;const ab=u.creep?{k:'nuke',v:[S2.ad*2.2]}:u.ab,v=(u.creep?ab.v[0]:ab.v[st-1])*(1+S2.ap/100);
+      tnTexto(u,u.creep?'¡Golpe especial!':ab.n,'#ffd98a');tnSfx('cast');
       if(TN_AREA.includes(ab.k)){enemigos.forEach(e=>tnDano(u,e,v*.65,'magic'));TN.flash=.5}
       else if(ab.k==='heal'){u.hp=Math.min(tnS(u).hp,u.hp+v);tnTexto(u,'+'+Math.round(v),'#8be29f')}
       else if(ab.k==='teamHeal'||ab.k==='materno'){aliados.forEach(a=>{const h=v*.7;a.hp=Math.min(tnS(a).hp,a.hp+h);tnTexto(a,'+'+Math.round(h),'#8be29f')})}
       else if(ab.k==='shield'||ab.k==='arenga'){const a=aliados.sort((x,y)=>x.hp/tnS(x).hp-y.hp/tnS(y).hp)[0];a.escudo+=v;tnTexto(a,'Escudo','#cfe0ea')}
       else if(ab.k==='haste'){TN.cola.unshift(u);tnTexto(u,'¡Otro turno!','#ffd98a')}
-      else{const tg=t||enemigos[0];tnDano(u,tg,v*(ab.k==='execute'&&tg.hp<tnS(tg).hp*.4?2:1),'magic');if(ab.k==='stun'&&tg.vivo)tg.aturdido=1;if(ab.k==='doble'&&tg.vivo)tnDano(u,tg,v*.6,'magic')}
+      else{const tg=t&&t.vivo?t:enemigos[0];tnDano(u,tg,v*(ab.k==='execute'&&tg.hp<tnS(tg).hp*.4?2:1),'magic');
+        if(ab.k==='stun'&&tg.vivo){tg.aturdido=1;if(tg.carga)tnRomper(tg)}if(ab.k==='doble'&&tg.vivo)tnDano(u,tg,v*.6,'magic')}
+      if(!u.creep){if(tnPas(u,'escudoHab'))u.escudo+=tnPas(u,'escudoHab');if(tnPas(u,'recarga'))u.mana=Math.min(100,tnPas(u,'recarga'))}
       tnLog(`${u.nombre} usa ${u.creep?'su golpe especial':ab.n}.`)}
+    if(u.lado===1)tnPlanear(u);tnBarra();
     tnTras(tnSiguienteTurno,650)};
   // animación: los cuerpo a cuerpo van hasta el objetivo; los de distancia disparan
-  const rango=u.creep?(CREEPS[u.id].range>1):CH[u.id].range>1;
-  TN.anim={u,t:t||enemigos[0],tipo:accion,rango,t0:performance.now(),dur:tnT(rango?480:520)};tnTras(golpe,rango?360:260);
+  const rango=accion==='prot'||(accion==='golpe'&&!t)||(u.creep?(CREEPS[u.id].range>1):CH[u.id].range>1),tipo=accion==='golpe'?'atk':accion==='prot'?'hab':accion;
+  TN.anim={u,t:t||enemigos[0],tipo,rango,t0:performance.now(),dur:tnT(rango?480:520)};tnTras(golpe,rango?360:260);
 }
-function tnVictoria(){TN.fin=true;sfx('win');misionEvento('rondaHist');maestriaGana(TN.equipo.filter(u=>u.vivo).map(u=>u.id));TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
-  const vivos=TN.equipo.filter(u=>u.vivo),xp=40+TN.fase*15+(TN.combate===2?40:0);const subidas=[];
+function tnVictoria(){TN.fin=true;
+  if(!TN.sim){sfx('win');misionEvento('rondaHist');maestriaGana(TN.equipo.filter(u=>u.vivo).map(u=>u.id))}
+  TN.ganado.xp+=GANA.ronda[0];TN.ganado.asc+=GANA.ronda[1];if(TN.combate===2){TN.ganado.xp+=GANA.fase[0];TN.ganado.asc+=GANA.fase[1]}
+  const xp=55+TN.fase*20+(TN.combate===2?50:0);const subidas=[];
   TN.equipo.forEach(u=>{u.xp+=u.vivo?xp:Math.round(xp/2);while(u.xp>=tnXpNec(u.nivel)){u.xp-=tnXpNec(u.nivel);u.nivel++;subidas.push(`${u.nombre} sube a nivel ${u.nivel}`)}
     u.vivo=true;u.hp=Math.max(u.hp,tnStats(u).hp*(u.hp>0?0:.4));u.hp=Math.min(tnStats(u).hp,u.hp+tnStats(u).hp*.35)}); // recupera un 35 % (los caídos vuelven con un 40 %)
-  const ultimo=TN.fase===3&&TN.combate===2;
+  const ultimo=TN.fase===TN_ESCALA.length-1&&TN.combate===2;
   if(ultimo)return tnFinal(true);
-  const opciones=shuffle(TN.fase>=1?Object.keys(ITEMS).filter(k=>ITEMS[k].full):ITEM_IDS.slice()).slice(0,3);
+  const opciones=shuffle(Object.keys(ITEMS).filter(k=>ITEMS[k].full&&!ITEMS[k].especial)).slice(0,3);
+  const seguir=()=>{if(!TN.sim)$('#tnPremioOv').hidden=true;TN.combate++;if(TN.combate>2){TN.combate=0;TN.fase++;TN.equipo.forEach(u=>u.hp=tnStats(u).hp)}tnSiguienteCombate()};
+  if(TN.sim){const it=TN.sim.objeto(opciones),u=it&&TN.equipo.filter(x=>x.items.length<3).sort((a,b)=>a.items.length-b.items.length)[0];if(u)u.items.push(it);return seguir()}
   $('#tnPremio').innerHTML=`<h2>¡Victoria!</h2><p class="sub">+${xp} de experiencia${subidas.length?' · '+subidas.join(' · '):''}</p>
-    <p class="sub">Elige un objeto y a quién dárselo:</p><div class="tnObjs">${opciones.map(it=>`<button class="tnObj" data-it="${it}">${itemBox(it,'','width:48px;height:48px')}<b>${ITEMS[it].n}</b><small>${ITEMS[it].d}</small></button>`).join('')}</div>
-    <div class="tnPara" hidden>${TN.equipo.map((u,i)=>`<button class="btn" data-u="${i}"${u.items.length>=3?' disabled':''}><img src="${portrait(u.id)}" alt="">${u.nombre} (${u.items.length}/3)</button>`).join('')}</div>
+    <p class="sub">Elige un objeto y a quién dárselo. Debajo, lo que ya lleva cada uno:</p><div class="tnObjs">${opciones.map(it=>`<button class="tnObj" data-it="${it}">${itemBox(it,'','width:48px;height:48px')}<b>${ITEMS[it].n}</b><small>${tnDescObj(it)}</small></button>`).join('')}</div>
+    <div class="tnEqObj">${TN.equipo.map((u,i)=>`<button class="tnPara1" data-u="${i}"${u.items.length>=3?' disabled':''}><img src="${portrait(u.id)}" alt=""><b>${u.nombre}</b><span>${[0,1,2].map(k=>u.items[k]?itemBox(u.items[k],'','width:26px;height:26px'):'<i class="tnHueco"></i>').join('')}</span></button>`).join('')}</div>
     <button class="btn" id="bTnSinObj" style="margin-top:10px">${TN.equipo.every(u=>u.items.length>=3)?'Todos llevan 3 objetos: seguir':'No quiero ninguno'}</button>`;
   $('#tnPremioOv').hidden=false;let elegido=null;
-  $('#tnPremio').querySelectorAll('[data-it]').forEach(b=>b.onclick=()=>{elegido=b.dataset.it;$('#tnPremio').querySelectorAll('.tnObj').forEach(x=>x.classList.toggle('sel',x===b));$('#tnPremio .tnPara').hidden=false});
-  const seguir=()=>{$('#tnPremioOv').hidden=true;TN.combate++;if(TN.combate>2){TN.combate=0;TN.fase++;TN.equipo.forEach(u=>u.hp=tnStats(u).hp)}tnSiguienteCombate()};
+  $('#tnPremio').querySelectorAll('[data-it]').forEach(b=>b.onclick=()=>{elegido=b.dataset.it;$('#tnPremio').querySelectorAll('.tnObj').forEach(x=>x.classList.toggle('sel',x===b));$('#tnPremio .tnEqObj').classList.add('elige')});
   $('#tnPremio').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{if(!elegido)return;TN.equipo[+b.dataset.u].items.push(elegido);seguir()});$('#bTnSinObj').onclick=seguir;
 }
-function tnDerrota(){TN.fin=true;sfx('lose');tnFinal(false)}
+function tnDerrota(){TN.fin=true;tnSfx('lose');tnFinal(false)}
 // fin del nivel: como uno normal del modo Historia (nivel superado o derrota, con la experiencia de cuenta)
-function tnFinal(gana){const n=TN.nivel,L=NIVELES[n-1],g=TN.ganado,fase=TN.fase+1;TN.fin=true;$('#tnOv').hidden=true;$('#tnPremioOv').hidden=true;
+function tnFinal(gana){const n=TN.nivel,L=NIVELES[n-1],g=TN.ganado,fase=TN.fase+1;TN.fin=true;if(TN.sim)return TN.sim.fin(gana);
+  $('#tnOv').hidden=true;$('#tnPremioOv').hidden=true;if(TN.tut){if(TN.tut.i>=TN_TUT.length)tnTutFin();else{tutOcultar();tnTutSuelta()}}
   if(gana){const primera=!HIST.hechos.includes(n);if(primera){HIST.hechos.push(n);if(NIVELES[n])HIST.sel=n+1}histSave(HIST);
     const est=guardarEstrellas(n,TN.equipo.filter(u=>u.vivo).length||1);misionEvento('nivelHist'); // estrellas: campeones en pie al final
     const B=primera?GANA.nivel1:GANA.nivelRep;mostrarCobro(g.xp+B[0],g.asc+B[1]+est.bonus);sfx('over');
     endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')} · ${TN.equipo.filter(u=>u.vivo).length} de 3 en pie.`,pintaEstrellas(est.e),'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)})}
-  else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de 4.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
-function tnLog(t){const l=$('#tnLog');if(!l)return;l.innerHTML=`<div>${t}</div>`+l.innerHTML;while(l.children.length>5)l.lastChild.remove()}
-function tnTexto(u,s,col){TN.fx.push({u,s,col,t0:performance.now()})}
+  else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de ${TN_ESCALA.length}.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
+function tnLog(t){if(TN&&TN.sim)return;const l=$('#tnLog');if(!l)return;l.innerHTML=`<div>${t}</div>`+l.innerHTML;while(l.children.length>5)l.lastChild.remove()}
+function tnTexto(u,s,col){if(TN.sim)return;const now=performance.now(),dy=TN.fx.filter(f=>f.u===u&&now-f.t0<350).length;TN.fx.push({u,s,col,t0:now,dy})}
 // ---- dibujo (vista lateral) ----
 const tnVertical=(W,H)=>H>W*1.05;
 const tnTam=(W,H)=>tnVertical(W,H)?Math.min(W*.2,H*.13):Math.min(H*.17,W*.1);
 function tnPos(u,W,H){const lista=u.lado===0?TN.equipo:TN.rivales,i=lista.indexOf(u),n=lista.length;
-  if(tnVertical(W,H)){const P=u.lado===0?[[.34,.86],[.68,.9],[.24,.71]]:[[.7,.47],[.4,.43],[.85,.36]],q=P[i%3];return [W*q[0],H*q[1]]}
-  const base=H*.78,dep=[0,.07,-.07][i%3]*H,x=u.lado===0?W*(.14+i*.12):W*(.86-i*.12);return [x,base+dep*(n>1?1:0)]}
+  if(tnVertical(W,H)){const P=u.lado===0?[[.36,.8],[.7,.84],[.18,.66]]:n===1?[[.6,.42]]:n===2?[[.72,.43],[.3,.35]]:[[.7,.42],[.36,.36],[.86,.27]],q=P[i%P.length];return [W*q[0],H*q[1]]}
+  const base=H*.74,dep=[0,.07,-.07][i%3]*H,x=u.lado===0?W*(.14+i*.12):W*(.84-i*.16);return [x,base+dep*(n>1?1:0)]}
 // fondo ilustrado del nivel (assets/menu/turnos<n>.webp, lo incrusta build.py en MENU_IMG); sin él, degradado del escenario
 const TN_FONDO={};function tnFondo(n){const k='turnos'+n;if(!MENU_IMG[k])return null;if(!TN_FONDO[k]){const im=new Image();im.src=MENU_IMG[k];TN_FONDO[k]=im}return TN_FONDO[k].complete&&TN_FONDO[k].naturalWidth?TN_FONDO[k]:null}
+// cartelito redondeado centrado en x; devuelve su alto
+function tnCartel(g,x,y,txt,col,s,fondo){g.font=`700 ${Math.max(11,s*.155)}px 'Barlow Semi Condensed',sans-serif`;const w=g.measureText(txt).width+12,h=Math.max(16,s*.23);
+  g.beginPath();if(g.roundRect)g.roundRect(x-w/2,y,w,h,h/2);else g.rect(x-w/2,y,w,h);g.fillStyle=fondo||'rgba(10,12,16,.85)';g.fill();g.strokeStyle=col;g.lineWidth=1.5;g.stroke();
+  g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,x,y+h/2+.5);g.textBaseline='alphabetic';return h}
 function tnDibujar(now){if(!TN||$('#tnOv').hidden)return;const cv=$('#tnCv'),r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);
   if(cv.width!==Math.round(r.width*dpr)||cv.height!==Math.round(r.height*dpr)){cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr)}const g=cv.getContext('2d'),W=r.width,H=r.height;g.setTransform(dpr,0,0,dpr,0,0);
   const th=THEMES[NIVELES[TN.nivel-1]?NIVELES[TN.nivel-1].tema:0],V=tnVertical(W,H),horiz=V?.3:.62,fo=tnFondo(TN.nivel);
@@ -5198,7 +5326,11 @@ function tnDibujar(now){if(!TN||$('#tnOv').hidden)return;const cv=$('#tnCv'),r=c
   else{const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,th.sky[0]);gr.addColorStop(horiz,th.sky[1]);gr.addColorStop(horiz,th.pa);gr.addColorStop(1,shade(th.pa,.4));g.fillStyle=gr;g.fillRect(0,0,W,H);
     g.fillStyle='rgba(0,0,0,.25)';for(let i=0;i<9;i++){g.beginPath();g.ellipse(W*(i/8),H*(horiz+.02),W*.09,H*.02,0,0,7);g.fill()}}
   if(TN.flash>0){TN.flash-=.016;g.fillStyle=`rgba(255,245,200,${TN.flash*.5})`;g.fillRect(0,0,W,H)}
-  const s=tnTam(W,H),todos=TN.equipo.concat(TN.rivales).slice().sort((a,b)=>tnPos(a,W,H)[1]-tnPos(b,W,H)[1]);
+  const s=tnTam(W,H),todos=TN.equipo.concat(TN.rivales).slice().sort((a,b)=>tnPos(a,W,H)[1]-tnPos(b,W,H)[1]),pulso=.5+.5*Math.sin(now/180);
+  // daño que espera a cada uno de los tuyos (intenciones de los rivales)
+  const llega=new Map();if(!TN.fin)for(const e of TN.rivales){if(!e.vivo||!e.int||e.aturdido)continue;for(const t of tnBlancos(e.int))llega.set(t,(llega.get(t)||0)+tnPrev(e,e.int,t))}
+  // Proteger: línea discontinua azul del protector al protegido
+  for(const u of TN.equipo)if(u.vivo&&u.guarda&&u.guarda!==u&&u.guarda.vivo){const [x1,y1]=tnPos(u,W,H),[x2,y2]=tnPos(u.guarda,W,H);g.save();g.strokeStyle='rgba(140,200,255,.85)';g.lineWidth=2.5;g.setLineDash([6,5]);g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();g.restore()}
   for(const u of todos){let [x,y]=tnPos(u,W,H);const A=TN.anim;let atk=0,cast=0;
     if(A&&A.u===u){const k=Math.min(1,(now-A.t0)/A.dur);if(k>=1)TN.anim=null;const ida=Math.sin(k*Math.PI);
       if(A.tipo==='atk'&&!A.rango){const [tx,ty]=tnPos(A.t,W,H);x+=(tx-x+(u.lado===0?-s*.8:s*.8))*ida;y+=(ty-y)*ida}atk=A.tipo==='atk'?Math.max(0,1-k):0;cast=A.tipo==='hab'?Math.sin(k*Math.PI):0;
@@ -5206,26 +5338,108 @@ function tnDibujar(now){if(!TN||$('#tnOv').hidden)return;const cv=$('#tnCv'),r=c
     if(u.golpe>0)u.golpe-=.05;
     g.save();g.translate(x,y);if(!u.vivo){g.globalAlpha=.25;g.rotate(u.lado===0?-.4:.4)}
     if(TN.turno===u&&u.vivo&&!TN.fin){g.strokeStyle='#ffd98a';g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();g.ellipse(0,s*.05,s*.55,s*.16,0,0,7);g.stroke();g.setLineDash([])}
-    if(TN.accion&&u.lado===1&&u.vivo){g.strokeStyle='#ff6a6a';g.lineWidth=2.5;g.beginPath();g.ellipse(0,s*.05,s*.6,s*.18,0,0,7);g.stroke()}
+    const elegible=TN.accion&&u.vivo&&(TN.accion==='prot'?u.lado===0:u.lado===1);
+    if(elegible){g.strokeStyle=TN.accion==='prot'?'#8cc8ff':'#ff6a6a';g.lineWidth=2.5;g.beginPath();g.ellipse(0,s*.05,s*.6,s*.18,0,0,7);g.stroke()}
+    if(u.carga&&u.vivo){g.save();g.globalCompositeOperation='lighter';g.fillStyle=`rgba(255,140,40,${.18+.22*pulso})`;g.beginPath();g.ellipse(0,-s*.7,s*.85,s*1.05,0,0,7);g.fill();g.restore()}
     g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(0,s*.05,s*.5,s*.14,0,0,7);g.fill();
     g.scale(u.lado===0?1:-1,1);
     const o={t:now/1000,seed:(u.id.length*1.7)%6,look:LOOK[u.id]||LOOK[CH[u.id]&&u.id],atk,cast,flash:u.golpe>0?u.golpe*.12:0,col:u.creep?CREEPS[u.id].col:TRAITS[CH[u.id].traits[0]].col,col2:u.creep?'#3a2a22':TRAITS[CH[u.id].traits[1]].col,cost:u.creep?0:CH[u.id].cost,creep:u.creep?u.id:null};
-    const sp=SPR[u.id];if(sp)drawSprite(g,o,(u.lado===0&&aspectoSpr(u.id))||sp,s,u.creep?(CREEP_SCALE[u.id]||1):(CH[u.id].escala||1));
-    else if(u.creep)drawCreep(g,Object.assign(o,{creep:u.id,col:CREEPS[u.id].col}),s*.098*(CREEP_SCALE[u.id]||1));else if(o.look)drawChamp(g,o,s*.098);
+    const sp=SPR[u.id],gr=u.jefe&&TN.rivales.length===1?1.35:1; // el jefe en solitario, más grande
+    if(sp)drawSprite(g,o,(u.lado===0&&aspectoSpr(u.id))||sp,s*gr,u.creep?(CREEP_SCALE[u.id]||1):(CH[u.id].escala||1));
+    else if(u.creep)drawCreep(g,Object.assign(o,{creep:u.id,col:CREEPS[u.id].col}),s*gr*.098*(CREEP_SCALE[u.id]||1));else if(o.look)drawChamp(g,o,s*.098);
     g.restore();
     if(u.vivo){const S2=tnS(u),bw=s*1.1,bx=x-bw/2,by=y+s*.25;g.fillStyle='rgba(0,0,0,.6)';g.fillRect(bx-1,by-1,bw+2,8);g.fillStyle=u.lado===0?'#53c476':'#e0605b';g.fillRect(bx,by,bw*Math.max(0,u.hp/S2.hp),6);
       if(u.escudo>0){g.fillStyle='rgba(220,235,245,.8)';g.fillRect(bx,by,Math.min(bw,bw*u.escudo/S2.hp),3)}
       if(!u.creep){g.fillStyle='#5aa6f2';g.fillRect(bx,by+7,bw*u.mana/100,3)}
-      g.font=`600 ${Math.max(11,s*.16)}px 'Barlow Semi Condensed',sans-serif`;g.textAlign='center';g.fillStyle='#fff';g.fillText(u.creep?u.nombre:`${u.nombre} · Nv ${u.nivel}`,x,by+22)}}
-  TN.fx=TN.fx.filter(f=>now-f.t0<900);for(const f of TN.fx){const [x,y]=tnPos(f.u,W,H),k=(now-f.t0)/900;g.globalAlpha=1-k;g.font=`700 ${Math.max(14,s*.26)}px 'Barlow Semi Condensed',sans-serif`;g.textAlign='center';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.8)';g.fillStyle=f.col;g.strokeText(f.s,x,y-s*1.9-k*s*.4);g.fillText(f.s,x,y-s*1.9-k*s*.4);g.globalAlpha=1}
+      if(!u.creep&&u.items.length){const iw=Math.max(16,s*.26),iy=y-s*1.78;u.items.forEach((it,k)=>{const ix=x+(k-(u.items.length-1)/2)*(iw+3)-iw/2,pic=ITEM_PIC[it]; // objetos sobre la cabeza
+        g.fillStyle='rgba(12,18,23,.85)';g.fillRect(ix,iy,iw,iw);if(pic&&pic.complete&&pic.naturalWidth)g.drawImage(pic,ix,iy,iw,iw);else{g.fillStyle=ITEMS[it].col;g.fillRect(ix,iy,iw,iw)}g.strokeStyle='#ffd98a';g.lineWidth=1.5;g.strokeRect(ix,iy,iw,iw)})}
+      if(u.guarda){g.font=`${Math.max(13,s*.2)}px sans-serif`;g.textAlign='center';g.fillText('🛡',bx-9,by+8)}
+      g.font=`600 ${Math.max(11,s*.16)}px 'Barlow Semi Condensed',sans-serif`;g.textAlign='center';g.fillStyle='#fff';g.fillText(u.creep?u.nombre:`${u.nombre} · Nv ${u.nivel}`,x,by+22);
+      const yc=by+27;
+      if(u.lado===1&&!TN.fin){const I=u.int;
+        if(u.aturdido)tnCartel(g,x,yc,'💫 Aturdido','#ffe27a',s);
+        else if(I&&I.k==='carga')tnCartel(g,x,yc,'⚠ Prepara '+tnCargaDe(u)[0],'#ffb347',s);
+        else if(I){const B=tnBlancos(I),d=B.length?tnPrev(u,I,B[0]):0,dest=I.area?'todos':B[0]?B[0].nombre:'';
+          const h=tnCartel(g,x,yc,(I.k==='golpe'?'💥 ':I.k==='hab'?'✦ ':'⚔ ')+dest+' '+d,I.k==='golpe'?`rgb(255,${90+60*pulso|0},80)`:I.k==='hab'?'#cfa6ff':'#ffb0a0',s,I.k==='golpe'?'rgba(70,10,8,.9)':null);
+          if(u.carga){const k=Math.min(1,u.carga.dano/u.carga.umbral),w=s*1.3,yb=yc+h+3;g.fillStyle='rgba(0,0,0,.7)';g.fillRect(x-w/2-1,yb-1,w+2,8);g.fillStyle='#ffb347';g.fillRect(x-w/2,yb,w*k,6);
+            g.font=`600 ${Math.max(10,s*.13)}px 'Barlow Semi Condensed',sans-serif`;g.fillStyle='#ffd9a0';g.textAlign='center';g.fillText(`Rómpelo: ${Math.round(k*100)} %`,x,yb+18)}}}
+      if(u.lado===0&&llega.get(u)){const d=llega.get(u),muere=d>=u.hp+u.escudo;tnCartel(g,x,yc,(muere?'☠ ':'▼ ')+'−'+d,muere?`rgb(255,${80+80*pulso|0},80)`:'#ff8a80',s,muere?'rgba(70,10,8,.9)':null)}}}
+  TN.fx=TN.fx.filter(f=>now-f.t0<900);for(const f of TN.fx){const [x,y]=tnPos(f.u,W,H),k=(now-f.t0)/900,yy=y-s*2.05-k*s*.4-(f.dy||0)*s*.32;g.globalAlpha=1-k;g.font=`700 ${Math.max(14,s*.26)}px 'Barlow Semi Condensed',sans-serif`;g.textAlign='center';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.8)';g.fillStyle=f.col;g.strokeText(f.s,x,yy);g.fillText(f.s,x,yy);g.globalAlpha=1}
+  tnTutColocar();
 }
 (function tnBucle(now){tnDibujar(now||performance.now());requestAnimationFrame(tnBucle)})();
-// tocar un rival para elegirlo
-$('#tnCv').addEventListener('pointerdown',e=>{if(!TN||!TN.accion||!TN.turno||TN.turno.lado!==0)return;const r=e.currentTarget.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,s=tnTam(r.width,r.height);
-  let mejor=null,bd=s*1.2;for(const u of TN.rivales){if(!u.vivo)continue;const [ux,uy]=tnPos(u,r.width,r.height),d=Math.hypot(ux-x,uy-s*.8-y);if(d<bd){bd=d;mejor=u}}
+// tocar a un rival (ataque, habilidad) o a un compañero (Proteger)
+$('#tnCv').addEventListener('pointerdown',e=>{if(!TN||!TN.accion||!TN.turno||TN.turno.lado!==0||TN.anim)return;const r=e.currentTarget.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,s=tnTam(r.width,r.height);
+  let mejor=null,bd=s*1.2;for(const u of (TN.accion==='prot'?TN.equipo:TN.rivales)){if(!u.vivo)continue;const [ux,uy]=tnPos(u,r.width,r.height),d=Math.hypot(ux-x,uy-s*.8-y);if(d<bd){bd=d;mejor=u}}
   if(mejor)tnHacer(TN.turno,TN.accion,mejor)});
 $('#bTnEmpezar').onclick=tnEmpezar;$('#bTnVolver').onclick=()=>{$('#tnElegirOv').hidden=true;TN=null;openStory()};$('#bTnVel').onclick=()=>tnVel(TN&&TN.vel>1?1:2);
 $('#bTnRendirse').onclick=()=>{if(TN&&!TN.fin){TN.fin=true;tnFinal(false)}};
+// ---- tutorial de los combates por turnos (la primera vez que juegas uno; usa el bocadillo de 15k-tutorial.js) ----
+const tnMiTurno=()=>{const b=$('#bTnAtk');return !!(TN&&!TN.fin&&TN.turno&&TN.turno.lado===0&&!TN.anim&&b&&!b.disabled)};
+function tnRectUnidad(u){const c=$('#tnCv').getBoundingClientRect(),[x,y]=tnPos(u,c.width,c.height),s=tnTam(c.width,c.height);return {x:c.left+x-s*.75,y:c.top+y-s*1.6,w:s*1.5,h:s*2.15}}
+function tnRectGrupo(L){const R=L.filter(u=>u.vivo).map(tnRectUnidad);if(!R.length)return null;const x=Math.min(...R.map(r=>r.x)),y=Math.min(...R.map(r=>r.y));
+  return {x,y,w:Math.max(...R.map(r=>r.x+r.w))-x,h:Math.max(...R.map(r=>r.y+r.h))-y}}
+const tnJefeCarga=()=>TN.rivales.find(r=>r.vivo&&(r.carga||(r.int&&r.int.k==='carga')));
+const TN_TUT=[
+ {id:'hola',quien:'crisol',cuando:tnMiTurno,texto:'Este claro se juega <b>por turnos</b>. Ni tienda ni oro: tus tres campeones luchan por orden y tú decides qué hace cada uno. Aquí gana quien piensa, no quien corre.'},
+ {id:'sinergias',quien:'tovo',cuando:tnMiTurno,
+  texto:'Ojo: aquí las <b>sinergias no cuentan</b>. Da igual de qué rasgo sea cada uno: lo que importa es su vida, su daño, su <b>habilidad</b> y los <b>objetos</b> que le des.'},
+ {id:'turnos',quien:'tovo',cuando:tnMiTurno,foco:()=>[rectEl('#tnTurnos')],texto:'Arriba está el <b>orden de turnos</b>: los más rápidos actúan antes. El de borde dorado es quien actúa ahora, y lo que va tras la raya es la ronda siguiente.'},
+ {id:'intencion',quien:'crisol',cuando:tnMiTurno,foco:()=>[tnRectGrupo(TN.rivales)],
+  texto:'Lo mejor de los turnos: ves lo que <b>planea cada rival</b>. Debajo de cada uno pone a quién atacará y cuánto daño hará. Los tuyos amenazados llevan la cuenta en rojo, y una calavera si el golpe los tumbaría.'},
+ {id:'accion',quien:'tovo',cuando:tnMiTurno,foco:()=>[rectEl('#tnAcciones .tnBtns')],hecho:()=>!!TN.accion||TN.acciones>=1,
+  texto:'¡Te toca! <b>Ataque</b> golpea a un rival y carga maná; con el maná lleno, la <b>habilidad</b>. Pulsa <b>Ataque</b>.'},
+ {id:'objetivo',quien:'tovo',cuando:()=>tnMiTurno()&&!!TN.accion,saltarSi:()=>TN.acciones>=1,foco:()=>[tnRectGrupo(TN.accion==='prot'?TN.equipo:TN.rivales)],hecho:()=>TN.acciones>=1,
+  texto:()=>TN.accion==='prot'?'Ahora <b>toca al compañero</b> que quieres proteger.':'Ahora <b>toca al rival</b> que quieres golpear. Mira cuánto daño planea hacer cada uno.'},
+ {id:'proteger',quien:'tovo',cuando:tnMiTurno,foco:()=>[rectEl('#bTnProt')],
+  texto:'Y esto es cosa de la Fragua: <b>Proteger</b>. Tocas a un compañero y, hasta tu próximo turno, los golpes que iban para él te llegan a ti, con un 60 % menos de daño. Tócate a ti para ponerte en guardia.'},
+ {id:'consejo',quien:'crisol',cuando:tnMiTurno,
+  texto:'Un consejo de archimago: acaba primero con quien más daño va a hacer, y protege a quien no aguante el próximo golpe. Tras cada victoria, tus campeones ganan experiencia y suben de nivel.'}];
+const TN_TUT_EV=[
+ {id:'carga',quien:'crisol',cuando:()=>tnMiTurno()&&!!tnJefeCarga(),foco:()=>{const j=tnJefeCarga();return j?[tnRectUnidad(j)]:[]},
+  texto:'¡Atención! El jefe va a <b>cargar un golpe enorme</b>: lo prepara un turno y lo suelta en el siguiente. Si recibe mucho daño mientras carga (mira la barra naranja), <b>se rompe</b> y pierde el turno. Si no llegas, protege a quien vaya a recibirlo.'},
+ {id:'premio',quien:'tovo',cuando:()=>!$('#tnPremioOv').hidden,foco:()=>[rectEl('#tnPremio .tnEqObj.elige')||rectEl('#tnPremio .tnObjs')],hecho:()=>$('#tnPremioOv').hidden,
+  clave:()=>!!rectEl('#tnPremio .tnEqObj.elige'),
+  texto:()=>rectEl('#tnPremio .tnEqObj.elige')?'Ahora <b>toca a quién dárselo</b>. Debajo de cada uno ves los objetos que ya lleva (hasta tres).':'¡Victoria! Tras cada combate eliges un <b>objeto</b> para uno de tus campeones. Toca el que quieras. A nivel 4 y 7, su habilidad mejora.'}];
+function tnTutTick(){const T=TN&&TN.tut;if(!T||TN.sim)return;
+  if(T.vis){const P=T.vis;if(P.hecho&&P.hecho())return tnTutCompletar();if(P.clave){const k=P.clave();if(k!==P.k0){P.k0=k;tutMostrar(P)}}return}
+  for(const E of TN_TUT_EV)if(!T.ev[E.id]&&E.cuando()){T.vis=Object.assign({ev:true},E);if(E.clave)T.vis.k0=E.clave();tutMostrar(T.vis);return}
+  while(TN_TUT[T.i]&&TN_TUT[T.i].saltarSi&&TN_TUT[T.i].saltarSi())T.i++;
+  const P=TN_TUT[T.i];if(!P||!P.cuando())return;T.vis=P;tutMostrar(P)}
+function tnTutCompletar(){const T=TN&&TN.tut;if(!T||!T.vis)return;const P=T.vis;if(P.ev)T.ev[P.id]=true;else T.i++;T.vis=null;tutOcultar();if(P.hecho)sfx('levelup');
+  if(T.i>=TN_TUT.length&&TN_TUT_EV.every(E=>T.ev[E.id]))tnTutFin()}
+function tnTutSuelta(){if(tutUI){tutUI.coach.style.top='';tutUI.coach.style.bottom=''}}
+function tnTutFin(){HIST.tutTurnos=true;histSave(HIST);if(TN)TN.tut=null;tutOcultar();tnTutSuelta()}
+// foco, flecha y bocadillo: el bocadillo, arriba o abajo según dónde esté lo que señala
+function tnTutColocar(){const T=TN&&TN.tut;if(!T||!T.vis||!tutUI)return;const r=tutFoco((T.vis.foco?T.vis.foco():[]).filter(Boolean)),c=tutUI.coach;
+  const arriba=$('.tnTop').getBoundingClientRect().bottom,panel=$('#tnPremioOv').hidden?$('.tnPanel').getBoundingClientRect().top:innerHeight,abajo=r?r.y+r.h/2<innerHeight*.5:false;
+  c.classList.toggle('abajo',abajo);c.style.top=abajo?'auto':arriba+44+'px';c.style.bottom=abajo?innerHeight-panel+8+'px':'auto'}
+setInterval(()=>{try{tnTutTick()}catch(e){console.error('tutorial por turnos',e)}},200);
+// ---- simulación sin dibujo para calibrar: tnSimular(nivel, partidas, listo) ----
+// listo: usa las intenciones (protege a quien va a caer, rompe la carga si le da tiempo, se pone en guardia ante un golpe
+// fuerte, remata); si no, ataca al de menos vida
+function tnBot(u,listo){const R=TN.rivales.filter(x=>x.vivo),E=TN.equipo.filter(x=>x.vivo),bajo=R.slice().sort((a,b)=>a.hp-b.hp)[0];
+  const hab=t=>tnHacer(u,'hab',tnHabSinObjetivo(u.ab)?null:t),dano=(a,t)=>tnS(a).ad*100/(100+tnS(t).ar);
+  if(!listo)return u.mana>=100?hab(bajo):tnHacer(u,'atk',bajo);
+  const llega=new Map();for(const r of R){if(!r.int||r.aturdido)continue;for(const t of tnBlancos(r.int))llega.set(t,(llega.get(t)||0)+tnPrev(r,r.int,t))}
+  const cae=x=>(llega.get(x)||0)>=x.hp+x.escudo;
+  // ¿da tiempo a romper la carga? suma lo que pegan los tuyos que actúan antes que el jefe
+  const jc=R.find(r=>r.carga&&!r.aturdido);let rompe=false;
+  if(jc){const j=TN.cola.indexOf(jc),antes=[u].concat((j<0?TN.cola:TN.cola.slice(0,j)).filter(x=>x.lado===0&&x.vivo&&x!==u));
+    rompe=antes.reduce((a,x)=>a+dano(x,jc)*(x.mana>=100&&!tnHabSinObjetivo(x.ab)?2:1),0)>=jc.carga.umbral-jc.carga.dano}
+  const peligro=E.filter(x=>x!==u&&cae(x)).sort((a,b)=>(llega.get(b)||0)-(llega.get(a)||0))[0];
+  if(peligro&&!rompe&&u.hp>(llega.get(peligro)||0)*TN_PROT+(llega.get(u)||0))return tnHacer(u,'prot',peligro);
+  if(u.mana>=100)return hab(rompe?jc:bajo);
+  if(!rompe&&(llega.get(u)||0)>=u.hp*.4)return tnHacer(u,'prot',u);
+  if(rompe)return tnHacer(u,'atk',jc);
+  const mata=R.find(r=>r.hp<=dano(u,r));return tnHacer(u,'atk',mata||bajo)}
+function tnSimular(n,N,listo,equipo){HIST=HIST||histLoad();const mazo=mazoNivel(n,HIST.mazo,HIST.col);let gana=0,atascos=0;const cae=[0,0,0],donde={};
+  for(let k=0;k<N;k++){let res=false;const eleg=equipo||shuffle(mazo.slice()).slice(0,3);
+    TN={nivel:n,elegidos:eleg,vel:1,mazo,ganado:{xp:0,asc:0},sim:{cola:[],juega:u=>tnBot(u,listo),objeto:op=>op[0],fin:g=>{res=g}}};
+    TN.fases=tnFasesNivel(n);TN.equipo=eleg.map(tnCampeon);TN.fase=0;TN.combate=0;TN.acciones=0;tnSiguienteCombate();
+    let pasos=0;while(TN.sim.cola.length&&pasos++<2e5)TN.sim.cola.shift()();if(pasos>=2e5)TN.sim.atasco=(TN.sim.atasco||0)+1;
+    if(res)gana++;else{cae[TN.fase]++;const k=(TN.fase+1)+'-'+(TN.combate+1);donde[k]=(donde[k]||0)+1}if(TN.sim.atasco)atascos++}
+  TN=null;return {gana:Math.round(gana/N*100),cae,donde,atascos}}
 
 // ================= AUMENTOS =================
 // A mitad de cada fase de la Historia (ronda 4; 3 en supervivencia) y en las rondas 2-2, 3-2 y 4-2 de la Arena eliges
@@ -5438,8 +5652,8 @@ function tutCrearUI(){if(tutUI)return tutUI;
   const coach=document.createElement('div');coach.id='tutCoach';
   coach.innerHTML='<img id="tutPj" alt=""><div class="tutTx"><b id="tutNombre"></b><p id="tutTexto"></p><div class="tutBtns"><button id="tutSaltar">Saltar tutorial</button><span id="tutHaz">Hazlo para continuar</span><button class="big" id="tutOk">Entendido</button></div></div>';
   document.body.append(foco,flecha,coach);
-  $('#tutOk').onclick=()=>tutCompletar(true);
-  $('#tutSaltar').onclick=()=>{HIST.tutorial=true;histSave(HIST);tutOcultar();if(S&&S.tut&&S.tut.pausa){S.pausa=false;S.tut.pausa=false}toast('Tutorial saltado. Puedes repetirlo desde «Cómo se juega»')};
+  $('#tutOk').onclick=()=>TN&&TN.tut?tnTutCompletar():tutCompletar(true);
+  $('#tutSaltar').onclick=()=>{if(TN&&TN.tut){tnTutFin();toast('Tutorial saltado. Puedes repetirlo desde «Cómo se juega»');return}HIST.tutorial=true;histSave(HIST);tutOcultar();if(S&&S.tut&&S.tut.pausa){S.pausa=false;S.tut.pausa=false}toast('Tutorial saltado. Puedes repetirlo desde «Cómo se juega»')};
   return tutUI={foco,flecha,coach,extra:[]}}
 function tutOcultar(){if(!tutUI)return;tutUI.foco.style.display='none';tutUI.flecha.style.display='none';tutUI.coach.classList.remove('ver');tutUI.extra.forEach(e=>e.remove());tutUI.extra=[]}
 function tutMostrar(P){const U=tutCrearUI(),q=P.quien;
@@ -5448,16 +5662,18 @@ function tutMostrar(P){const U=tutCrearUI(),q=P.quien;
   $('#tutOk').style.display=P.hecho&&P.id!=='combinar'?'none':'';$('#tutHaz').style.display=P.hecho?'':'none';
   U.coach.classList.remove('ver');void U.coach.offsetWidth;U.coach.classList.add('ver');sfx('roll')}
 // coloca foco, anillos, flecha y bocadillo cada fotograma (la interfaz y el lienzo se recolocan solos)
-function tutColocar(){if(!tutUI||!S||!S.tut||!S.tut.vis)return;const P=S.tut.vis,U=tutUI;
-  const R=(P.foco?P.foco():[]).filter(Boolean),r=R[0];
+function tutColocar(){if(!tutUI||!S||!S.tut||!S.tut.vis)return;const r=tutFoco((S.tut.vis.foco?S.tut.vis.foco():[]).filter(Boolean));
+  // el bocadillo, en la mitad contraria al objetivo
+  const abajo=r?r.y+r.h/2<innerHeight*.5:false;tutUI.coach.classList.toggle('abajo',abajo)}
+// oscurece todo menos el primer rectángulo, lo señala con la flecha y pone anillos en los demás; devuelve el primero
+function tutFoco(R){const U=tutUI,r=R[0];
   if(r){const m=8;Object.assign(U.foco.style,{display:'block',left:r.x-m+'px',top:r.y-m+'px',width:r.w+2*m+'px',height:r.h+2*m+'px'});
     const arriba=r.y>140;Object.assign(U.flecha.style,{display:'block',left:r.x+r.w/2-14+'px',top:(arriba?r.y-46:r.y+r.h+12)+'px'});U.flecha.className=arriba?'':'abajo'}
   else{U.foco.style.display='none';U.flecha.style.display='none'}
   // anillos extra (sin oscurecer) para el resto de objetivos
   while(U.extra.length<Math.max(0,R.length-1)){const e=document.createElement('div');e.className='tutAnillo';document.body.appendChild(e);U.extra.push(e)}
   U.extra.forEach((e,k)=>{const q=R[k+1];if(!q){e.style.display='none';return}Object.assign(e.style,{display:'block',left:q.x-6+'px',top:q.y-6+'px',width:q.w+12+'px',height:q.h+12+'px'})});
-  // el bocadillo, en la mitad contraria al objetivo
-  const abajo=r?r.y+r.h/2<innerHeight*.5:false;U.coach.classList.toggle('abajo',abajo)}
+  return r}
 function tutCompletar(conBoton){const st=S&&S.tut;if(!st||!st.vis)return;const P=st.vis,r=tutUI&&tutUI.foco.style.display!=='none'?tutUI.foco.getBoundingClientRect():null;
   if(P.ev)st.ev[P.id]=true;else st.i++;st.vis=null;if(st.pausa){S.pausa=false;st.pausa=false}tutOcultar();
   if(!conBoton||P.hecho){sfx('levelup');if(r)tutDestello(r.left+r.width/2,r.top+r.height/2)}
@@ -5468,6 +5684,7 @@ function tutDestello(x,y){for(let k=0;k<14;k++){const e=document.createElement('
 // ---- bucle ----
 const TUT_TAPAN=['#dialogoOv','#mundoOv','#reglaOv','#storyOv','#pausaOv','#endOv','#diarioOv','#objOv','#fichaOv','#unlockOv','#subidaOv','#espiaOv','#cuentaOv'];
 function tutTick(){
+  if(TN&&TN.tut)return; // el de los combates por turnos (15h-turnos.js) usa el mismo bocadillo
   if(!tutActivo()){if(tutUI&&tutUI.coach.classList.contains('ver'))tutOcultar();return}
   const st=S.tut||(S.tut={i:0,vis:null,ev:{},d:{}});
   if(TUT_TAPAN.some(s=>{const e=$(s);return e&&!e.hidden})){if(st.vis){tutOcultar();st.vis.oculto=true}return} // espera a que se cierren diálogos y menús
@@ -5487,7 +5704,7 @@ function tutTick(){
 setInterval(()=>{try{tutTick()}catch(e){console.error('tutorial',e)}},200);
 (function tutBucle(){try{tutColocar()}catch(e){}requestAnimationFrame(tutBucle)})();
 // repetir desde «Cómo se juega»
-$('#bTutorial').onclick=()=>{HIST.tutorial=false;histSave(HIST);$('#reglasOv').hidden=true;toast('El tutorial empezará la próxima vez que juegues el nivel 1 del modo Historia')};
+$('#bTutorial').onclick=()=>{HIST.tutorial=false;HIST.tutTurnos=false;histSave(HIST);$('#reglasOv').hidden=true;toast('El tutorial empezará la próxima vez que juegues el nivel 1 del modo Historia (y el de los turnos, en tu próximo nivel por turnos)')};
 
 // ================= TORRE DEL CRISOL (modo infinito) =================
 // Se abre al completar el nivel 15. Una subida: empiezas de cero (carrusel en el piso 0) y cada piso es un combate;
