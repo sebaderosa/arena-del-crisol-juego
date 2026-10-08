@@ -955,6 +955,18 @@ body.en-combate .goldPill{display:none}
 @keyframes tSube{from{transform:translateY(calc(-50% + 40px));opacity:0}to{transform:translateY(-50%)}}
 @media (max-width:760px){.torreModal{flex-direction:column;align-items:center;gap:10px;max-height:calc(100vh - 20px);overflow-y:auto}.tDib{width:100%}.tLlama{width:34px;height:42px}.tCol{max-height:20vh}.tInfo{width:100%;gap:8px}.tReglas{font-size:12px}}
 
+/* escenas ilustradas de la historia (15m-escenas.js) */
+.overlay.escenaOv{display:block;padding:0;background:#000;backdrop-filter:none;overflow:hidden;z-index:47;cursor:pointer}
+.escCapa,.escCapa img{position:absolute;left:0;top:0}.escCapa{inset:0;overflow:hidden}
+.escCapa img{max-width:none;transform-origin:0 0;opacity:0;transition:opacity .9s ease;will-change:transform,opacity}
+.escVelo{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 22%,transparent 55%,rgba(0,0,0,.88)),radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.45))}
+.escTxt{position:absolute;left:0;right:0;bottom:0;padding:0 22px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:12px}
+#escTexto{margin:0;max-width:820px;min-height:3.2em;text-align:center;color:#f4ead2;font-size:clamp(17px,2.3vw,24px);line-height:1.45;font-style:italic;text-shadow:0 2px 6px #000,0 0 18px rgba(0,0,0,.8)}
+#escTexto.ve{animation:escTxtIn .8s ease-out}
+@keyframes escTxtIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.escPuntos{display:flex;gap:6px}.escPuntos i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}.escPuntos i.on{background:#ffd98a;box-shadow:0 0 6px rgba(255,200,100,.8)}
+.escSaltar{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;background:rgba(10,14,18,.55);border:1px solid rgba(255,217,138,.4);color:#f4ead2;border-radius:20px;padding:6px 14px;font-size:14px}
+
 </style>
 
 <div id="app">
@@ -1136,6 +1148,12 @@ body.en-combate .goldPill{display:none}
 <div class="overlay unlock" id="unlockOv" hidden>
   <div class="ulRays"></div><div class="ulFlash"></div><div class="ulSparks"></div>
   <div class="ulWrap"><div class="ulHero"></div><div class="ulCard"></div></div>
+</div>
+
+<div class="overlay escenaOv" id="escenaOv" hidden>
+  <div class="escCapa"><img alt=""><img alt=""></div><div class="escVelo"></div>
+  <div class="escTxt"><p id="escTexto"></p><div class="escPuntos" id="escPuntos"></div></div>
+  <button class="escSaltar" id="bEscSaltar">Saltar ›</button>
 </div>
 
 <div class="overlay mundoOv" id="mundoOv" hidden>
@@ -2224,7 +2242,7 @@ const SPRITE_SRC={"brasa":{"ax":0.499,"src":"recursos/sprites/brasa/idle.webp?v=
 // Iconos de objetos: los incrusta tools/build.py desde assets/objetos/<id>.webp. Sin icono, se usa el cuadrado de color con letra.
 const ITEM_IMG={"ancestral":"recursos/objetos/ancestral.webp?v=e41e2bfa","arco":"recursos/objetos/arco.webp?v=ce26f340","bastionob":"recursos/objetos/bastionob.webp?v=b006918a","batuta":"recursos/objetos/batuta.webp?v=d8fc6452","brisa":"recursos/objetos/brisa.webp?v=d124c003","caliz":"recursos/objetos/caliz.webp?v=5a39aac2","certero":"recursos/objetos/certero.webp?v=80cdfb87","corazavi":"recursos/objetos/corazavi.webp?v=322fbe43","cota":"recursos/objetos/cota.webp?v=1f5b320e","cristal":"recursos/objetos/cristal.webp?v=76d44309","duelista":"recursos/objetos/duelista.webp?v=d68d1f1d","egida":"recursos/objetos/egida.webp?v=5aa6eb6e","espejo":"recursos/objetos/espejo.webp?v=c4f37076","filoarc":"recursos/objetos/filoarc.webp?v=025959fb","fuente":"recursos/objetos/fuente.webp?v=cbf9633d","gema":"recursos/objetos/gema.webp?v=b7f4a596","gigante":"recursos/objetos/gigante.webp?v=ab118242","guantel":"recursos/objetos/guantel.webp?v=0b49b6bd","hachague":"recursos/objetos/hachague.webp?v=efda8211","hoja":"recursos/objetos/hoja.webp?v=7c2ca758","hojamana":"recursos/objetos/hojamana.webp?v=854a9bd6","lagrima":"recursos/objetos/lagrima.webp?v=cf1e22b9","mandoble":"recursos/objetos/mandoble.webp?v=6c1c2f2c","manto":"recursos/objetos/manto.webp?v=ee584098","mareamnt":"recursos/objetos/mareamnt.webp?v=901f54de","martir":"recursos/objetos/martir.webp?v=25a04303","muralla":"recursos/objetos/muralla.webp?v=06466b25","ocaso":"recursos/objetos/ocaso.webp?v=49a3c65b","ojo":"recursos/objetos/ojo.webp?v=369d9c70","penitente":"recursos/objetos/penitente.webp?v=a1fbfe57","precision":"recursos/objetos/precision.webp?v=ce5df303","pua":"recursos/objetos/pua.webp?v=ae326f6d","rompecor":"recursos/objetos/rompecor.webp?v=b8db97b6","runica":"recursos/objetos/runica.webp?v=0d032ffb","sabio":"recursos/objetos/sabio.webp?v=4f68d080","savia":"recursos/objetos/savia.webp?v=d6c564a5","talisman":"recursos/objetos/talisman.webp?v=e64f4726","tambor":"recursos/objetos/tambor.webp?v=e31d1a2e","tormenta":"recursos/objetos/tormenta.webp?v=1e176cec","troll":"recursos/objetos/troll.webp?v=33ef3e12","vampira":"recursos/objetos/vampira.webp?v=7e9d5585","vara":"recursos/objetos/vara.webp?v=d882211f","velo":"recursos/objetos/velo.webp?v=b9e86a0c","vendaval":"recursos/objetos/vendaval.webp?v=4583a1af"};
 // imágenes del menú principal (assets/menu/*.webp)
-const MENU_IMG={"arena":"recursos/menu/arena.webp?v=46da9660","fondo":"recursos/menu/fondo.webp?v=19630fe2","historia":"recursos/menu/historia.webp?v=634c3a4f"};
+const MENU_IMG={"arena":"recursos/menu/arena.webp?v=46da9660","fondo":"recursos/menu/fondo.webp?v=19630fe2","historia":"recursos/menu/historia.webp?v=634c3a4f","turnos13":"recursos/menu/turnos13.webp?v=bb2f9c26","turnos28":"recursos/menu/turnos28.webp?v=f390dd24"};
 const ITEM_PIC={};for(const k in ITEM_IMG){const im=new Image();im.src=ITEM_IMG[k];ITEM_PIC[k]=im}
 function itemBox(it,cls,style){const I=ITEMS[it],src=ITEM_IMG[it];
   return `<span class="item${cls?' '+cls:''}${I.full?' full':''}${src?' pic':''}" style="${src?'':'background:'+I.col+';'}${style||''}">${src?`<img src="${src}" alt="${I.n}" draggable="false">`:I.g}</span>`}
@@ -3731,7 +3749,7 @@ $('#bAgain').onclick=backToMenu;
 // modo Historia (15-historia.js)
 $('#bStory').onclick=()=>{audioInit();openStory()};
 $('#bStoryBack').onclick=()=>{$('#storyOv').hidden=true;$('#startOv').hidden=false;showBest()};
-$('#bDeck').onclick=()=>openDeck();$('#bWPrev').onclick=()=>showWorld(mapMundo-1);$('#bWNext').onclick=()=>showWorld(mapMundo+1);$('#bLore').onclick=()=>showMundo(MUNDOS[mapMundo]);$('#bDeckOk').onclick=()=>{$('#deckOv').hidden=true;renderMapCard()};
+$('#bDeck').onclick=()=>openDeck();$('#bWPrev').onclick=()=>showWorld(mapMundo-1);$('#bWNext').onclick=()=>showWorld(mapMundo+1);$('#bLore').onclick=()=>{const M=MUNDOS[mapMundo];escenasMundo(M.n,()=>showMundo(M))};$('#bDeckOk').onclick=()=>{$('#deckOv').hidden=true;renderMapCard()};
 window.addEventListener('resize',()=>{if(!$('#storyOv').hidden)renderMap(false)});
 $('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};
 function showBest(){let b=null;try{b=localStorage.getItem('crisol_best')}catch(e){}$('#bestTxt').textContent=b?`8 jugadores · tu mejor puesto: ${ord(b)}`:'8 jugadores · el último en pie gana';
@@ -4181,7 +4199,7 @@ function showMundo(M,prev,done){const ov=$('#mundoOv'),I=MAPAS[M.n];
   $('#mdTit').textContent=M.titulo;$('#mdReg').textContent=M.nombre;$('#mdTxt').innerHTML=DLG_MUNDO[M.n]?'':M.intro.map(p=>`<p>${p}</p>`).join('');$('#mdTxt').hidden=!!DLG_MUNDO[M.n];
   ov.classList.toggle('conFin',!!prev);ov.classList.remove('play');void ov.offsetWidth;ov.classList.add('play');ov.hidden=false;
   if(prev){sfx('merge3');setTimeout(()=>sfx('levelup'),2600)}else sfx('carousel');
-  $('#bMundoOk').onclick=()=>{ov.hidden=true;if(!HIST.intro.includes(M.n)){HIST.intro.push(M.n);histSave(HIST)}dialogo(DLG_MUNDO[M.n],done,I&&I.src)}}
+  $('#bMundoOk').onclick=()=>{ov.hidden=true;if(!HIST.intro.includes(M.n)){HIST.intro.push(M.n);histSave(HIST)}escena('m'+M.n+'_intro',()=>dialogo(DLG_MUNDO[M.n],done,I&&I.src))}} // antes, sus escenas ilustradas (15m-escenas.js)
 function openDeck(){renderDeck();$('#deckOv').hidden=false}
 function avatarImgBig(kind,col){const S0=SPRITE_SRC[avSpr(kind)];if(S0)return S0.src;const k='big'+kind+col;if(AVIMG[k])return AVIMG[k];const [c,g]=mkCanvas(96,96);drawAvatar(g,48,90,34,kind,col,0);return AVIMG[k]=c.toDataURL()}
 function renderDeck(aviso){
@@ -5782,6 +5800,120 @@ $('#bTorre').onclick=abrirTorre;
 function pintaCartaTorre(){const b=$('#bTorre');if(!b)return;HIST=HIST||histLoad();const ok=torreDesbloqueada();b.classList.toggle('bloq',!ok);
   $('#torreSub').textContent=ok?`Récord: piso ${torreDatos().mejor}`:'Se abre al completar el nivel 15'}
 pintaCartaTorre();
+
+// ================= ESCENAS ILUSTRADAS DE LA HISTORIA =================
+// Cada mundo tiene tres momentos (intro, mitad y final) contados con imágenes a pantalla completa: la cámara se mueve
+// despacio sobre cada una (zoom y desplazamiento), el narrador escribe abajo y suena música épica sintetizada. Después
+// siguen los diálogos de siempre (15f-dialogos.js). Imágenes en assets/escenas/<id>.webp (las mete build.py en
+// ESCENA_IMG); textos y prompts en docs/arte/prompts-escenas.md. Un momento solo se reproduce si están todas sus
+// imágenes (o su `alt`), y una sola vez (HIST.vistos: 'e'+clave); el título del mundo en el mapa las repite.
+const ESCENA_IMG={"m1_final_1":"recursos/escenas/m1_final_1.webp?v=ed367947","m1_final_3":"recursos/escenas/m1_final_3.webp?v=3100d417","m1_intro_1":"recursos/escenas/m1_intro_1.webp?v=00f0dbdc","m1_intro_2":"recursos/escenas/m1_intro_2.webp?v=b65075b0","m1_intro_3":"recursos/escenas/m1_intro_3.webp?v=46da35ce","m1_intro_4":"recursos/escenas/m1_intro_4.webp?v=8f915def","m1_intro_5":"recursos/escenas/m1_intro_5.webp?v=fe601a6f","m1_mitad_1":"recursos/escenas/m1_mitad_1.webp?v=358451e4","m1_mitad_2":"recursos/escenas/m1_mitad_2.webp?v=5c2202e5","m2_intro_1":"recursos/escenas/m2_intro_1.webp?v=6290a8c2","m2_intro_2":"recursos/escenas/m2_intro_2.webp?v=cb11d27a"};
+// cámara: z = zoom sobre el encuadre que llena la pantalla; x, y = punto de la imagen (0-1) que queda en el centro
+const cam=(z0,x0,y0,z1,x1,y1)=>({z0,x0,y0,z1,x1,y1});
+const ESCENAS={
+ m1_intro:[
+  {img:'m1_intro_1',cam:cam(1,.5,.5,1.25,.49,.45),txt:'En el corazón de las tierras arde el Crisol, una llama antigua. No quema la madera: arde con el valor de quien la cuida, y de ese valor nacen los campeones.'},
+  {img:'m1_intro_2',cam:cam(1.25,.2,.5,1.25,.8,.5),txt:'Hace siglos, siete guardianes juraron protegerla. Las canciones recuerdan sus hazañas… pero ninguna cuenta qué fue de ellos.'},
+  {img:'m1_intro_3',cam:cam(1.35,.5,.62,1,.5,.5),txt:'Ahora la llama se apaga. Los monstruos salen del bosque, las fraguas de los lagos se enfrían y en las cumbres ruge algo antiguo.'},
+  {img:'m1_intro_4',cam:cam(1,.5,.5,1.3,.35,.6),txt:'Antes de apagarse del todo, el Crisol ha elegido a alguien para guardarlo. A ti.'},
+  {img:'m1_intro_5',cam:cam(1.3,.45,.75,1.3,.5,.3),txt:'El camino empieza en el claro del bosque y termina en la cumbre más alta. Allí, dicen, espera quien se está llevando la luz.'}],
+ m1_mitad:[
+  {img:'m1_mitad_1',cam:cam(1.25,.45,.4,1.2,.75,.6),txt:'Camille ha visto desde el cielo lo que nadie ve desde abajo: el frío no viene del invierno. Algo baja de las cumbres y se bebe el calor de las tierras.'},
+  {img:'m1_mitad_2',cam:cam(1.3,.3,.72,1.3,.62,.25),txt:'Un lago helado en pleno verano. Un templo del Crisol en ruinas. Y en lo más alto, un Draco antiguo dormido sobre una luz que no es suya.'}],
+ m1_final:[
+  {img:'m1_final_1',cam:cam(1,.5,.5,1.35,.47,.58),txt:'El Draco no robaba la llama. La protegía, con su propio cuerpo, de algo peor.'},
+  {img:'m1_final_2',alt:'m1_final_3',cam:cam(1,.5,.5,1.1,.5,.55),txt:'Sus brasas se escapan por las grietas de la montaña y caen a una caverna sin fondo. Algo, allí abajo, las está llamando.'},
+  {img:'m1_final_3',cam:cam(1.1,.5,.5,1.4,.52,.3),txt:'En la corte bajo la roca, una reina bebe la luz del Crisol para no envejecer nunca.'}],
+ m2_intro:[
+  {img:'m2_intro_1',cam:cam(1.3,.45,.25,1.3,.4,.62),txt:'Siguiendo las brasas, el guardián baja a la caverna profunda, donde la luz del sol no ha llegado nunca.'},
+  {img:'m2_intro_2',cam:cam(1,.5,.5,1.3,.62,.35),txt:'Goblins, arañas y murciélagos sirven a la reina de la caverna. Cada uno guarda una parte del camino.'},
+  {img:'m2_intro_3',cam:cam(1.25,.2,.5,1.25,.8,.5),txt:'La caverna es traicionera. No todos los campeones pueden pasar por todas partes: habrá que elegir bien a quién llevar.'},
+  {img:'m2_intro_4',cam:cam(1,.5,.5,1.3,.5,.4),txt:'En el Castillo carmesí reina Dracqueen. Lleva siglos sin envejecer… y no piensa empezar ahora.'}],
+ m2_mitad:[
+  {img:'m2_mitad_1',cam:cam(1.25,.2,.5,1.25,.8,.5),txt:'El Rey Goblin conoce cada túnel de la caverna: por algo los ha saqueado todos. El camino a la reina pasa por sus minas, por un lago sin luz y por la tela de la Reina Araña.'},
+  {img:'m2_mitad_2',cam:cam(1,.5,.5,1.35,.5,.35),txt:'Hay algo que el goblin no entiende: a veces llegan al castillo unos caballeros grises que no comen, no hablan… y huelen a ceniza.'}],
+ m2_final:[
+  {img:'m2_final_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Dracqueen devuelve la luz. Y, entre suspiros, confiesa que ella no la robaba: se la vendían unos caballeros grises a cambio de oro y de juventud.'},
+  {img:'m2_final_2',cam:cam(1.3,.2,.6,1.3,.8,.5),txt:'Cuando el guardián va a buscarlos, solo encuentra un rastro de ceniza que se pierde en la oscuridad.'},
+  {img:'m2_final_3',cam:cam(1,.5,.5,1.4,.6,.45),txt:'Y entonces, mientras todos celebran, un duende se cuela entre las piernas de los campeones… y se lleva el Crisol.'}],
+ m3_intro:[
+  {img:'m3_intro_1',cam:cam(1,.5,.5,1.35,.5,.45),txt:'El rastro del duende baja por una grieta que huele a tumba.'},
+  {img:'m3_intro_2',cam:cam(1.3,.2,.6,1.3,.8,.4),txt:'Al otro lado empiezan las tierras de Morvane Noctem, el Nigromante, donde los muertos no descansan.'},
+  {img:'m3_intro_3',cam:cam(1,.5,.5,1.35,.6,.55),txt:'Morvane quiere el poder de la llama. Nadie sabe para qué… ni por qué lleva siglos sin salir de su castillo.'},
+  {img:'m3_intro_4',cam:cam(1.3,.2,.5,1.3,.8,.5),txt:'Sin la llama, el Crisol de las tierras se apagará en días. No hay tiempo que perder.'}],
+ m3_mitad:[
+  {img:'m3_mitad_1',cam:cam(1.25,.2,.5,1.3,.75,.5),txt:'La luz abre el mausoleo y descubre un mural: los siete guardianes del Crisol. Tres brillan aún. Los otros cuatro… son de ceniza.'},
+  {img:'m3_mitad_2',cam:cam(1.3,.3,.55,1.3,.8,.4),txt:'Dicen que los guardianes de ceniza quisieron la llama para sí, y que el Crisol los rechazó. Desde entonces atan con cadenas a quien pueda servirles.'}],
+ m3_final:[
+  {img:'m3_final_1',cam:cam(1.35,.5,.6,1,.5,.5),txt:'La maldición de Morvane era una cadena de ceniza. Cada alma que levantaba les daba fuerza a sus amos. Al purificarlo, la cadena se rompe.'},
+  {img:'m3_final_2',cam:cam(1,.5,.5,1.35,.5,.4),txt:'Muy lejos, cuatro caballeros sienten cómo se rompe. Son la Orden de la Ceniza. Ya no tienen nada que esconder… y saben que el guardián está lejos de casa.'},
+  {img:'m3_final_3',cam:cam(1.3,.25,.5,1.3,.8,.6),txt:'La ciudad del Crisol está siendo atacada. La grieta se ha derrumbado: solo queda volver por mar.'}]};
+// nivel que desbloquea la escena de la mitad y la del final de cada mundo (se ven tras el diálogo de victoria de su jefe)
+const ESC_MITAD={1:10,2:20,3:40},ESC_FIN={1:15,2:30,3:46};
+const escImg=sc=>ESCENA_IMG[sc.img]||(sc.alt&&ESCENA_IMG[sc.alt]);
+const escLista=k=>{const L=ESCENAS[k];return L&&L.every(escImg)?L:null};
+// ---- reproductor ----
+let ESC=null;
+function escena(clave,fin,forzar){const L=escLista(clave);if(!L||(!forzar&&visto('e'+clave))){fin&&fin();return}
+  escenas([clave],fin)}
+// varias seguidas (al repetirlas desde el mapa); sin imágenes, ninguna
+function escenas(claves,fin){claves=claves.filter(escLista);const L=[].concat(...claves.map(escLista));if(!L.length){fin&&fin();return}
+  claves.forEach(k=>marcarVisto('e'+k));
+  audioInit();const ov=$('#escenaOv');ESC={L,i:-1,fin,capa:0,t0:0,dur:0,escrito:true,timer:null};
+  ov.querySelectorAll('img').forEach(im=>{im.style.opacity=0;im.removeAttribute('src')});
+  $('#escPuntos').innerHTML=L.map(()=>'<i></i>').join('');ov.hidden=false;escMusica(claves[0]);escSiguiente();requestAnimationFrame(escBucle)}
+function escSiguiente(){const E=ESC;if(!E)return;
+  if(!E.escrito){escTerminaTexto();return}
+  E.i++;if(E.i>=E.L.length)return escCerrar();
+  const sc=E.L[E.i],im=$('#escenaOv').querySelectorAll('.escCapa img')[E.capa=1-E.capa],otra=$('#escenaOv').querySelectorAll('.escCapa img')[1-E.capa];
+  im.onload=()=>{escEncuadre(im,sc.cam,0);im.style.opacity=1;otra.style.opacity=0};im.src=escImg(sc);if(im.complete&&im.naturalWidth)im.onload();
+  E.sc=sc;E.im=im;E.t0=performance.now();E.dur=Math.max(7000,sc.txt.length*70+2500);
+  $('#escPuntos').querySelectorAll('i').forEach((p,k)=>p.classList.toggle('on',k<=E.i));
+  // el texto se escribe poco a poco, y al terminar, a los pocos segundos, pasa sola a la siguiente
+  const el=$('#escTexto');el.textContent='';el.classList.remove('ve');void el.offsetWidth;el.classList.add('ve');E.escrito=false;let k=0;clearInterval(E.timer);
+  E.timer=setInterval(()=>{k+=1;el.textContent=sc.txt.slice(0,k);if(k>=sc.txt.length)escTerminaTexto()},38)}
+function escTerminaTexto(){const E=ESC;if(!E)return;clearInterval(E.timer);E.timer=null;$('#escTexto').textContent=E.sc.txt;E.escrito=true}
+// coloca la imagen: llena la pantalla con el zoom pedido y deja el punto (x, y) en el centro, sin enseñar bordes
+function escEncuadre(im,c,k){const ov=$('#escenaOv'),W=ov.clientWidth,H=ov.clientHeight,iw=im.naturalWidth,ih=im.naturalHeight;if(!iw)return;
+  const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,z=c.z0+(c.z1-c.z0)*e,fx=c.x0+(c.x1-c.x0)*e,fy=c.y0+(c.y1-c.y0)*e;
+  const s=Math.max(W/iw,H/ih)*z,w=iw*s,h=ih*s,x=Math.min(0,Math.max(W-w,W/2-fx*w)),y=Math.min(0,Math.max(H-h,H/2-fy*h));
+  im.style.width=w+'px';im.style.height=h+'px';im.style.transform=`translate3d(${x}px,${y}px,0)`}
+function escBucle(now){const E=ESC;if(!E)return;
+  if(E.im&&E.sc){const k=Math.min(1,(now-E.t0)/E.dur);escEncuadre(E.im,E.sc.cam,k);if(k>=1&&E.escrito)escSiguiente()}
+  requestAnimationFrame(escBucle)}
+function escCerrar(){const E=ESC;if(!E)return;clearInterval(E.timer);ESC=null;escMusicaFin(E.mus);$('#escenaOv').hidden=true;E.fin&&E.fin()}
+$('#escenaOv').onclick=e=>{if(e.target.id==='bEscSaltar')return;escSiguiente()};
+$('#bEscSaltar').onclick=e=>{e.stopPropagation();escCerrar()};
+window.addEventListener('keydown',e=>{if(!ESC)return;if(e.key===' '||e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();escSiguiente()}else if(e.key==='Escape')escCerrar()},true);
+// ---- música épica sintetizada: cuerdas, coro, tambores y metales que crecen con cada imagen ----
+// intro: misterio y aventura (re menor); mitad: inquietud (más grave, sin metales); final: clímax
+const ESC_TONO={intro:{root:50,ini:0},mitad:{root:47,ini:1,sinMetal:true},final:{root:50,ini:1}};
+const ESC_PROG=[0,5,2,6],ESC_SC=[0,2,3,5,7,8,10],ESC_MELO=[4,5,4,2,0,1,2,-1,4,5,7,6,4,2,4,0];
+function escMusica(clave){const ac=SND.ac;if(!ac)return;const T=ESC_TONO[clave.split('_')[1]]||ESC_TONO.intro;
+  if(SND.mus)SND.mus.gain.setTargetAtTime(0,ac.currentTime,.4); // calla la música del juego
+  const g=ac.createGain();g.gain.value=0;g.gain.setTargetAtTime(SND.musicOn?.32:0,ac.currentTime,.8);g.connect(SND.master);
+  const M={g,T,paso:0,sig:ac.currentTime+.15,bpm:66};ESC.mus=M;
+  M.timer=setInterval(()=>{if(!ESC||ESC.mus!==M){clearInterval(M.timer);return}while(M.sig<ac.currentTime+.4){escPaso(M,M.paso,M.sig-ac.currentTime);M.paso++;M.sig+=60/M.bpm}},100)}
+function escPaso(M,paso,when){if(when<0)return;const T=M.T,b=60/M.bpm,bar=Math.floor(paso/4),beat=paso%4,ch=ESC_PROG[bar%4],d=M.g;
+  const nivel=Math.min(3,T.ini+Math.floor((ESC?ESC.i:0)/2)),deg=(x,o)=>{const n=7,q=Math.floor(x/n);return T.root+ESC_SC[((x%n)+n)%n]+12*(q+(o||0))};
+  if(beat===0){[0,2,4].forEach((k,i)=>{const f=mtof(deg(ch+k,0));tone(f,b*4.4,{type:'sawtooth',vol:.022,attack:1.4,lp:900+nivel*250,when,dest:d,detune:-8});tone(f,b*4.4,{type:'sawtooth',vol:.022,attack:1.4,lp:900+nivel*250,when,dest:d,detune:8})}); // cuerdas
+    tone(mtof(deg(ch,-1)),b*4,{type:'triangle',vol:.12,attack:.3,lp:500,when,dest:d}); // bajo
+    if(nivel>=1)[0,2,4].forEach(k=>tone(mtof(deg(ch+k,1)),b*4.2,{type:'triangle',vol:.018,attack:2,lp:2000,when,dest:d,detune:(k-2)*5}))} // coro
+  // tambores graves: el uno y el tres; con más tensión, también a contratiempo; redoble al final de cada 4 compases
+  if(beat===0||beat===2||(nivel>=2&&beat===3)){tone(72,.7,{slide:36,vol:beat===0?.34:.24,when,dest:d});noise(.18,{f:320,vol:.12,when,dest:d})}
+  if(nivel>=2&&bar%4===3&&beat===3)for(let r=0;r<6;r++)tone(90,.25,{slide:50,vol:.08+r*.03,when:when+r*b/6,dest:d});
+  // metales: el tema heroico, desde la segunda imagen del final (o la tercera de la intro)
+  if(nivel>=2&&!T.sinMetal){const n=ESC_MELO[(bar%4)*4+beat];tone(mtof(deg(n,1)),b*.95,{type:'sawtooth',vol:.045,attack:.09,lp:1500,when,dest:d})}}
+function escMusicaFin(M){const ac=SND.ac;if(!ac)return;
+  if(SND.mus)SND.mus.gain.setTargetAtTime(SND.musicOn?.2:0,ac.currentTime+.6,.8); // vuelve la música del juego
+  if(M){clearInterval(M.timer);M.g.gain.setTargetAtTime(0,ac.currentTime,.6);setTimeout(()=>M.g.disconnect(),4000)}}
+// ---- ganchos en el modo Historia ----
+// mitad y final: tras el diálogo de victoria del jefe, antes de presentarlo como campeón nuevo
+const _dialogoVictoria=dialogoVictoria;
+dialogoVictoria=function(n,go){const m=mundoDe(n)+1,k=ESC_MITAD[m]===n?`m${m}_mitad`:ESC_FIN[m]===n?`m${m}_final`:null;
+  _dialogoVictoria(n,k?()=>escena(k,go):go)};
+// el título del mundo en el mapa repite las escenas ya desbloqueadas y luego su presentación
+function escenasMundo(m,fin){const H=HIST.hechos||[],ks=[`m${m}_intro`];if(H.includes(ESC_MITAD[m]))ks.push(`m${m}_mitad`);if(H.includes(ESC_FIN[m]))ks.push(`m${m}_final`);escenas(ks,fin)}
 
 // ================= LOOP =================
 let last=performance.now(),acc=0,REND_A=0; // REND_A: fracción (0..1) del paso de combate en curso, para dibujar entre dos pasos
