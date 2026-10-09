@@ -1171,6 +1171,15 @@ body.en-combate .goldPill{display:none}
   <div class="mdNuevo"><small id="mdLbl">Nuevo mundo</small><h1 id="mdTit"></h1><span id="mdReg"></span><div id="mdTxt"></div><button class="big" id="bMundoOk">Continuar</button></div>
 </div>
 
+<div class="overlay" id="volverOv" hidden>
+  <div class="modal" style="max-width:440px;text-align:center">
+    <div class="lbl">Arena con amigos</div>
+    <h2>Tienes una partida a medias</h2>
+    <p class="sub" id="vuTxt"></p>
+    <div class="row" style="justify-content:center;margin-top:12px"><button class="big alt" id="bVuNo">Descartarla</button><button class="big" id="bVuSi">Volver</button></div>
+  </div>
+</div>
+
 <div class="overlay" id="reglaOv" hidden>
   <div class="modal" style="max-width:480px;text-align:center">
     <div class="lbl">Regla del nivel</div>
@@ -4538,7 +4547,7 @@ function invitadoFuera(seat,cc){if(seat==null||!NET.conns[seat]||(cc&&NET.conns[
 // latido: cada 3 s todos dan señal; quien pasa NET.sinSenal sin darla se da por desconectado (PeerJS no siempre avisa al cerrar)
 // si este dispositivo estuvo congelado (pantalla bloqueada, otra app), no culpa a los demás de su silencio
 let latidoUlt=Date.now();
-setInterval(()=>{if(!NET.peer)return;const ahora=Date.now(),dormido=ahora-latidoUlt>8000;latidoUlt=ahora;
+setInterval(()=>{multiGuardar();if(!NET.peer)return;const ahora=Date.now(),dormido=ahora-latidoUlt>8000;latidoUlt=ahora;
   if(dormido){for(const s of Object.keys(NET.visto))NET.visto[s]=ahora;NET.vistoHost=ahora}
   if(NET.peer.disconnected&&!NET.peer.destroyed)try{NET.peer.reconnect()}catch(e){}
   if(NET.host){enviar({t:'ping'});for(const s of Object.keys(NET.conns))if(ahora-(NET.visto[s]||ahora)>NET.sinSenal)invitadoFuera(+s,NET.conns[s])}
@@ -4546,7 +4555,7 @@ setInterval(()=>{if(!NET.peer)return;const ahora=Date.now(),dormido=ahora-latido
     if(NET.jugando&&NET.vistoHost&&ahora-NET.vistoHost>NET.sinSenal){const c=NET.conn;NET.conn=null;try{c.close()}catch(e){}invitadoReconectar()}}
   else if(NET.jugando&&!NET.reconectando&&S&&S.mode==='multi'&&S.phase!=='over')invitadoReconectar()},3000);
 // al volver a la pestaña (tras bloquear el móvil), se da señal enseguida o se reconecta
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!NET.peer||!NET.jugando)return;latidoUlt=Date.now();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')multiGuardar();if(document.visibilityState!=='visible'||!NET.peer||!NET.jugando)return;latidoUlt=Date.now();
   if(NET.peer.disconnected&&!NET.peer.destroyed)try{NET.peer.reconnect()}catch(e){}
   if(NET.host){enviar({t:'ping'});return}
   if(NET.conn&&NET.conn.open)mandar(NET.conn,{t:'ping'});else invitadoReconectar()});
@@ -4582,7 +4591,7 @@ function invitadoRecibe(m){
   NET.vistoHost=Date.now();if(!m||!m.t||m.t==='ping')return;
   if(m.t==='sala'){NET.sala.jugadores=m.jugadores;NET.sala.miSeat=m.tuSeat;NET.sala.diff=m.diff;NET.sala.tiempo=m.tiempo;renderSala()}
   else if(m.t==='lleno')salaEstado(m.txt||'La sala está llena.',true);
-  else if(m.t==='inicio'){NET.token=m.token;startMulti(false,m)}
+  else if(m.t==='inicio'){NET.token=m.token;NET.inicio=m;startMulti(false,m)}
   else if(!S||S.mode!=='multi')return;
   else if(m.t==='ronda')aplicarRonda(m);
   else if(m.t==='fase')aplicarFase(m);
@@ -4699,13 +4708,16 @@ function hostDesconectado(seat){const p=porSeat(seat);if(!p||!p.amigo)return;
 function hostVuelve(seat,c){const viejo=NET.conns[seat];NET.conns[seat]=c;NET.visto[seat]=Date.now();if(viejo&&viejo!==c)try{viejo.close()}catch(e){}
   if(!S||S.mode!=='multi')return;const p=porSeat(seat),M=S.multi;if(!p)return;
   if(p.desc&&p.alive){p.remoto=true;p.amigo=true;p.desc=false;p.name=p.name.replace(' (bot)','');const t=`${p.name} ha vuelto a la partida.`;toast(t);enviar({t:'aviso',txt:t})}
-  mandar(c,{t:'vuelta',k:rondaK(),restante:Math.max(1,(M.finPrep-performance.now())/1000),hp:p.hp,vivo:p.alive,puesto:p.place,ronda:M.ultRonda&&M.ultRonda.k===rondaK()?M.ultRonda:null})}
+  mandar(c,{t:'vuelta',k:rondaK(),restante:Math.max(1,(M.finPrep-performance.now())/1000),hp:p.hp,vivo:p.alive,puesto:p.place,ronda:M.ultRonda&&M.ultRonda.k===rondaK()?M.ultRonda:null,
+    jug:S.players.map(q=>({seat:q.seat,hp:q.hp,vivo:q.alive,puesto:q.place}))})}
 // el invitado, al volver: se pone en la ronda del anfitrión con la vida que le cuenta él
 function multiVuelta(m){const M=S.multi,hu=H();NET.reconectando=false;toast('Conexión recuperada');
+  for(const j of m.jug||[]){const q=porSeat(j.seat);if(q&&q!==hu){q.hp=j.hp;q.alive=j.vivo;if(!j.vivo)q.place=j.puesto||q.place}}
   hu.hp=m.hp;if(!m.vivo){if(hu.alive){hu.alive=false;hu.place=m.puesto}return multiFin(hu.place)}
   if(m.k!==rondaK())return aplicarFase({k:m.k,dur:m.restante});
-  M.finPrep=performance.now()+m.restante*1000;
-  if(S.phase==='espera'){if(m.ronda)aplicarRonda(m.ronda);else mandar(NET.conn,{t:'listo',k:rondaK(),seat:M.miSeat,tablero:hu.board.map(u=>u&&{id:u.id,star:u.star,items:u.items.slice()}),hp:hu.hp,nivel:hu.level})}
+  M.finPrep=performance.now()+m.restante*1000;updateHUD();
+  if((S.phase==='planning'||S.phase==='hecho')&&m.ronda)aplicarRonda(m.ronda);
+  else if(S.phase==='espera'){if(m.ronda)aplicarRonda(m.ronda);else mandar(NET.conn,{t:'listo',k:rondaK(),seat:M.miSeat,tablero:hu.board.map(u=>u&&{id:u.id,star:u.star,items:u.items.slice()}),hp:hu.hp,nivel:hu.level})}
   else if(S.phase==='hecho')mandar(NET.conn,{t:'hecho',k:rondaK(),hp:hu.hp})}
 // ---- todos: la ronda contra jugadores ----
 function aplicarRonda(m){
@@ -4751,7 +4763,7 @@ function multiCae(){const hu=H(),M=S.multi;
   if(!M.host){mandar(NET.conn,{t:'fin',seat:M.miSeat});return multiFin(hu.place)}
   if(!M.multiFinVisto){M.multiFinVisto=true;multiFin(hu.place)}
   if(S.players.filter(p=>p.alive).length>1)tras(()=>nextRound(),2100);else multiFinPartida('Fin de la partida.')}
-function multiFin(place){
+function multiFin(place){multiBorrarGuardado();
   const M=S.multi;if(!M.host)S.phase='over';sfx('over');
   if(!M.cobrado){M.cobrado=true;cobrarArena(place);misionEvento('amigos');if(place<=4)misionEvento('arenaTop4');if(place===1)misionEvento('arenaGana')} // experiencia de cuenta y ascuas, como en la Arena (15e-cuenta.js)
   $('#endPlace').textContent=ord(place);$('#endTitle').textContent=place===1?'¡Campeón del Crisol!':place<=4?'Entre los cuatro mejores':'Eliminado';
@@ -4759,14 +4771,38 @@ function multiFin(place){
   $('#bAgain').textContent=M.host&&place>1?'Ver la partida':'Volver al menú';$('#bAgain').onclick=()=>{if(M.host&&place>1){$('#endOv').hidden=true;return}cerrarRed();backToMenu()};
   $('#bMenu').hidden=true;$('#endOv').hidden=false;
 }
-function multiFinPartida(txt){if(!S)return;S.phase='over';updateHUD();
+function multiFinPartida(txt){multiBorrarGuardado();if(!S)return;S.phase='over';updateHUD();
   $('#endPlace').textContent=H().alive?ord(1):ord(H().place||8);$('#endTitle').textContent='Fin de la partida';$('#endSub').textContent=txt;
   $('#bAgain').textContent='Volver al menú';$('#bAgain').onclick=()=>{cerrarRed();backToMenu()};$('#bMenu').hidden=true;$('#endOv').hidden=false}
 $('#bAmigos').onclick=crearSala;$('#bSalaListo').onclick=botonSala;$('#bSalaSalir').onclick=()=>{if(!NET.host)mandar(NET.conn,{t:'chao'});cerrarSala()};
-$('#bPausaSalir').addEventListener('click',()=>{if(NET.peer){if(!NET.host)mandar(NET.conn,{t:'chao'});setTimeout(cerrarRed,300)}});
-window.addEventListener('beforeunload',()=>{if(NET.conn)mandar(NET.conn,{t:'chao'})});
-// enlace de invitación: ?sala=CÓDIGO abre la sala y se une directamente
-{const c=new URLSearchParams(location.search).get('sala');if(c&&/^[A-Z0-9]{5}$/i.test(c))setTimeout(()=>unirseSala(c.toUpperCase()),400)}
+$('#bPausaSalir').addEventListener('click',()=>{if(S&&S.mode==='multi')multiBorrarGuardado();if(NET.peer){if(!NET.host)mandar(NET.conn,{t:'chao'});setTimeout(cerrarRed,300)}});
+window.addEventListener('pagehide',()=>multiGuardar()); // el móvil puede cerrar la pestaña en segundo plano
+window.addEventListener('beforeunload',()=>{multiGuardar();if(NET.conn)mandar(NET.conn,{t:'chao'})});
+// ---- volver a una partida tras cerrar la página (solo invitados; la partida sigue viva mientras el anfitrión no se vaya) ----
+// cada 3 s y al salir se guarda en el móvil la sala, la clave y el estado propio (tablero, banquillo, oro, objetos, nivel…);
+// al volver a abrir el juego se ofrece volver: se rehace la partida, se reconecta con la clave y el anfitrión le pone al día
+const MULTI_KEY='crisol_multi_v1',MULTI_VIDA=20*60000;
+function multiGuardar(){if(!S||S.mode!=='multi'||!S.multi||S.multi.host||!NET.inicio||!NET.sala)return;const hu=H();if(!hu.alive||S.phase==='over')return;
+  try{localStorage.setItem(MULTI_KEY,JSON.stringify({t:Date.now(),codigo:NET.sala.codigo,token:NET.token,inicio:NET.inicio,k:rondaK(),pool:S.pool,uid:S.uid,aum:S.aumHechos||{},
+    hu:JSON.parse(JSON.stringify(hu,(k,v)=>k==='lastOpp'?undefined:v))}))}catch(e){}}
+function multiBorrarGuardado(){try{localStorage.removeItem(MULTI_KEY)}catch(e){}}
+function multiGuardado(){try{const g=JSON.parse(localStorage.getItem(MULTI_KEY));if(g&&g.inicio&&Date.now()-g.t<MULTI_VIDA)return g}catch(e){}return null}
+function ofrecerVuelta(g){if(S&&S.mode==='multi')return;const ov=$('#volverOv');$('#vuTxt').textContent=`Ibas por la ronda ${g.k} en la sala ${g.codigo}. Si el anfitrión sigue jugando, puedes volver a tu partida.`;
+  ov.hidden=false;$('#bVuSi').onclick=()=>{ov.hidden=true;volverPartida(g)};$('#bVuNo').onclick=()=>{ov.hidden=true;multiBorrarGuardado()}}
+async function volverPartida(g){
+  cerrarRed();audioInit();NET.sala={codigo:g.codigo,miSeat:g.inicio.tuSeat,jugadores:[]};NET.token=g.token;NET.inicio=g.inicio;
+  startMulti(false,g.inicio);
+  const hu=H(),M=S.multi;Object.assign(hu,g.hu,{human:true,alive:true});S.pool=g.pool;S.uid=g.uid;S.aumHechos=g.aum;
+  const [st,r]=g.k.split('-').map(Number);S.stage=st;S.round=r;S.combat=null;S.carOpts=null;S.type=roundType(st,r);
+  S.phase=S.type==='carousel'?'hecho':'planning';S.preview=S.type==='pve'?enemyTeam(1):null;M.finPrep=performance.now()+30000;
+  ['#startOv','#volverOv'].forEach(x=>$(x).hidden=true);layout();updateHUD();banner('Volviendo a la partida','Conectando con el anfitrión…');
+  try{await cargarPeerJS()}catch(e){return multiFinPartida('No se pudo cargar la conexión. Revisa tu internet.')}
+  invitadoReconectar()}
+// enlace de invitación: ?sala=CÓDIGO abre la sala y se une directamente (o vuelve a la partida guardada de esa sala);
+// sin enlace, si hay una partida a medias se ofrece volver. Va al final: usa lo definido arriba
+{const c=new URLSearchParams(location.search).get('sala'),g=multiGuardado();
+  if(c&&/^[A-Z0-9]{5}$/i.test(c))setTimeout(()=>g&&g.codigo===c.toUpperCase()?volverPartida(g):unirseSala(c.toUpperCase()),400);
+  else if(g)setTimeout(()=>ofrecerVuelta(g),600)}
 
 // ================= CUENTA DEL JUGADOR: NIVEL, ASCUAS, TIENDA Y ASPECTOS =================
 // Progreso general (no de la partida): experiencia de cuenta y ascuas (la moneda de la tienda), que se ganan en el modo
