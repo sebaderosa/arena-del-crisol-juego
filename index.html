@@ -5807,7 +5807,7 @@ pintaCartaTorre();
 // siguen los diálogos de siempre (15f-dialogos.js). Imágenes en assets/escenas/<id>.webp (las mete build.py en
 // ESCENA_IMG); textos y prompts en docs/arte/prompts-escenas.md. Un momento solo se reproduce si están todas sus
 // imágenes (o su `alt`), y una sola vez (HIST.vistos: 'e'+clave); el título del mundo en el mapa las repite.
-const ESCENA_IMG={"m1_final_1":"recursos/escenas/m1_final_1.webp?v=ed367947","m1_final_3":"recursos/escenas/m1_final_3.webp?v=3100d417","m1_intro_1":"recursos/escenas/m1_intro_1.webp?v=00f0dbdc","m1_intro_2":"recursos/escenas/m1_intro_2.webp?v=b65075b0","m1_intro_3":"recursos/escenas/m1_intro_3.webp?v=46da35ce","m1_intro_4":"recursos/escenas/m1_intro_4.webp?v=8f915def","m1_intro_5":"recursos/escenas/m1_intro_5.webp?v=fe601a6f","m1_mitad_1":"recursos/escenas/m1_mitad_1.webp?v=358451e4","m1_mitad_2":"recursos/escenas/m1_mitad_2.webp?v=5c2202e5","m2_intro_1":"recursos/escenas/m2_intro_1.webp?v=6290a8c2","m2_intro_2":"recursos/escenas/m2_intro_2.webp?v=cb11d27a"};
+const ESCENA_IMG={"m1_final_1":"recursos/escenas/m1_final_1.webp?v=ed367947","m1_final_2":"recursos/escenas/m1_final_2.webp?v=3c07a695","m1_final_3":"recursos/escenas/m1_final_3.webp?v=3100d417","m1_intro_1":"recursos/escenas/m1_intro_1.webp?v=00f0dbdc","m1_intro_2":"recursos/escenas/m1_intro_2.webp?v=b65075b0","m1_intro_3":"recursos/escenas/m1_intro_3.webp?v=46da35ce","m1_intro_4":"recursos/escenas/m1_intro_4.webp?v=8f915def","m1_intro_5":"recursos/escenas/m1_intro_5.webp?v=fe601a6f","m1_mitad_1":"recursos/escenas/m1_mitad_1.webp?v=358451e4","m1_mitad_2":"recursos/escenas/m1_mitad_2.webp?v=5c2202e5","m2_intro_1":"recursos/escenas/m2_intro_1.webp?v=6290a8c2","m2_intro_2":"recursos/escenas/m2_intro_2.webp?v=cb11d27a","m2_mitad_1":"recursos/escenas/m2_mitad_1.webp?v=4107fb08","m2_mitad_2":"recursos/escenas/m2_mitad_2.webp?v=317a4adf"};
 // cámara: z = zoom sobre el encuadre que llena la pantalla; x, y = punto de la imagen (0-1) que queda en el centro
 const cam=(z0,x0,y0,z1,x1,y1)=>({z0,x0,y0,z1,x1,y1});
 const ESCENAS={
@@ -5822,19 +5822,19 @@ const ESCENAS={
   {img:'m1_mitad_2',cam:cam(1.3,.3,.72,1.3,.62,.25),txt:'Un lago helado en pleno verano. Un templo del Crisol en ruinas. Y en lo más alto, un Draco antiguo dormido sobre una luz que no es suya.'}],
  m1_final:[
   {img:'m1_final_1',cam:cam(1,.5,.5,1.35,.47,.58),txt:'El Draco no robaba la llama. La protegía, con su propio cuerpo, de algo peor.'},
-  {img:'m1_final_2',alt:'m1_final_3',cam:cam(1,.5,.5,1.1,.5,.55),txt:'Sus brasas se escapan por las grietas de la montaña y caen a una caverna sin fondo. Algo, allí abajo, las está llamando.'},
+  {img:'m1_final_2',alt:'m1_final_3',cam:cam(1,.5,.35,1.3,.5,.62),txt:'Sus brasas se escapan por las grietas de la montaña y caen a una caverna sin fondo. Algo, allí abajo, las está llamando.'},
   {img:'m1_final_3',cam:cam(1.1,.5,.5,1.4,.52,.3),txt:'En la corte bajo la roca, una reina bebe la luz del Crisol para no envejecer nunca.'}],
  m2_intro:[
-  {img:'m2_intro_1',cam:cam(1.3,.45,.25,1.3,.4,.62),txt:'Siguiendo las brasas, el guardián baja a la caverna profunda, donde la luz del sol no ha llegado nunca.'},
+  {img:'m2_intro_1',cam:cam(1.3,.45,.25,1.3,.4,.62),txt:'Siguiendo las brasas, bajas a la caverna profunda, donde la luz del sol no ha llegado nunca.'},
   {img:'m2_intro_2',cam:cam(1,.5,.5,1.3,.62,.35),txt:'Goblins, arañas y murciélagos sirven a la reina de la caverna. Cada uno guarda una parte del camino.'},
   {img:'m2_intro_3',cam:cam(1.25,.2,.5,1.25,.8,.5),txt:'La caverna es traicionera. No todos los campeones pueden pasar por todas partes: habrá que elegir bien a quién llevar.'},
   {img:'m2_intro_4',cam:cam(1,.5,.5,1.3,.5,.4),txt:'En el Castillo carmesí reina Dracqueen. Lleva siglos sin envejecer… y no piensa empezar ahora.'}],
  m2_mitad:[
-  {img:'m2_mitad_1',cam:cam(1.25,.2,.5,1.25,.8,.5),txt:'El Rey Goblin conoce cada túnel de la caverna: por algo los ha saqueado todos. El camino a la reina pasa por sus minas, por un lago sin luz y por la tela de la Reina Araña.'},
-  {img:'m2_mitad_2',cam:cam(1,.5,.5,1.35,.5,.35),txt:'Hay algo que el goblin no entiende: a veces llegan al castillo unos caballeros grises que no comen, no hablan… y huelen a ceniza.'}],
+  {img:'m2_mitad_1',cam:cam(1.05,.55,.3,1.1,.5,.45),txt:'El Rey Goblin conoce cada túnel de la caverna: por algo los ha saqueado todos. El camino a la reina pasa por sus minas, por un lago sin luz y por la tela de la Reina Araña.'},
+  {img:'m2_mitad_2',cam:cam(1,.5,.5,1.35,.6,.35),txt:'Hay algo que el goblin no entiende: a veces llegan al castillo unos soldados grises que no comen, no hablan… y huelen a ceniza.'}],
  m2_final:[
-  {img:'m2_final_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Dracqueen devuelve la luz. Y, entre suspiros, confiesa que ella no la robaba: se la vendían unos caballeros grises a cambio de oro y de juventud.'},
-  {img:'m2_final_2',cam:cam(1.3,.2,.6,1.3,.8,.5),txt:'Cuando el guardián va a buscarlos, solo encuentra un rastro de ceniza que se pierde en la oscuridad.'},
+  {img:'m2_final_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Dracqueen devuelve la luz. Y, entre suspiros, confiesa que ella no la robaba: se la vendían unos soldados grises a cambio de oro y de juventud.'},
+  {img:'m2_final_2',cam:cam(1.3,.2,.6,1.3,.8,.5),txt:'Cuando vas a buscarlos, solo encuentras un rastro de ceniza que se pierde en la oscuridad.'},
   {img:'m2_final_3',cam:cam(1,.5,.5,1.4,.6,.45),txt:'Y entonces, mientras todos celebran, un duende se cuela entre las piernas de los campeones… y se lleva el Crisol.'}],
  m3_intro:[
   {img:'m3_intro_1',cam:cam(1,.5,.5,1.35,.5,.45),txt:'El rastro del duende baja por una grieta que huele a tumba.'},
@@ -5846,7 +5846,7 @@ const ESCENAS={
   {img:'m3_mitad_2',cam:cam(1.3,.3,.55,1.3,.8,.4),txt:'Dicen que los guardianes de ceniza quisieron la llama para sí, y que el Crisol los rechazó. Desde entonces atan con cadenas a quien pueda servirles.'}],
  m3_final:[
   {img:'m3_final_1',cam:cam(1.35,.5,.6,1,.5,.5),txt:'La maldición de Morvane era una cadena de ceniza. Cada alma que levantaba les daba fuerza a sus amos. Al purificarlo, la cadena se rompe.'},
-  {img:'m3_final_2',cam:cam(1,.5,.5,1.35,.5,.4),txt:'Muy lejos, cuatro caballeros sienten cómo se rompe. Son la Orden de la Ceniza. Ya no tienen nada que esconder… y saben que el guardián está lejos de casa.'},
+  {img:'m3_final_2',cam:cam(1,.5,.5,1.35,.5,.4),txt:'Muy lejos, cuatro caballeros sienten cómo se rompe. Son la Orden de la Ceniza. Ya no tienen nada que esconder… y saben que quien guarda el Crisol está lejos de casa.'},
   {img:'m3_final_3',cam:cam(1.3,.25,.5,1.3,.8,.6),txt:'La ciudad del Crisol está siendo atacada. La grieta se ha derrumbado: solo queda volver por mar.'}]};
 // nivel que desbloquea la escena de la mitad y la del final de cada mundo (se ven tras el diálogo de victoria de su jefe)
 const ESC_MITAD={1:10,2:20,3:40},ESC_FIN={1:15,2:30,3:46};
