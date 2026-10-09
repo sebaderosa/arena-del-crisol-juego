@@ -4089,7 +4089,8 @@ function storyWin(){
   histSave(HIST);S.phase='over';sfx('over');updateHUD();
   const est=guardarEstrellas(L.n,estrellasNivel());misionEvento('nivelHist');if(S.ganado)S.ganado.asc+=est.bonus; // estrellas (15j-progreso.js)
   const fin=()=>{cobrarHistoria(true,primera,!!L.premio);endScreen('¡Nivel superado!',`${L.nombre} completado · ${S.perfectas||0} de ${S.combates||0} rondas sin perder ningún campeón.`+(est.bonus?` ¡${estrellasTotal()} estrellas: +${est.bonus} ascuas!`:'')+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),pintaEstrellas(est.e),'Continuar',()=>{if(finMundo)return showMundo(sig,W,openStory);openStory();despuesDeNivel(L.n,primera)})};
-  if(nuevo)tras(()=>dialogoVictoria(L.n,()=>showUnlock(L.premio,fin)),900);else fin(); // el jefe vencido te habla antes de unirse
+  const sigue=()=>nuevo?showUnlock(L.premio,fin):fin();
+  if(nuevo||pendienteVictoria(L.n))tras(()=>dialogoVictoria(L.n,sigue),900);else fin(); // lo que se cuenta al ganar (y el jefe vencido antes de unirse)
 }
 function storyLost(){
   const where=`${S.stage}-${S.round}`,n=S.story.nivel;S.phase='over';sfx('over');updateHUD();cobrarHistoria(false);
@@ -4989,67 +4990,88 @@ if(REINICIADO)setTimeout(()=>{const ov=$('#subidaOv');ov.querySelector('.modal')
 // Cuándo salen: al entrar en un mundo (DLG_MUNDO), la primera vez que juegas un nivel (DLG_NIVEL), antes del jefe
 // y al vencerlo por primera vez (DLG_JEFE.antes / .despues). Lo ya visto se guarda en HIST.vistos.
 const DLG_MUNDO={
- 1:[['crisol','¡Por fin! Llevo tres días esperando a que el Crisol eligiera a alguien… y te ha elegido a ti.'],
-    ['crisol','Soy Crisol, el mejor archimago del fuego que han visto estas tierras. Lo digo yo, pero es verdad.'],
-    ['tovo','No le hagas caso, siempre se presenta así. Yo soy Tovo, aprendiz de la Fragua.'],
-    ['tovo','La llama del Crisol se está apagando. Los monstruos salen del bosque y las fraguas de los lagos se enfrían.'],
-    ['crisol','Tú puedes llamar a los campeones y luchar a su lado. Empieza por el claro del bosque. Yo… supervisaré.']],
- 2:[['draco','Me has vencido, así que te debo la verdad: yo no robaba la llama del Crisol. La protegía.'],
-    ['draco','Sus brasas se escapan por las grietas de la montaña y bajan a una caverna sin fondo.'],
+ 1:[['crisol','Llevo tres días esperando a que el Crisol eligiera a alguien… y te ha elegido a ti. A ti.'],
+    ['crisol','Soy Crisol, el mejor archimago del fuego que han visto estas tierras. Me preparé toda la vida para este día. Pero bueno… hasta la llama se equivoca.'],
+    ['tovo','No le hagas caso, hoy se ha levantado con el pie izquierdo. Yo soy Tovo, aprendiz de la Fragua.'],
+    ['tovo','Esa chispa que llevas te la dio el Crisol al elegirte. Mientras la lleves tú, el Crisol no se apaga del todo.'],
+    ['tovo','Y los campeones nacen del valor que alimenta la llama. Sienten tu chispa: por eso te seguirán.'],
+    ['crisol','A ti. Te seguirán a ti. Qué bien.'],
+    ['tovo','Mi padre dice que quien protege la llama protege a todos. Cree mucho en ella… y en mí, aunque yo todavía no sé por qué.'],
+    ['tovo','Desde hace semanas la llama se apaga. Los monstruos salen del bosque, las fraguas se enfrían y su luz se escapa hacia las cumbres. Alguien se la está llevando.'],
+    ['crisol','Tú puedes llamar a los campeones del Crisol y luchar a su lado. Empieza por el claro del bosque. Yo… supervisaré. Alguien tendrá que vigilar que no la apagues.']],
+ 2:[['draco','Lo que no pude salvar se escapó por las grietas de la montaña. Cae a una caverna sin fondo.'],
     ['crisol','¿Una caverna? Odio las cavernas. Humedad, oscuridad, murciélagos…'],
     ['draco','Murciélagos, sí. Allí abajo reina Dracqueen, que bebe la luz del Crisol para no envejecer nunca.'],
+    ['draco','Cada gota que bebe es una gota menos para el santuario. Si no la paras, el Crisol se apagará antes del invierno.'],
     ['tovo','Pues bajamos. Pero dicen que en la caverna no todos los campeones pueden pasar por todas partes.'],
-    ['draco','Escucha a quien conozca cada tramo. Y no me hagas quedar mal.']]};
+    ['draco','Escucha a quien conozca cada tramo. Y cuida esa llama: ahora es más grande, y habrá quien la quiera.']]};
 const DLG_NIVEL={
- 1:[['tovo','Unos Roedines están mordiendo las raíces del claro. Son pequeños, pero muchos.'],['crisol','Y cuidado con la Kangmoth del risco: con su cría en la bolsa, pega el doble.']],
- 2:[['brasa','¡Mi vieja fragua llena de bichos! Eso sí que no. ¿Me ayudas a echarlos?']],
- 3:[['tovo','Los Roedines han hecho su nido junto al arroyo. Si los dejamos, mañana serán el doble.']],
- 4:[['sombrio','…'],['sombrio','Los lobos atacan en oleadas toda la noche. No hace falta ganarles: hay que aguantar hasta el amanecer.']],
+ 1:[['narra','El claro está a un paseo del santuario. Hace un mes era el sitio más tranquilo de las tierras.'],['tovo','Unos Roedines están mordiendo las raíces del claro. Antes nunca salían del bosque.'],['crisol','Sin la llama, los monstruos pierden el miedo. Y cuidado con la Kangmoth del risco: con su cría en la bolsa, pega el doble.']],
+ 2:[['brasa','¡Mi vieja fragua llena de bichos! Eso sí que no.'],['brasa','Llevo semanas sin poder encenderla: el fuego no prende, como si le faltaran las ganas. ¿Me ayudas a echarlos?']],
+ 3:[['tovo','Los Roedines han hecho su nido junto al arroyo. Si los dejamos, mañana serán el doble.'],['crisol','Y este arroyo baja hasta la ciudad. Si lo ensucian, todos beberán barro. Hasta los elegidos.']],
+ 4:[['sombrio','…'],['crisol','¿Y este quién es?'],['tovo','Inerit. Vigila la linde desde siempre. No habla mucho.'],['sombrio','Los lobos atacan en oleadas toda la noche. No hace falta ganarles: hay que aguantar hasta el amanecer.'],['crisol','Tovo, tú detrás de mí. No es que tenga miedo, es que… detrás de mí.']],
  5:[['tovo','Hammerbrock, el héroe de la Fragua, ha cerrado las puertas. Solo abrirá a quien le gane.'],['crisol','Es una montaña con armadura. Te sugiero no estar delante cuando golpee.']],
- 6:[['nerea','Las mareas de los lagos están revueltas. Mis amigos del agua no reconocen a nadie… ni siquiera a ti.']],
- 7:[['fresno','Greta, la reina de las zarzas, ha cerrado el pinar. Las espinas crecen hacia dentro.']],
- 8:[['musgo','Mmm… ¿eh? Ah, hola. Los árboles dicen que vienen colosos. Yo iba a echarme la siesta, pero vale.']],
- 9:[['lira','¡Desde el mirador se ven caer las estrellas! Bueno, y los guardianes astrales, que no dejan pasar a nadie.']],
- 10:[['nebula','La reina de las estrellas ha bajado del cielo. Camille no lucha por maldad: quiere saber si mereces la pena.']],
- 11:[['martillo','La senda de las cumbres está llena de forjadores que no preguntan. Como yo.']],
+ 6:[['narra','Los lagos y sus fraguas daban de comer a media ciudad. Ahora el agua se enturbia y los hornos no prenden.'],['nerea','Las mareas de los lagos están revueltas. Mis amigos del agua no reconocen a nadie… ni siquiera a ti.'],['nerea','Y el agua está fría por dentro, como si le hubieran quitado el sol.']],
+ 7:[['fresno','Greta, la reina de las zarzas, ha cerrado el pinar. Las espinas crecen hacia dentro.'],['fresno','Cuando el bosque tiene miedo, se defiende de todos. Hay que demostrarle que no venimos a hacerle daño.']],
+ 8:[['musgo','Mmm… ¿eh? Ah, hola. Los árboles dicen que vienen colosos. Yo iba a echarme la siesta, pero vale.'],['musgo','Los más viejos recuerdan otra vez que la llama se apagó así. Fue hace muchísimo… y no quieren hablar de ello.']],
+ 9:[['lira','¡Desde el mirador se ven caer las estrellas! Bueno, y los guardianes astrales, que no dejan pasar a nadie.'],['lira','Pero no son estrellas: son destellos del Crisol que suben al cielo y se apagan. Cada noche caen más.']],
+ 10:[['nebula','La reina de las estrellas ha bajado del cielo. Camille no lucha por maldad: quiere saber si mereces la pena.'],['crisol','¿Y si no la merece? ¿Me la pasa a mí?']],
+ 11:[['narra','Las cumbres solo se cruzan en verano. Este año la nieve no se ha ido… y la luz del Crisol sube por ellas como humo.'],['martillo','La senda de las cumbres está llena de forjadores que no preguntan. Como yo.'],['tovo','Aquí estaban los hornos más antiguos de la Fragua. Ahora solo queda ceniza.'],['tovo','(En voz baja) No se lo tengas en cuenta a Crisol. Se preparó toda su vida para algo… y no le llegó.']],
  12:[['rama','Huellas de dos cabezas. Es Wolfbi, el alfa: muerde dos veces antes de que pestañees.']],
  13:[['kalima','El lago se ha helado en pleno verano. Algo roba el calor de estas montañas… y no es el invierno.'],['kalima','El hielo cruje: aquí solo podemos pelear tres a la vez. Elige bien.']],
- 14:[['ebano','Estas ruinas fueron un templo del Crisol. Lo que queda de su guardia ya no distingue amigos de enemigos.']],
- 15:[['crisol','La cumbre. El Draco antiguo. Si alguien está robando la llama, tiene que ser él.'],['tovo','Crisol, te tiemblan las manos.'],['crisol','¡Es el frío!']],
- 16:[['tovo','La boca de la caverna. Huele a goblin y a… ¿monedas?']],
- 17:[['eclipse','Los murciélagos de Dracqueen vigilan este nido. Si uno escapa, ella sabrá que venimos.']],
- 18:[['brasa','Esporas por todas partes. Una chispa de mis flechas y la galería entera sale volando.'],['tovo','Los de la Forja esperaremos fuera. Llévate a los demás, ¿vale?']],
- 19:[['yunque','Un trol cobra peaje en el puente. Yo pago con martillazos.']],
+ 14:[['ebano','Estas ruinas fueron un templo del Crisol. Lo que queda de su guardia ya no distingue amigos de enemigos.'],['ebano','Lo levantaron los siete guardianes. Mira sus estatuas: siete… y a cuatro les falta la cara. Nadie sabe quién se la arrancó.'],['crisol','Qué sitio tan alegre.']],
+ 15:[['crisol','La cumbre. El Draco antiguo. Si alguien roba la llama, tiene que ser él.'],['tovo','Crisol, te tiemblan las manos.'],['crisol','¡Es el frío!'],['crisol','Y ahora, quietos todos. Voy yo delante. Que la chispa no se acerque a ese bicho.']],
+ 16:[['narra','La caverna profunda empieza bajo las raíces de la montaña. Los goblins la llaman hogar; todos los demás, trampa.'],['tovo','La boca de la caverna. Huele a goblin y a… ¿monedas?'],['crisol','Mirad el suelo: hay destellos dorados entre las piedras. Es la luz del Crisol. Vamos bien.']],
+ 17:[['eclipse','Los murciélagos de Dracqueen vigilan este nido. Si uno escapa, ella sabrá que venimos.'],['eclipse','Cazo en la oscuridad desde siempre y nunca había visto tantos juntos. Alguien los alimenta bien.'],['crisol','¿Y tú de dónde sales?'],['eclipse','De la sombra. Como ellos.']],
+ 18:[['brasa','Esporas por todas partes. Una chispa de mis flechas y la galería entera sale volando.'],['tovo','Los de la Forja esperaremos fuera. Llévate a los demás, ¿vale?'],['crisol','Yo también me quedo. No por miedo: por solidaridad con la Forja.']],
+ 19:[['yunque','Un trol cobra peaje en el puente. Yo pago con martillazos.'],['tovo','Dice que ha subido el peaje desde que pasan por aquí unos soldados grises. Le pagan con luz.']],
  20:[['crisol','Un goblin con corona. Lo que me faltaba por ver.']],
- 21:[['reygoblin','¡Mis minas! Los túneles son estrechos, ¿eh? Si entra alguien muy poderoso… ¡crac!, todo abajo.'],['crisol','Por una vez estoy de acuerdo con el goblin. Los legendarios se quedan fuera.']],
+ 21:[['narra','Las minas son del Rey Goblin… o eso dice él. Sus cristales guardan la luz que cae de arriba, y por eso brillan.'],['reygoblin','¡Mis minas! Los túneles son estrechos, ¿eh? Si entra alguien muy poderoso… ¡crac!, todo abajo.'],['crisol','Por una vez estoy de acuerdo con el goblin. Los legendarios se quedan fuera.']],
  22:[['vespa','¡Vagonetas sin frenos y arañas en el techo! ¿A que es divertido?'],['vespa','Agárrate: aguanta un minuto mientras bajamos y no dejes que suban a bordo.']],
- 23:[['abisal','Este lago no ha visto la luz en mil años. Lo que vive aquí abajo no la echa de menos.']],
+ 23:[['abisal','Este lago no ha visto la luz en mil años. Lo que vive aquí abajo no la echa de menos.'],['abisal','Hace unas semanas pasaron por la orilla unos soldados grises. Llevaban tarros de luz dorada… hacia el castillo.']],
  24:[['tovo','La veta es tan estrecha que solo pasamos los pequeños. ¡Por fin una ventaja!'],['titan','Yo vigilo la salida. Y no, no es que no quepa.']],
- 25:[['kalima','Telarañas que brillan. La Reina Araña teje su palacio con seda y veneno.']],
- 26:[['soberana','El Castillo carmesí. Ni una estrella brilla aquí dentro: Dracqueen se las ha bebido todas.']],
- 27:[['lira','Sin luz no puedo cantar… ni disparar. Los astrales nos quedamos fuera esta vez.'],['nebula','Nos debes una historia cuando salgas.']],
+ 25:[['kalima','Telarañas que brillan. La Reina Araña teje su palacio con seda y veneno.'],['kalima','Y mira lo que brilla en la tela: destellos del Crisol. Se le caen a alguien por el camino.']],
+ 26:[['narra','El Castillo carmesí se alza sobre una aguja de roca, en el centro de la caverna. Dentro siempre hay fiesta, y siempre falta luz.'],['soberana','El Castillo carmesí. Ni una estrella brilla aquí dentro: Dracqueen se las ha bebido todas.']],
+ 27:[['lira','Sin luz no puedo cantar… ni disparar. Los astrales nos quedamos fuera esta vez.'],['nebula','Nos debes una historia cuando salgas.'],['crisol','Tranquila, Lira. Ya llevo yo la luz por todos. Bueno… la lleva quien la lleva.']],
  28:[['ceniza','Cuidado con los espejos: cada reflejo es un enemigo de verdad.'],['ceniza','Te retarán a duelos de tres en tres. Elige a tus mejores campeones.']],
- 29:[['reygoblin','¡Oigo música! Dracqueen siempre da una fiesta antes de cenar. Y la cena somos nosotros.']],
- 30:[['crisol','Ahí está. La luz del Crisol brilla en su copa.'],['tovo','Es ahora o nunca. ¡Vamos!']]};
+ 29:[['reygoblin','¡Oigo música! Dracqueen siempre da una fiesta antes de cenar. Y la cena somos nosotros.'],['tovo','Mirad la mesa del banquete: tarros de luz, docenas. Dracqueen no la roba sola: alguien se la trae.']],
+ 30:[['crisol','Ahí está. La luz del Crisol brilla en su copa.'],['tovo','Es ahora o nunca. ¡Vamos!'],['crisol','Y oye… ten cuidado con esa llama. No por nada. Es que la he visto crecer.']]};
+// antes: en la ronda del jefe; despues: la primera vez que se gana el nivel (aunque no haya jefe ni desbloqueo)
 const DLG_JEFE={
  1:{antes:[['matrona','¿Quién se acerca a mi risco? ¡Mi cría y yo te vamos a enseñar modales!']],
-    despues:[['matrona','Peleas con el corazón. Mi cría ya te ha cogido cariño… y yo también. Contad con nosotras.']]},
+    despues:[['matrona','Peleas con el corazón. Mi cría ya te ha cogido cariño… y yo también. Contad con nosotras.'],['matrona','Esa chispa que llevas… mi cría la ha notado antes que yo. Iremos donde vaya ella.'],
+     ['crisol','No ha estado mal. Para ser tu primer día.'],['tovo','Si hasta la Kangmoth bajaba del risco asustada, algo muy gordo pasa en las tierras.']]},
+ 2:{despues:[['brasa','¡Prende! Poquito, pero prende. Será tu chispa, que contagia.'],['brasa','Quiero saber quién nos está apagando las fraguas. Cuenta conmigo.']]},
+ 4:{despues:[['sombrio','Los lobos no huían de nosotros. Huían de algo que baja de las cumbres.']]},
  5:{antes:[['titan','¿Vienes a por la llama? Demuéstralo. Nadie ha pasado nunca de mi escudo.']],
-    despues:[['titan','Hacía siglos que nadie me hacía retroceder. Mi martillo es tuyo.']]},
+    despues:[['titan','Hacía siglos que nadie me hacía retroceder. Mi martillo es tuyo.'],['titan','Espera… ¿Tovo? ¿El pequeño de Bram? La última vez que te vi no levantabas ni un martillo de juguete. Cuánto has crecido, chico.'],
+     ['tovo','Mi padre me ha hablado mucho de ti.'],['titan','Pues dile que su hijo anda con quien lleva la llama. Se le caerá el yunque del orgullo.']]},
  7:{antes:[['espina','Mi pinar, mis reglas. Cada corte me hace más fuerte.']],
     despues:[['espina','Peleas como una tormenta de verano. Me gusta. Mis espinas te seguirán.']]},
  10:{antes:[['soberana','Las estrellas me hablaron de ti. Veamos si mentían.']],
     despues:[['soberana','No mentían. Mi luz te acompañará hasta el final del camino.']]},
  12:{antes:[['lobo','Grrrr… ¡GRAUUU!'],['tovo','Creo que quiere decir que esta es su guarida.']],
     despues:[['lobo','…Grr.'],['tovo','Dice que ahora la guarida es de los dos. O que tiene hambre. Una de las dos cosas.']]},
+ 14:{despues:[['ebano','En el altar pone: «Mientras arda con valor, la llama no se apaga».'],['ebano','Si se apaga… es que alguien le roba algo más que la luz.']]},
  15:{antes:[['draco','Llevo mil años en esta cumbre. No sabes lo que estás haciendo, pequeña llama.']],
-    despues:[['draco','Basta. Eres más fuerte de lo que pensaba. Te acompañaré… y te contaré lo que de verdad pasa con el Crisol.']]},
+    despues:[['draco','Basta. Eres más fuerte de lo que pensaba. Te acompañaré… y te contaré lo que de verdad pasa con el Crisol.'],
+     ['draco','Llevo mil años en esta cumbre esperando a alguien. Empezaba a pensar que no llegaría.']]},
+ 16:{despues:[['tovo','Los goblins llevaban sacos de destellos. Los recogen como si fueran monedas.']]},
+ 17:{despues:[['eclipse','Llevo meses siguiendo a estos murciélagos y siempre vuelven al mismo sitio: el Castillo carmesí.'],['eclipse','Esa chispa que llevas… la he visto brillar desde el otro lado de la caverna. Si vas a por Dracqueen, mi arco va contigo.']]},
  20:{antes:[['reygoblin','¡Alto ahí! Este es MI salón, MI oro y MI caverna. ¡Corte, a por ellos!']],
-    despues:[['reygoblin','Vale, vale… Me rindo. Pero si vamos a por Dracqueen, quiero mi parte del botín. ¡Toda!']]},
+    despues:[['reygoblin','Vale, vale… Me rindo. Pero si vamos a por Dracqueen, quiero mi parte del botín. ¡Toda!'],
+     ['reygoblin','Y un consejo gratis: por mis túneles anda un duende que no trabaja para nadie. Si os roba algo, no es cosa mía.']]},
+ 22:{despues:[['vespa','¡Otra vez! ¡Otra vez!'],['crisol','Ni hablar.']]},
  25:{antes:[['reinaarana','Qué visita tan… apetecible. Quédate un rato. Para siempre, a ser posible.']],
-    despues:[['reinaarana','Mi telaraña era perfecta y la has roto. Tendré que tejer otra… a tu lado.']]},
+    despues:[['reinaarana','Mi telaraña era perfecta y la has roto. Tendré que tejer otra… a tu lado.'],
+     ['reinaarana','Una cosa más: esos soldados grises cruzan mi tela sin quedarse pegados. No tienen carne. Solo ceniza.']]},
  30:{antes:[['dracqueen','¡Cariño, qué entrada! Lástima que la función termine aquí. ¡Murciélagos, música!']],
-    despues:[['dracqueen','Ay… Me has robado el protagonismo, y eso no me lo había hecho nadie.'],['dracqueen','Está bien: la llama vuelve a casa. Pero yo voy contigo. Un espectáculo así no se repite.']]}};
+    despues:[['dracqueen','Ay… Me has robado el protagonismo, y eso no me lo había hecho nadie.'],['dracqueen','Está bien: toma tu luz. Ya brillo bastante sin ella.'],
+     ['dracqueen','¿Los soldados grises? Ni idea de quiénes son. Traían la luz, se llevaban el oro… y ni una sola vez se quedaron a ver mi espectáculo. Groseros.'],
+     ['dracqueen','Pero yo voy contigo. Un espectáculo así no se repite.']]}};
+// tras las escenas de un nivel (la mitad o el final del mundo): se dice justo después de ellas
+const DLG_TRAS_ESCENA={
+ 15:[['draco','Esta es la luz que he podido salvar. Llévala con tu chispa: juntas arderán más fuerte.'],['crisol','Claro. Más llama para quien ya tenía llama.'],['tovo','Crisol…'],['crisol','¡Ya, ya! Me alegro. Mucho. Muchísimo.']]};
 
 // ---- la escena ----
 let DLG=null;
@@ -5084,12 +5106,15 @@ window.addEventListener('keydown',e=>{if(!DLG)return;if(e.key===' '||e.key==='En
 // ---- ganchos del modo Historia ----
 const fondoMundo=n=>{const I=MAPAS[mundoDe(n)+1];return I?I.src:null};
 // antes de jugar un nivel por primera vez
-function dialogoNivel(n,go){if(visto('n'+n)||!DLG_NIVEL[n])return go();marcarVisto('n'+n);dialogo(DLG_NIVEL[n],go,fondoMundo(n))}
+// las claves llevan la versión de los diálogos (2: el repaso de la historia), para que quien ya jugó vea los nuevos al repetir
+function dialogoNivel(n,go){if(visto('n2_'+n)||!DLG_NIVEL[n])return go();marcarVisto('n2_'+n);dialogo(DLG_NIVEL[n],go,fondoMundo(n))}
 // al llegar a la ronda del jefe (una vez por nivel)
 function dialogoJefe(){if(!S||S.mode!=='historia')return;const n=S.story.nivel,R=storyRound(),J=DLG_JEFE[n];
   if(!R||!R.jefe||!J||visto('j'+n))return;marcarVisto('j'+n);dialogo(J.antes,null,fondoMundo(n))}
-// al vencer al jefe por primera vez, antes de presentarlo como campeón nuevo
-function dialogoVictoria(n,go){const J=DLG_JEFE[n];if(!J||visto('v'+n))return go();marcarVisto('v'+n);dialogo(J.despues,go,fondoMundo(n))}
+// al ganar un nivel (la primera vez que se ve), antes de presentar al campeón nuevo si lo hay
+function dialogoVictoria(n,go){const J=DLG_JEFE[n];if(!J||!J.despues||visto('v2_'+n))return go();marcarVisto('v2_'+n);dialogo(J.despues,go,fondoMundo(n))}
+// ¿queda algo por contar al ganar este nivel? (15m-escenas.js le añade las escenas)
+function pendienteVictoria(n){const J=DLG_JEFE[n];return !!(J&&J.despues&&!visto('v2_'+n))}
 
 // ================= MUNDO 3: LA SOMBRA DEL NIGROMANTE (niveles 31-46) =================
 // Historia y diseño en docs/historia.md. Chipilín roba el Crisol para Morvane Noctem; lo persigues por el bosque muerto,
@@ -5154,43 +5179,65 @@ MUNDOS.push({n:3,titulo:'La sombra del Nigromante',nombre:'Tierras de Morvane',n
 
 // ---- diálogos ----
 Object.assign(DLG_MUNDO,{3:[
- ['crisol','¡Me han robado la llama delante de las narices! ¡A mí! ¡Al mejor archimago de…!'],
- ['tovo','Crisol, céntrate. Ha sido un duende: lo he visto colarse por esa grieta con el Crisol bajo el brazo.'],
+ ['crisol','¡Nos han robado la llama delante de las narices! ¡Delante de MIS narices!'],
+ ['tovo','Crisol, céntrate. Ha sido un duende: se ha colado por esa grieta con la llama bajo el brazo.'],
+ ['narra','Tu chispa sigue ahí, más pequeña que nunca, tirando hacia la grieta como si supiera el camino.'],
  ['draco','Huele a tumba ahí abajo. Esa grieta lleva a las tierras de Morvane Noctem, el Nigromante.'],
  ['tovo','Si la llama acaba en manos de un nigromante…'],
- ['crisol','…no quiero ni pensarlo. ¡En marcha, que se escapa!']]});
+ ['crisol','…no quiero ni pensarlo. ¡En marcha! Y tú delante: tu chispa sabe el camino.']]});
 Object.assign(DLG_NIVEL,{
- 31:[['tovo','La grieta baja y baja… y al otro lado hay un bosque sin una sola hoja.'],['crisol','Y esqueletos. Muchos esqueletos. Genial.']],
+ 31:[['narra','Al otro lado de la grieta empiezan las tierras de Morvane Noctem. Hace un siglo eran campos; ahora son un bosque sin hojas donde los muertos no descansan.'],['tovo','La grieta baja y baja… y al otro lado hay un bosque sin una sola hoja.'],['crisol','Y esqueletos. Muchos esqueletos. Genial.']],
  32:[['chipilin','¡Ji, ji! ¿Buscáis algo brillante? ¡Venid a por ello, si podéis!'],['crisol','¡Ese es! ¡El duende! Y cuidado con lo que llevas encima: roba hasta los objetos.']],
  33:[['orion','¡Eh, tú! ¡No te quedes mirando! Llevo horas aguantando aquí solo.'],['orion','Aguanta conmigo hasta que pase la oleada. Luego hablamos.']],
- 34:[['orion','Me llamo Orión. Llevo años persiguiendo a Morvane por estas tierras.'],['orion','Un consejo: los Siniestros, que se queden atrás. Su magia se mete en las sombras y las vuelve contra ti.']],
+ 34:[['orion','Un consejo: los Siniestros, que se queden atrás. Su magia se mete en las sombras y las vuelve contra ti.'],['eclipse','Tiene razón: noto cómo algo tira de mi sombra hacia el castillo. Me quedo vigilando la entrada. Si salen murciélagos, no pasarán.']],
  35:[['orion','El duende se esconde en este cementerio. Huele a trampa.'],['crisol','Huele a trampa y a calcetín de duende. ¡Vamos!']],
- 36:[['tovo','Yo… creo que me quedo aquí. Los pequeños tenemos miedo de la necrópolis.'],['tovo','Pero vuelve, ¿vale? Prométemelo.']],
- 37:[['orion','Las calles de los caídos. Antes esto era una ciudad llena de vida.']],
+ 36:[['narra','La necrópolis fue una ciudad viva. Morvane la llenó de muertos, y la fuerza de cada alma que levanta… nadie sabe adónde va.'],['tovo','Yo… creo que me quedo aquí. Los pequeños tenemos miedo de la necrópolis.'],['tovo','Pero vuelve, ¿vale? Prométemelo.'],['crisol','Yo también tengo miedo, Tovo. Pero alguien tiene que cuidar de quien lleva la chispa.']],
+ 37:[['orion','Las calles de los caídos. Antes esto era una ciudad llena de vida.'],['orion','Los Vigías llegamos tarde. Cuando entramos, Morvane ya la había vaciado.']],
  38:[['fresno','Lo vivo teme a la muerte. Los del bosque no podemos seguir: aquí se marchita todo.']],
  39:[['chipilin','En el osario los huesos no se cansan nunca. Ni se quedan quietos. ¡Aguanta un minuto y te enseño el atajo!']],
  40:[['orion','La puerta del mausoleo solo se abre con luz. Necesito a los Astrales a mi lado.']],
- 41:[['chipilin','Por aquí. Por el foso. Morvane nunca vigila su propia cloaca, ji, ji.']],
+ 41:[['narra','El castillo de Morvane cuelga de un acantilado. Hace siglos que su dueño no sale de él, y nadie sabe por qué.'],['chipilin','Por aquí. Por el foso. Morvane nunca vigila su propia cloaca, ji, ji.']],
  42:[['orion','El puente está guardado por un gigante: Varg. Dicen que Morvane lo revivió con un hechizo.']],
  43:[['varg','Mi hermano Vidar guarda el salón de arriba. Por favor… no le hagas daño. Tiene tanto miedo como yo tenía.']],
  44:[['varg','Ahí está. Déjame hablar con él cuando caiga.']],
- 45:[['crisol','Ahí está. El Nigromante. Y en su mano… ¡nuestra llama!'],['orion','Esta vez no se escapa.']],
+ 45:[['crisol','Ahí está. El Nigromante. Y en su mano… ¡nuestra llama!'],['orion','Esta vez no se escapa.'],['orion','Mirad su muñeca. La oscuridad que llevo años persiguiendo sale de ahí: de esa cadena.']],
  46:[['orion','Ya no es él: la maldición se lo está comiendo. Solo la luz puede devolverle su forma.'],['crisol','Pues que brillen esos Astrales como nunca.']]});
 Object.assign(DLG_JEFE,{
- 33:{antes:[],despues:[['orion','Buen trabajo. Hacía mucho que nadie peleaba a mi lado.'],['orion','Vais detrás de Morvane, ¿verdad? Entonces vamos juntos. Mi luz es lo único que le da miedo.']]},
+ 31:{despues:[['crisol','Tu chispa tira hacia el norte, hacia ese castillo. Pues al castillo.']]},
+ 32:{despues:[['chipilin','(A lo lejos) ¡Demasiado lentos! ¡La llama ya va camino del castillo! ¡Ji, ji!']]},
+ 33:{antes:[],despues:[['orion','Buen trabajo. Hacía mucho que nadie peleaba a mi lado.'],
+    ['orion','Me llamo Orión. Soy el último de los Vigías de la luz. Durante siglos combatimos la oscuridad allí donde nacía.'],
+    ['orion','Y nunca había visto tanta como la que rodea a Morvane: sus tierras se apagan y la oscuridad crece cada año.'],
+    ['orion','Vais detrás de él, ¿verdad? Entonces vamos juntos. Mi luz es lo único que le da miedo.'],
+    ['orion','Y esa chispa que llevas… hacía siglos que no veía una así.']]},
  35:{antes:[['chipilin','¡Ji, ji, ji! ¿De verdad creíais que me ibais a pillar? ¡Soy el duende más rápido del mundo!']],
-    despues:[['chipilin','¡Vale, vale, me rindo! Pero ya no tengo la llama: se la di a Morvane.'],['chipilin','Me prometió un saco de oro y me echó a patadas. ¿Sabéis qué? Os enseño el camino a su castillo. Que se fastidie.']]},
+    despues:[['chipilin','¡Vale, vale, me rindo! Pero ya no tengo la llama: se la di a Morvane.'],['chipilin','Me prometió un saco de oro y me echó a patadas. ¿Sabéis qué? Os enseño el camino a su castillo. Que se fastidie.'],
+     ['crisol','¿Y para qué la quería?'],['chipilin','Ni idea. Pero cuando la tuvo en la mano, se miró la muñeca y se rió como un loco. Tiene una cadena ahí, ¿sabéis? Una cadena gris.']]},
+ 39:{despues:[['chipilin','¿Lo notáis? Los huesos se levantan, pero su fuerza no se queda aquí. Se va hacia algún sitio, como por un desagüe.'],['orion','Alguien se está alimentando de todo esto. Y no es Morvane.']]},
  40:{antes:[['narra','El suelo tiembla. De entre las tumbas se levanta un gigante hecho de huesos.']],despues:[]},
  42:{antes:[['varg','Nadie cruza el puente. Si Morvane me pierde, me pierdo yo: mi vida le pertenece.']],
     despues:[['varg','¿Sigo… vivo? Has dicho la verdad: no necesito su hechizo para respirar.'],['varg','Nunca estuvimos muertos. Solo teníamos miedo. Lucharé a tu lado… y te ayudaré a convencer a mi hermano.']]},
  44:{antes:[['vidar','¿Varg? ¿Te has unido a ellos? ¡Morvane nos destruirá a los dos!'],['varg','No le debemos nada, hermano. Mira: sigo aquí.']],
     despues:[['vidar','Tenías razón, Varg. No dependemos de él.'],['vidar','Juntos otra vez. Que tiemble el Nigromante.']]},
  45:{antes:[['morvane','¿Venís a por la llama? Llegáis tarde. Con su poder romperé por fin lo que me ata.'],['morvane','¡Levantaos, mis siervos!']],
-    despues:[['morvane','No… no puede ser… La maldición… se despierta…'],['narra','El Crisol cae al suelo. Una sombra enorme envuelve a Morvane.']]},
+    despues:[['morvane','No… no puede ser… La cadena… se despierta…'],['narra','La llama cae al suelo. La cadena de ceniza se aprieta y una sombra enorme envuelve a Morvane.']]},
  46:{antes:[['morvane','¡Tengo… siglos… dentro…! ¡Huid!'],['orion','¡Ahora! ¡Toda la luz contra la maldición!']],
-    despues:[['morvane','La sombra… se ha ido. Hacía siglos que no sentía mis propias manos.'],['morvane','Me maldijeron cuando era joven. Quería la llama para librarme… y casi lo destruyo todo. Lo siento.'],
-     ['morvane','Si me dejas, lucharé a tu lado para enmendarlo.'],['tovo','¡Eh! ¡Malas noticias! ¡La ciudad del Crisol está siendo atacada!'],
-     ['draco','La grieta se ha derrumbado. Por aquí no se vuelve.'],['orion','Entonces, por mar. Conozco un puerto al otro lado del castillo. ¡Vamos!']]}});
+    despues:[['narra','La llama vuelve a tus manos. Tu chispa la reconoce, y las dos arden juntas otra vez.'],
+     ['morvane','La sombra se ha ido. Hacía siglos que no sentía mis propias manos.'],
+     ['morvane','Yo era sanador. Hace trescientos años, una peste se llevaba a mi pueblo y no podía salvar a nadie.'],
+     ['morvane','Entonces vinieron unos caballeros grises. Me ofrecieron poder sobre la muerte… y acepté. Me pusieron una cadena de ceniza en la muñeca.'],
+     ['morvane','Desde ese día no envejecí, no pude salir de este castillo y no pude dejar de levantar muertos. Si lo intentaba, la cadena apretaba hasta dejarme sin sentido.'],
+     ['morvane','Y ningún muerto era para mí: cada alma que levantaba les daba fuerza a ellos. Yo solo era su farol.'],
+     ['morvane','Quería la llama para quemar la cadena… y casi lo destruyo todo. Lo siento.'],
+     ['orion','Así que esa era la oscuridad que perseguía. No eras tú: era lo que tiraba de ti.'],
+     ['morvane','Si me dejas, lucharé a tu lado para enmendarlo.']]}});
+Object.assign(DLG_TRAS_ESCENA,{
+ 40:[['crisol','Cuatro guardianes que quisieron la llama para sí… y se quedaron vacíos.'],
+  ['crisol','Yo también la quería para mí. Me preparé toda la vida en el santuario. Tenía que ser yo el elegido.'],
+  ['chipilin','¡Uy! ¿Esto es una confesión? ¡Me encantan las confesiones!'],
+  ['crisol','Déjame terminar. Cuando la chispa te eligió, pensé que la llama se había equivocado.'],
+  ['crisol','Pero viéndote todo este camino… a lo mejor no se equivocó.'],
+  ['crisol','Cuenta conmigo. Esta vez de verdad.']]});
 // el 46 no sale en el mapa hasta vencer a Morvane en el 45
 function nivelOcultoVisible(L){return !L||!L.oculto||HIST.hechos.includes(L.n-1)}
 // tras vencer por primera vez en el 45: la transformación de Morvane y el nivel oculto aparece en el mapa
@@ -5942,7 +5989,7 @@ const ESCENAS={
  m2_final:[
   {img:'m2_final_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Dracqueen devuelve la luz. Y, entre suspiros, confiesa que ella no la robaba: se la vendían unos soldados grises a cambio de oro y de juventud.'},
   {img:'m2_final_2',cam:cam(1.3,.2,.6,1.3,.8,.5),txt:'Cuando vas a buscarlos, solo encuentras un rastro de ceniza que se pierde en la oscuridad.'},
-  {img:'m2_final_3',cam:cam(1,.5,.5,1.4,.6,.45),txt:'Y entonces, mientras todos celebran, un duende se cuela entre las piernas de los campeones… y se lleva el Crisol.'}],
+  {img:'m2_final_3',cam:cam(1,.5,.5,1.4,.6,.45),txt:'Y entonces, mientras todos celebran, un duende se cuela entre las piernas de los campeones… y se lleva la llama.'}],
  m3_intro:[
   {img:'m3_intro_1',cam:cam(1,.5,.5,1.35,.5,.45),txt:'El rastro del duende baja por una grieta que huele a tumba.'},
   {img:'m3_intro_2',cam:cam(1.3,.2,.6,1.3,.8,.4),txt:'Al otro lado empiezan las tierras de Morvane Noctem, el Nigromante, donde los muertos no descansan.'},
@@ -6017,8 +6064,13 @@ function escMusicaFin(M){const ac=SND.ac;if(!ac)return;
 // ---- ganchos en el modo Historia ----
 // mitad y final: tras el diálogo de victoria del jefe, antes de presentarlo como campeón nuevo
 const _dialogoVictoria=dialogoVictoria;
-dialogoVictoria=function(n,go){const m=mundoDe(n)+1,k=ESC_MITAD[m]===n?`m${m}_mitad`:ESC_FIN[m]===n?`m${m}_final`:null;
-  _dialogoVictoria(n,k?()=>escena(k,go):go)};
+const escenaDe=n=>{const m=mundoDe(n)+1;return ESC_MITAD[m]===n?`m${m}_mitad`:ESC_FIN[m]===n?`m${m}_final`:null};
+// tras las escenas, lo que se dice justo después (DLG_TRAS_ESCENA), una sola vez
+const trasEscena=(n,go)=>{if(!DLG_TRAS_ESCENA[n]||visto('t2_'+n))return go();marcarVisto('t2_'+n);dialogo(DLG_TRAS_ESCENA[n],go,fondoMundo(n))};
+dialogoVictoria=function(n,go){const k=escenaDe(n);
+  _dialogoVictoria(n,k?()=>escena(k,()=>trasEscena(n,go)):go)};
+const _pendienteVictoria=pendienteVictoria;
+pendienteVictoria=function(n){const k=escenaDe(n);return _pendienteVictoria(n)||!!(k&&!visto('e'+k))||!!(DLG_TRAS_ESCENA[n]&&!visto('t2_'+n))};
 // el título del mundo en el mapa repite las escenas ya desbloqueadas y luego su presentación
 function escenasMundo(m,fin){const H=HIST.hechos||[],ks=[`m${m}_intro`];if(H.includes(ESC_MITAD[m]))ks.push(`m${m}_mitad`);if(H.includes(ESC_FIN[m]))ks.push(`m${m}_final`);escenas(ks,fin)}
 
