@@ -967,6 +967,15 @@ body.en-combate .goldPill{display:none}
 .escPuntos{display:flex;gap:6px}.escPuntos i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}.escPuntos i.on{background:#ffd98a;box-shadow:0 0 6px rgba(255,200,100,.8)}
 .escSaltar{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;background:rgba(10,14,18,.55);border:1px solid rgba(255,217,138,.4);color:#f4ead2;border-radius:20px;padding:6px 14px;font-size:14px}
 
+/* Torre con imágenes: carta del menú y torre por dentro en su pantalla */
+.mpCarta.torreCarta.conImg{background-size:cover;background-position:center 35%;position:relative;overflow:hidden}.torreCarta.conImg .mpIcoAlbum{visibility:hidden}
+.torreCarta.conImg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,14,0) 30%,rgba(8,10,14,.85) 92%);pointer-events:none}.torreCarta.conImg>*{position:relative;z-index:1}
+@media (max-width:760px){.mpCarta.torreCarta.conImg{background-position:center 30%}.torreCarta.conImg::before{background:linear-gradient(90deg,rgba(8,10,14,.2),rgba(8,10,14,.72))}}
+.tDib.conImg{background-size:cover;background-position:center;border-radius:14px;border:1px solid #6a5226;min-height:52vh;justify-content:center;box-shadow:inset 0 0 40px rgba(0,0,0,.6)}
+.tDib.conImg .tLlama,.tDib.conImg .tBase{display:none}
+.tDib.conImg .tCol{background:rgba(14,10,6,.62);border-color:rgba(160,120,60,.7);backdrop-filter:blur(1px)}
+@media (max-width:760px){.tDib.conImg{min-height:30vh}}
+
 </style>
 
 <div id="app">
@@ -2242,7 +2251,7 @@ const SPRITE_SRC={"brasa":{"ax":0.499,"src":"recursos/sprites/brasa/idle.webp?v=
 // Iconos de objetos: los incrusta tools/build.py desde assets/objetos/<id>.webp. Sin icono, se usa el cuadrado de color con letra.
 const ITEM_IMG={"ancestral":"recursos/objetos/ancestral.webp?v=e41e2bfa","arco":"recursos/objetos/arco.webp?v=ce26f340","bastionob":"recursos/objetos/bastionob.webp?v=b006918a","batuta":"recursos/objetos/batuta.webp?v=d8fc6452","brisa":"recursos/objetos/brisa.webp?v=d124c003","caliz":"recursos/objetos/caliz.webp?v=5a39aac2","certero":"recursos/objetos/certero.webp?v=80cdfb87","corazavi":"recursos/objetos/corazavi.webp?v=322fbe43","cota":"recursos/objetos/cota.webp?v=1f5b320e","cristal":"recursos/objetos/cristal.webp?v=76d44309","duelista":"recursos/objetos/duelista.webp?v=d68d1f1d","egida":"recursos/objetos/egida.webp?v=5aa6eb6e","espejo":"recursos/objetos/espejo.webp?v=c4f37076","filoarc":"recursos/objetos/filoarc.webp?v=025959fb","fuente":"recursos/objetos/fuente.webp?v=cbf9633d","gema":"recursos/objetos/gema.webp?v=b7f4a596","gigante":"recursos/objetos/gigante.webp?v=ab118242","guantel":"recursos/objetos/guantel.webp?v=0b49b6bd","hachague":"recursos/objetos/hachague.webp?v=efda8211","hoja":"recursos/objetos/hoja.webp?v=7c2ca758","hojamana":"recursos/objetos/hojamana.webp?v=854a9bd6","lagrima":"recursos/objetos/lagrima.webp?v=cf1e22b9","mandoble":"recursos/objetos/mandoble.webp?v=6c1c2f2c","manto":"recursos/objetos/manto.webp?v=ee584098","mareamnt":"recursos/objetos/mareamnt.webp?v=901f54de","martir":"recursos/objetos/martir.webp?v=25a04303","muralla":"recursos/objetos/muralla.webp?v=06466b25","ocaso":"recursos/objetos/ocaso.webp?v=49a3c65b","ojo":"recursos/objetos/ojo.webp?v=369d9c70","penitente":"recursos/objetos/penitente.webp?v=a1fbfe57","precision":"recursos/objetos/precision.webp?v=ce5df303","pua":"recursos/objetos/pua.webp?v=ae326f6d","rompecor":"recursos/objetos/rompecor.webp?v=b8db97b6","runica":"recursos/objetos/runica.webp?v=0d032ffb","sabio":"recursos/objetos/sabio.webp?v=4f68d080","savia":"recursos/objetos/savia.webp?v=d6c564a5","talisman":"recursos/objetos/talisman.webp?v=e64f4726","tambor":"recursos/objetos/tambor.webp?v=e31d1a2e","tormenta":"recursos/objetos/tormenta.webp?v=1e176cec","troll":"recursos/objetos/troll.webp?v=33ef3e12","vampira":"recursos/objetos/vampira.webp?v=7e9d5585","vara":"recursos/objetos/vara.webp?v=d882211f","velo":"recursos/objetos/velo.webp?v=b9e86a0c","vendaval":"recursos/objetos/vendaval.webp?v=4583a1af"};
 // imágenes del menú principal (assets/menu/*.webp)
-const MENU_IMG={"arena":"recursos/menu/arena.webp?v=46da9660","fondo":"recursos/menu/fondo.webp?v=19630fe2","historia":"recursos/menu/historia.webp?v=634c3a4f","turnos13":"recursos/menu/turnos13.webp?v=bb2f9c26","turnos28":"recursos/menu/turnos28.webp?v=f390dd24"};
+const MENU_IMG={"arena":"recursos/menu/arena.webp?v=46da9660","fondo":"recursos/menu/fondo.webp?v=19630fe2","historia":"recursos/menu/historia.webp?v=634c3a4f","torre":"recursos/menu/torre.webp?v=fe8708d9","torre_1":"recursos/menu/torre_1.webp?v=68798bf1","torre_2":"recursos/menu/torre_2.webp?v=9b615ee5","torre_3":"recursos/menu/torre_3.webp?v=2f268601","torre_interior":"recursos/menu/torre_interior.webp?v=a0248e82","turnos13":"recursos/menu/turnos13.webp?v=bb2f9c26","turnos28":"recursos/menu/turnos28.webp?v=f390dd24"};
 const ITEM_PIC={};for(const k in ITEM_IMG){const im=new Image();im.src=ITEM_IMG[k];ITEM_PIC[k]=im}
 function itemBox(it,cls,style){const I=ITEMS[it],src=ITEM_IMG[it];
   return `<span class="item${cls?' '+cls:''}${I.full?' full':''}${src?' pic':''}" style="${src?'':'background:'+I.col+';'}${style||''}">${src?`<img src="${src}" alt="${I.n}" draggable="false">`:I.g}</span>`}
@@ -2998,21 +3007,29 @@ function mkCanvas(w,h){const c=document.createElement('canvas');c.width=Math.max
 function hexPathG(g,cx,cy,s){g.beginPath();for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30);const x=cx+s*Math.cos(a),y=cy+s*Math.sin(a);i?g.lineTo(x,y):g.moveTo(x,y)}g.closePath()}
 function rrG(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 const BG={key:null,scene:null,board:null,stars:[]};
+// escenario con imagen de fondo (th.img: assets/menu/<img>.webp, en MENU_IMG): el suelo redondo de la imagen (centro fx, fy
+// y radio fr, en fracciones de la imagen) queda bajo el tablero y las casillas se vuelven semitransparentes
+const TEMA_IMG={};
+function temaImg(k){if(!MENU_IMG[k])return null;let im=TEMA_IMG[k];if(!im){im=TEMA_IMG[k]=new Image();im.onload=()=>{BG.key=null};im.src=MENU_IMG[k]}return im.complete&&im.naturalWidth?im:null}
 function ensureCache(){
-  const th=curTheme(),k=th.n+'|'+M.size+'|'+M.CW+'|'+M.H+'|'+DPR;if(BG.key===k)return;BG.key=k;
+  const th=curTheme(),fi=th.img&&temaImg(th.img),k=th.n+'|'+M.size+'|'+M.CW+'|'+M.H+'|'+DPR+'|'+!!fi;if(BG.key===k)return;BG.key=k;
   const s=M.size,pad=M.pad;
   // --- scene (full canvas) ---
   const [sc,g]=mkCanvas(M.CW,M.H);
   const gr=g.createLinearGradient(0,0,0,M.H);gr.addColorStop(0,th.sky[0]);gr.addColorStop(1,th.sky[1]);g.fillStyle=gr;g.fillRect(0,0,M.CW,M.H);
-  drawProps(g,th,s);
+  if(fi){const iw=fi.naturalWidth,ih=fi.naturalHeight,cx=M.ox+M.W/2,cy=M.oy+(world(0,0).y+world(0,7).y)/2*s+pad,rb=Math.hypot(M.W/2,(world(0,7).y-world(0,0).y)/2*s+s)*.92;
+    const k2=Math.max(M.CW/iw,M.H/ih,rb/((th.fr||.45)*ih));let x=cx-(th.fx||.5)*iw*k2,y=cy-(th.fy||.5)*ih*k2;
+    x=Math.min(0,Math.max(M.CW-iw*k2,x));y=Math.min(0,Math.max(M.H-ih*k2,y));g.drawImage(fi,x,y,iw*k2,ih*k2);g.fillStyle='rgba(0,0,0,.22)';g.fillRect(0,0,M.CW,M.H)}
+  else drawProps(g,th,s);
   const vg=g.createRadialGradient(M.CW/2,M.H/2,M.H*.3,M.CW/2,M.H/2,Math.max(M.CW,M.H)*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');g.fillStyle=vg;g.fillRect(0,0,M.CW,M.H);
   BG.scene=sc;
   // --- board (F frame) ---
   const [bc,b]=mkCanvas(M.W,M.H);
-  for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){const w=world(C,R);hexPathG(b,w.x*s,w.y*s+pad+s*.16,s*.95);b.fillStyle='rgba(0,0,0,.5)';b.fill()}
+  const al=fi?.5:1; // con imagen de fondo, casillas semitransparentes
+  for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){const w=world(C,R);hexPathG(b,w.x*s,w.y*s+pad+s*.16,s*.95);b.fillStyle=fi?'rgba(0,0,0,.25)':'rgba(0,0,0,.5)';b.fill()}
   for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){
     const w=world(C,R),x=w.x*s,y=w.y*s+pad,mine=R>=4,rr=srand(R*97+C*13+themeIdx()*7+3);
-    const base=mine?((R+C)%2?th.pa:th.pb):((R+C)%2?th.ea:th.eb);
+    const base=mine?((R+C)%2?th.pa:th.pb):((R+C)%2?th.ea:th.eb);b.globalAlpha=al;
     hexPathG(b,x,y+s*.08,s*.95);b.fillStyle=shade(base,.45);b.fill();
     hexPathG(b,x,y,s*.95);b.fillStyle=base;b.fill();
     b.save();b.clip();
@@ -3020,7 +3037,7 @@ function ensureCache(){
     if(rr()<.4){b.strokeStyle='rgba(0,0,0,.22)';b.lineWidth=1;b.beginPath();let px=x+(rr()-.5)*s,py=y+(rr()-.5)*s;b.moveTo(px,py);for(let j=0;j<3;j++){px+=(rr()-.5)*s*.6;py+=(rr()-.5)*s*.6;b.lineTo(px,py)}b.stroke()}
     const lg=b.createLinearGradient(0,y-s,0,y+s);lg.addColorStop(0,'rgba(255,255,255,.09)');lg.addColorStop(.5,'rgba(255,255,255,0)');lg.addColorStop(1,'rgba(0,0,0,.2)');b.fillStyle=lg;b.fillRect(x-s,y-s,2*s,2*s);
     tileDeco(b,th,x,y,s,rr,C);
-    b.restore();
+    b.restore();b.globalAlpha=1;
     hexPathG(b,x,y,s*.95);b.strokeStyle=mine?th.line:th.lineE;b.lineWidth=1.3;b.stroke();
     hexPathG(b,x,y-.5,s*.86);b.strokeStyle='rgba(255,255,255,.05)';b.lineWidth=1;b.stroke();
   }
@@ -3754,7 +3771,7 @@ window.addEventListener('resize',()=>{if(!$('#storyOv').hidden)renderMap(false)}
 $('#bMenu').onclick=()=>{S=null;hideInfo();openStory()};
 function showBest(){let b=null;try{b=localStorage.getItem('crisol_best')}catch(e){}$('#bestTxt').textContent=b?`8 jugadores · tu mejor puesto: ${ord(b)}`:'8 jugadores · el último en pie gana';
   // menú principal: imágenes de las cartas, progreso de la Historia y del álbum
-  $('#mpImgHist').style.backgroundImage=`url(${MENU_IMG.historia})`;$('#mpImgArena').style.backgroundImage=`url(${MENU_IMG.arena})`;$('#startOv').querySelector('.mpFondo').style.backgroundImage=`url(${MENU_IMG.fondo||MENU_IMG.arena})`;
+  $('#mpImgHist').style.backgroundImage=`url(${MENU_IMG.historia})`;if(MENU_IMG.torre){$('#bTorre').classList.add('conImg');$('#bTorre').style.backgroundImage=`url(${MENU_IMG.torre})`}$('#mpImgArena').style.backgroundImage=`url(${MENU_IMG.arena})`;$('#startOv').querySelector('.mpFondo').style.backgroundImage=`url(${MENU_IMG.fondo||MENU_IMG.arena})`;
   const h=histLoad(),tot=NIVELES.length;$('#mpHistSub').textContent=h.hechos.length?`${h.hechos.length}/${tot} niveles superados`:'Mundos con jefes · tu mazo de campeones';
   $('#mpAlbumSub').textContent=`${ALBUM.filter(id=>h.col.includes(id)).length}/${ALBUM.length} campeones`}
 
@@ -5731,7 +5748,13 @@ $('#bTutorial').onclick=()=>{HIST.tutorial=false;HIST.tutTurnos=false;histSave(H
 const TORRE={L:null};
 const TORRE_K=1.0,TORRE_CREC=1.13,TORRE_ECO=.36;              // fuerza: base, crecimiento por fase desde la 5.ª y jefes
 const TORRE_ECOS=[15,20,25,30];                               // niveles de cuyos jefes salen los ecos (Draco, Rey Goblin, Reina Araña, Dracqueen)
-const TORRE_TEMAS=[0,8,9,1,2,3,4,5,6,7];                      // el escenario cambia cada 2 fases (sube por la torre)
+// escenarios de la torre, con su imagen de fondo bajo el tablero (09-escenarios.js): base (pisos 1-10), cristales (11-20) y cima (21+)
+const TORRE_ESC=[
+ {n:'Torre: base',img:'torre_1',fx:.5,fy:.5,fr:.47,sky:['#120d08','#1c140c'],pa:'#3a3128',pb:'#40362c',ea:'#3a2a22',eb:'#40302a',line:'#a08458',lineE:'#a06a48',side:'#0c0805',mid:'rgba(255,190,110,.55)',amb:'ember',ac:['#ffb13a','#ffe27a'],prop:'',deco:'losas'},
+ {n:'Torre: cristales',img:'torre_2',fx:.55,fy:.5,fr:.42,sky:['#0a0a1a','#141434'],pa:'#2a2a4a',pb:'#30305a',ea:'#33264a',eb:'#3a2a52',line:'#7a8ae0',lineE:'#a86ad0',side:'#06061a',mid:'rgba(160,200,255,.55)',amb:'wisp',ac:['#9fd0ff','#d0a0ff'],prop:'',deco:'cristal'},
+ {n:'Torre: cima',img:'torre_3',fx:.42,fy:.58,fr:.3,sky:['#1a1020','#2a1830'],pa:'#4a3e38',pb:'#52453e',ea:'#4a3430',eb:'#523a34',line:'#e0b070',lineE:'#e08050',side:'#100a10',mid:'rgba(255,200,120,.55)',amb:'ember',ac:['#ffb13a','#fff0c0'],prop:'',deco:'losas'}];
+const TORRE_TEMAS=TORRE_ESC.map((T,i)=>{THEMES.push(T);MUSIC.push(MUSIC[[1,11,4][i]]);return THEMES.length-1});
+const torreTema=s=>TORRE_TEMAS[s<=2?0:s<=4?1:2];
 const MALDICIONES=[
  {id:'regenera',n:'Raíces malditas',d:'Los rivales regeneran un 2 % de su vida por segundo.'},
  {id:'robustos',n:'Piel de piedra',d:'Los rivales tienen un 25 % más de vida.'},
@@ -5757,7 +5780,7 @@ function torreFase(s){const rr=srand(torreSemilla()+s*97),n=s===1?6:5,fila=[],F=
       const R=L.fases[F-1][idx];
       fila.push(Object.assign({},R,{k:R.k*torreK(s)}))}}
   return fila}
-function torreAsegura(s){const L=TORRE.L;while(L.fases.length<s)L.fases.push(torreFase(L.fases.length+1));S.story.tema=TORRE_TEMAS[Math.floor((s-1)/2)%TORRE_TEMAS.length]}
+function torreAsegura(s){const L=TORRE.L;while(L.fases.length<s)L.fases.push(torreFase(L.fases.length+1));S.story.tema=torreTema(s)}
 // ---- empezar y terminar ----
 function torreEmpezar(){audioInit();S=null;TORRE.L={n:0,nombre:'Torre del Crisol',tema:0,premio:null,regla:null,torre:true,nr:5,fases:[]};
   newGame('normal',{nivel:0,tema:0,mazo:HIST.mazo.slice(),torre:true});torreAsegura(1);torreDatos();
@@ -5786,7 +5809,7 @@ beginRound=function(){_beginRound();if(!enTorre()||S.phase!=='planning')return;c
 function abrirTorre(){HIST=histLoad();if(!torreDesbloqueada()){toast('La Torre del Crisol se abre al completar el nivel 15 del modo Historia');return}
   const T=torreDatos(),M=torreMaldicion(),alto=Math.max(30,Math.ceil((T.mejor+10)/10)*10);
   const pisos=Array.from({length:alto/5+1},(_,i)=>alto-i*5).map(p=>`<div class="tPiso${p%10===0&&p>0?' eco':''}${p<=T.mejor?' subido':''}"><span>${p}</span>${p%10===0&&p>0?'<i>eco</i>':''}${p===Math.floor(T.mejor/5)*5&&T.mejor>0?'<b class="tYo">récord '+T.mejor+'</b>':''}</div>`).join('');
-  $('#torreBody').innerHTML=`<div class="tDib"><div class="tLlama"></div><div class="tCol">${pisos}</div><div class="tBase"></div></div>
+  $('#torreBody').innerHTML=`<div class="tDib${MENU_IMG.torre_interior?' conImg':''}" style="${MENU_IMG.torre_interior?`background-image:url(${MENU_IMG.torre_interior})`:''}"><div class="tLlama"></div><div class="tCol">${pisos}</div><div class="tBase"></div></div>
     <div class="tInfo"><h2>Torre del Crisol</h2><p class="sub">Sube piso a piso con un solo equipo. Cada piso es un combate; si caes, la subida termina.</p>
       <div class="tDatos"><div><small>Tu récord</small><b>Piso ${T.mejor}</b></div><div><small>Esta semana</small><b>Piso ${T.mejorSem}</b></div></div>
       <div class="tMald"><small>Maldición de la semana</small><b>${M.n}</b><span>${M.d}</span></div>
