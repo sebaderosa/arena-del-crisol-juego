@@ -2992,7 +2992,7 @@ function drawAuras(f,x,y,s,now){
 
 // ================= STAGE THEMES, BOARD & SCENERY =================
 const THEMES=[
- {n:'Claro del bosque',img:'tablero_claro',fx:.5,fy:.52,fr:.4,sky:['#0c1a10','#132a19'],pa:'#213b29',pb:'#25432e',ea:'#2c2b22',eb:'#312f26',line:'#3d6448',lineE:'#4e4834',side:'#0d1810',mid:'rgba(200,240,140,.5)',amb:'firefly',ac:['#d8ff8a','#fff3a0'],prop:'forest',deco:'hierba'},
+ {n:'Claro del bosque',img:'tablero_claro',fx:.5,fy:.53,frx:.3,fry:.28,sky:['#0c1a10','#132a19'],pa:'#213b29',pb:'#25432e',ea:'#2c2b22',eb:'#312f26',line:'#3d6448',lineE:'#4e4834',side:'#0d1810',mid:'rgba(200,240,140,.5)',amb:'firefly',ac:['#d8ff8a','#fff3a0'],prop:'forest',deco:'hierba'},
  {n:'La Fragua',sky:['#1a0e0b','#2a1510'],pa:'#2e2522',pb:'#342a26',ea:'#3b201b',eb:'#42241e',line:'#5c4236',lineE:'#743627',side:'#140a08',mid:'rgba(255,140,60,.55)',amb:'ember',ac:['#ffb13a','#ff6a2a','#ffe27a'],prop:'forge',deco:'brasas'},
  {n:'Arrecife hundido',sky:['#06182a','#0c2a3c'],pa:'#123547',pb:'#163b4e',ea:'#1c2a40',eb:'#213047',line:'#2a5d70',lineE:'#384a70',side:'#051320',mid:'rgba(110,220,255,.5)',amb:'bubble',ac:['#bdefff','#7fd6ff'],prop:'reef',deco:'arena'},
  {n:'Umbral sombrío',sky:['#0f0b18','#1a1328'],pa:'#231d32',pb:'#282039',ea:'#2b1827',eb:'#311c2d',line:'#43375e',lineE:'#58324b',side:'#0b0812',mid:'rgba(180,140,255,.5)',amb:'wisp',ac:['#b28cff','#7a5ad0'],prop:'umbra',deco:'runas'},
@@ -3026,15 +3026,18 @@ function ensureCache(){
   // --- scene (full canvas) ---
   const [sc,g]=mkCanvas(M.CW,M.H);
   const gr=g.createLinearGradient(0,0,0,M.H);gr.addColorStop(0,th.sky[0]);gr.addColorStop(1,th.sky[1]);g.fillStyle=gr;g.fillRect(0,0,M.CW,M.H);
-  if(fi){const iw=fi.naturalWidth,ih=fi.naturalHeight,cx=M.ox+M.W/2,cy=M.oy+(world(0,0).y+world(0,7).y)/2*s+pad,rb=Math.hypot(M.W/2,(world(0,7).y-world(0,0).y)/2*s+s)*.92;
-    const k2=Math.max(M.CW/iw,M.H/ih,rb/((th.fr||.45)*ih));let x=cx-(th.fx||.5)*iw*k2,y=cy-(th.fy||.5)*ih*k2;
+  if(fi){const iw=fi.naturalWidth,ih=fi.naturalHeight,cx=M.ox+M.W/2,cy=M.oy+(world(0,0).y+world(0,7).y)/2*s+pad,bw=M.W/2,bh=(world(0,7).y-world(0,0).y)/2*s+s;
+    // suelo de la imagen: óvalo de semiejes frx (fracción del ancho) y fry (del alto); con solo fr, un círculo de radio fr·alto
+    const fx=th.fx||.5,fy=th.fy||.5,rx=(th.frx||(th.fr||.45)*ih/iw)*iw,ry=(th.fry||th.fr||.45)*ih;
+    // escala: llena la pantalla, el óvalo cubre el tablero y el centro del suelo puede quedar bajo el centro del tablero sin enseñar bordes
+    const k2=Math.max(M.CW/iw,M.H/ih,Math.hypot(bw/rx,bh/ry)*.95,cx/(fx*iw),(M.CW-cx)/((1-fx)*iw),cy/(fy*ih),(M.H-cy)/((1-fy)*ih));let x=cx-fx*iw*k2,y=cy-fy*ih*k2;
     x=Math.min(0,Math.max(M.CW-iw*k2,x));y=Math.min(0,Math.max(M.H-ih*k2,y));g.drawImage(fi,x,y,iw*k2,ih*k2);g.fillStyle='rgba(0,0,0,.22)';g.fillRect(0,0,M.CW,M.H)}
   else drawProps(g,th,s);
   const vg=g.createRadialGradient(M.CW/2,M.H/2,M.H*.3,M.CW/2,M.H/2,Math.max(M.CW,M.H)*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');g.fillStyle=vg;g.fillRect(0,0,M.CW,M.H);
   BG.scene=sc;
   // --- board (F frame) ---
   const [bc,b]=mkCanvas(M.W,M.H);
-  const al=fi?.3:1; // con imagen de fondo, casillas semitransparentes y sin su textura dibujada
+  const al=fi?.1:1; // con imagen de fondo, casillas casi transparentes y sin su textura dibujada
   for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){const w=world(C,R);hexPathG(b,w.x*s,w.y*s+pad+s*.16,s*.95);b.fillStyle=fi?'rgba(0,0,0,.25)':'rgba(0,0,0,.5)';b.fill()}
   for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){
     const w=world(C,R),x=w.x*s,y=w.y*s+pad,mine=R>=4,rr=srand(R*97+C*13+themeIdx()*7+3);
@@ -3047,8 +3050,9 @@ function ensureCache(){
     const lg=b.createLinearGradient(0,y-s,0,y+s);lg.addColorStop(0,'rgba(255,255,255,.09)');lg.addColorStop(.5,'rgba(255,255,255,0)');lg.addColorStop(1,'rgba(0,0,0,.2)');b.fillStyle=lg;b.fillRect(x-s,y-s,2*s,2*s);
     if(!fi)tileDeco(b,th,x,y,s,rr,C);
     b.restore();b.globalAlpha=1;
+    if(fi)b.globalAlpha=.3; // sobre una ilustración, el contorno apenas se insinúa
     hexPathG(b,x,y,s*.95);b.strokeStyle=mine?th.line:th.lineE;b.lineWidth=1.3;b.stroke();
-    hexPathG(b,x,y-.5,s*.86);b.strokeStyle='rgba(255,255,255,.05)';b.lineWidth=1;b.stroke();
+    hexPathG(b,x,y-.5,s*.86);b.strokeStyle='rgba(255,255,255,.05)';b.lineWidth=1;b.stroke();b.globalAlpha=1;
   }
   const my=(world(0,3).y+world(0,4).y)/2*s+pad;b.strokeStyle=th.mid;b.lineWidth=1.5;b.setLineDash([6,6]);b.beginPath();b.moveTo(4,my);b.lineTo(M.W-4,my);b.stroke();b.setLineDash([]);
   for(let i=0;i<9;i++){const x=i*M.slot+3,y=M.benchY,w=M.slot-6;rrG(b,x,y+2,w,w-2,7);b.fillStyle='rgba(0,0,0,.45)';b.fill();rrG(b,x,y,w,w-2,7);const bg=b.createLinearGradient(0,y,0,y+w);bg.addColorStop(0,shade(th.pa,.15));bg.addColorStop(1,shade(th.pa,.55));b.fillStyle=bg;b.fill();b.strokeStyle=th.line;b.lineWidth=1.2;b.stroke()}
