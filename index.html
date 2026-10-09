@@ -5748,13 +5748,13 @@ $('#bTutorial').onclick=()=>{HIST.tutorial=false;HIST.tutTurnos=false;histSave(H
 const TORRE={L:null};
 const TORRE_K=1.0,TORRE_CREC=1.13,TORRE_ECO=.36;              // fuerza: base, crecimiento por fase desde la 5.ª y jefes
 const TORRE_ECOS=[15,20,25,30];                               // niveles de cuyos jefes salen los ecos (Draco, Rey Goblin, Reina Araña, Dracqueen)
-// escenarios de la torre, con su imagen de fondo bajo el tablero (09-escenarios.js): base (pisos 1-10), cristales (11-20) y cima (21+)
+// escenarios de la torre, con su imagen de fondo bajo el tablero (09-escenarios.js): base (pisos 1-20), cristales (21-50) y cima (51+)
 const TORRE_ESC=[
  {n:'Torre: base',img:'torre_1',fx:.5,fy:.5,fr:.47,sky:['#120d08','#1c140c'],pa:'#3a3128',pb:'#40362c',ea:'#3a2a22',eb:'#40302a',line:'#a08458',lineE:'#a06a48',side:'#0c0805',mid:'rgba(255,190,110,.55)',amb:'ember',ac:['#ffb13a','#ffe27a'],prop:'',deco:'losas'},
  {n:'Torre: cristales',img:'torre_2',fx:.55,fy:.5,fr:.42,sky:['#0a0a1a','#141434'],pa:'#2a2a4a',pb:'#30305a',ea:'#33264a',eb:'#3a2a52',line:'#7a8ae0',lineE:'#a86ad0',side:'#06061a',mid:'rgba(160,200,255,.55)',amb:'wisp',ac:['#9fd0ff','#d0a0ff'],prop:'',deco:'cristal'},
  {n:'Torre: cima',img:'torre_3',fx:.42,fy:.58,fr:.3,sky:['#1a1020','#2a1830'],pa:'#4a3e38',pb:'#52453e',ea:'#4a3430',eb:'#523a34',line:'#e0b070',lineE:'#e08050',side:'#100a10',mid:'rgba(255,200,120,.55)',amb:'ember',ac:['#ffb13a','#fff0c0'],prop:'',deco:'losas'}];
 const TORRE_TEMAS=TORRE_ESC.map((T,i)=>{THEMES.push(T);MUSIC.push(MUSIC[[1,11,4][i]]);return THEMES.length-1});
-const torreTema=s=>TORRE_TEMAS[s<=2?0:s<=4?1:2];
+const torreTema=s=>TORRE_TEMAS[s<=4?0:s<=10?1:2]; // fase s: pisos 5s-4 a 5s
 const MALDICIONES=[
  {id:'regenera',n:'Raíces malditas',d:'Los rivales regeneran un 2 % de su vida por segundo.'},
  {id:'robustos',n:'Piel de piedra',d:'Los rivales tienen un 25 % más de vida.'},
