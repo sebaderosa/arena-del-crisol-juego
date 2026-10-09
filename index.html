@@ -349,7 +349,7 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 #toast{bottom:calc(var(--shopH,120px) + var(--itH,0px) + 10px)}
 #banner{top:45%}
 @media (min-width:901px){
-  #left{position:fixed;left:8px;top:calc(var(--topH,60px) + 8px);bottom:calc(var(--shopH,120px) + 64px);width:230px;max-height:none!important;overflow:auto;z-index:5}
+  #left{position:fixed;left:8px;top:calc(var(--topH,60px) + 8px);bottom:calc(var(--shopH,120px) + var(--itD,58px) + 6px);width:230px;max-height:none!important;overflow:auto;z-index:5}
   #itemsBar{position:fixed;left:8px;width:230px;bottom:calc(var(--shopH,120px) + 6px);z-index:5;min-height:0}
   #players{position:fixed;right:8px;top:calc(var(--topH,60px) + 8px);width:230px;max-height:calc(100vh - var(--topH,60px) - var(--shopH,120px) - 22px)!important;overflow:auto;z-index:5}
   #info{top:calc(var(--topH,60px) + 8px);right:248px}
@@ -2244,6 +2244,8 @@ function layout(){
   $('#countTag').style.top=(oy+8+pad+size*(1.5*3.5+1))+'px';$('#countTag').style.left=(ox+8)+'px';
   $('#oppTag').style.top=(oy+4)+'px';$('#oppTag').style.left=(ox+8)+'px';
 }
+// en escritorio, el panel de sinergias termina justo encima de la barra de objetos, que crece al tener muchos
+if(window.ResizeObserver)new ResizeObserver(()=>document.documentElement.style.setProperty('--itD',($('#itemsBar').offsetHeight+6)+'px')).observe($('#itemsBar'));
 function P(wx,wy){return [wx*M.size,wy*M.size]}
 function hexPath(cx,cy,s){ctx.beginPath();for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30);const x=cx+s*Math.cos(a),y=cy+s*Math.sin(a);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath()}
 function benchCenter(i){return [(i+.5)*M.slot,M.benchY+M.slot*.42]}
