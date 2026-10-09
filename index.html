@@ -4494,7 +4494,7 @@ function cargarPeerJS(){return window.Peer?Promise.resolve():new Promise((ok,mal
 const miNombre=()=>(myAv&&AVN[myAv])||'Jugador';
 function mandar(c,m){try{c&&c.open&&c.send(m)}catch(e){console.warn('sala: no se pudo enviar',e)}}
 function enviar(m){if(NET.host)Object.values(NET.conns).forEach(c=>mandar(c,m));else mandar(NET.conn,m)}
-function cerrarRed(){try{Object.values(NET.conns).forEach(c=>c.close())}catch(e){}try{NET.conn&&NET.conn.close()}catch(e){}try{NET.peer&&NET.peer.destroy()}catch(e){}
+function cerrarRed(){NET.reconectando=false;try{Object.values(NET.conns).forEach(c=>c.close())}catch(e){}try{NET.conn&&NET.conn.close()}catch(e){}try{NET.peer&&NET.peer.destroy()}catch(e){}
   NET.peer=NET.conn=NET.sala=null;NET.conns={};NET.visto={};NET.host=false;NET.jugando=false}
 
 // ---- sala previa ----
@@ -4518,6 +4518,7 @@ function atarInvitado(c){
     if(seat!=null)NET.visto[seat]=Date.now();
     if(!m||!m.t||m.t==='ping')return;const J=NET.sala&&NET.sala.jugadores;
     if(m.t==='hola'){
+      if(NET.jugando&&m.vuelvo&&NET.tokens&&NET.tokens[m.seat]&&NET.tokens[m.seat]===m.token){seat=m.seat;hostVuelve(seat,c);return} // un invitado que se cayó vuelve a su plaza
       if(NET.jugando||!J||J.length>=MAX_JUG){mandar(c,{t:'lleno',txt:NET.jugando?'La partida ya ha empezado.':'La sala está llena.'});setTimeout(()=>c.close(),300);return}
       seat=1;while(J.some(j=>j.seat===seat))seat++;
       let nombre=String(m.nombre||'Jugador').slice(0,16);if(J.some(j=>j.nombre===nombre))nombre+=' '+(seat+1);
@@ -4529,38 +4530,65 @@ function atarInvitado(c){
     else if(m.t==='fin')hostCae(seat);
     else if(m.t==='chao')c.close();
   });
-  c.on('close',()=>invitadoFuera(seat));
+  c.on('close',()=>invitadoFuera(seat,c));
 }
-function invitadoFuera(seat){if(seat==null||!NET.conns[seat])return;const c=NET.conns[seat];delete NET.conns[seat];try{c.close()}catch(e){}
+function invitadoFuera(seat,cc){if(seat==null||!NET.conns[seat]||(cc&&NET.conns[seat]!==cc))return;const c=NET.conns[seat];delete NET.conns[seat];try{c.close()}catch(e){}
   if(!NET.jugando){if(NET.sala){NET.sala.jugadores=NET.sala.jugadores.filter(j=>j.seat!==seat);difundirSala()}return}
   hostDesconectado(seat)}
 // latido: cada 3 s todos dan señal; quien pasa NET.sinSenal sin darla se da por desconectado (PeerJS no siempre avisa al cerrar)
-setInterval(()=>{if(!NET.peer)return;const ahora=Date.now();
-  if(NET.host){enviar({t:'ping'});for(const s of Object.keys(NET.conns))if(ahora-(NET.visto[s]||ahora)>NET.sinSenal)invitadoFuera(+s)}
+// si este dispositivo estuvo congelado (pantalla bloqueada, otra app), no culpa a los demás de su silencio
+let latidoUlt=Date.now();
+setInterval(()=>{if(!NET.peer)return;const ahora=Date.now(),dormido=ahora-latidoUlt>8000;latidoUlt=ahora;
+  if(dormido){for(const s of Object.keys(NET.visto))NET.visto[s]=ahora;NET.vistoHost=ahora}
+  if(NET.peer.disconnected&&!NET.peer.destroyed)try{NET.peer.reconnect()}catch(e){}
+  if(NET.host){enviar({t:'ping'});for(const s of Object.keys(NET.conns))if(ahora-(NET.visto[s]||ahora)>NET.sinSenal)invitadoFuera(+s,NET.conns[s])}
   else if(NET.conn&&NET.conn.open){mandar(NET.conn,{t:'ping'});
-    if(NET.jugando&&NET.vistoHost&&ahora-NET.vistoHost>NET.sinSenal){try{NET.conn.close()}catch(e){}if(S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('Se ha perdido la conexión con el anfitrión: la partida no puede seguir.')}}},3000);
+    if(NET.jugando&&NET.vistoHost&&ahora-NET.vistoHost>NET.sinSenal){const c=NET.conn;NET.conn=null;try{c.close()}catch(e){}invitadoReconectar()}}
+  else if(NET.jugando&&!NET.reconectando&&S&&S.mode==='multi'&&S.phase!=='over')invitadoReconectar()},3000);
+// al volver a la pestaña (tras bloquear el móvil), se da señal enseguida o se reconecta
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!NET.peer||!NET.jugando)return;latidoUlt=Date.now();
+  if(NET.peer.disconnected&&!NET.peer.destroyed)try{NET.peer.reconnect()}catch(e){}
+  if(NET.host){enviar({t:'ping'});return}
+  if(NET.conn&&NET.conn.open)mandar(NET.conn,{t:'ping'});else invitadoReconectar()});
 function difundirSala(){if(!NET.sala)return;for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'sala',jugadores:NET.sala.jugadores,diff,tiempo:NET.tiempo,tuSeat:+seat});renderSala()}
 async function unirseSala(cod){
   cerrarRed();audioInit();abrirSala();NET.sala={codigo:cod,miSeat:null,jugadores:[]};renderSala();salaEstado('Conectando con la sala…');
   try{await cargarPeerJS()}catch(e){return salaEstado('No se pudo cargar la conexión. Revisa tu internet.',true)}
   NET.peer=new Peer();
   NET.peer.on('error',e=>salaEstado(e.type==='peer-unavailable'?`No existe la sala ${cod} o ya se ha cerrado.`:'Error de conexión: '+(e.type||e.message),true));
-  NET.peer.on('open',()=>{const c=NET.conn=NET.peer.connect(SALA_PREFIJO+cod,{reliable:true,serialization:'json'});
-    c.on('open',()=>{mandar(c,{t:'hola',nombre:miNombre(),av:myAv});salaEstado('Conectado. Marca «Listo» cuando quieras empezar.')});
-    c.on('data',m=>invitadoRecibe(m));
-    c.on('close',()=>{if(NET.jugando&&S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('El anfitrión se ha desconectado: la partida no puede seguir.');
-      else if(!$('#salaOv').hidden)salaEstado('Se ha cerrado la sala.',true);NET.conn=null})});
+  NET.peer.on('open',()=>conectarHost(false));
 }
+// conexión con el anfitrión: al unirse, o para volver a la partida tras perderla (vuelvo, con la plaza y la clave)
+function conectarHost(vuelvo){if(!NET.peer||!NET.sala)return;const c=NET.peer.connect(SALA_PREFIJO+NET.sala.codigo,{reliable:true,serialization:'json'});
+  if(!vuelvo)NET.conn=c;
+  c.on('open',()=>{if(vuelvo){if(NET.conn&&NET.conn!==c&&NET.conn.open){c.close();return}NET.conn=c;NET.vistoHost=Date.now();
+      mandar(c,{t:'hola',vuelvo:true,seat:NET.sala.miSeat,token:NET.token,nombre:miNombre(),av:myAv})}
+    else{mandar(c,{t:'hola',nombre:miNombre(),av:myAv});salaEstado('Conectado. Marca «Listo» cuando quieras empezar.')}});
+  c.on('data',m=>{if(NET.conn===c)invitadoRecibe(m)});
+  c.on('close',()=>{if(NET.conn!==c)return;NET.conn=null;
+    if(NET.jugando&&S&&S.mode==='multi'&&S.phase!=='over')return invitadoReconectar();
+    if(!$('#salaOv').hidden)salaEstado('Se ha cerrado la sala.',true)})}
+// sin conexión en plena partida: se intenta volver durante un minuto antes de darla por perdida
+function invitadoReconectar(){if(NET.host||NET.reconectando||!NET.sala||!NET.jugando)return;NET.reconectando=true;const t0=Date.now();toast('Se ha perdido la conexión: reconectando…');
+  const intentar=()=>{if(!NET.reconectando)return;
+    if(Date.now()-t0>60000){NET.reconectando=false;if(S&&S.mode==='multi'&&S.phase!=='over')multiFinPartida('No se ha podido recuperar la conexión con el anfitrión: la partida no puede seguir.');return}
+    try{if(NET.conn&&NET.conn.open)mandar(NET.conn,{t:'hola',vuelvo:true,seat:NET.sala.miSeat,token:NET.token,nombre:miNombre(),av:myAv}); // conectado pero sin respuesta: se vuelve a pedir la plaza
+      else if(!NET.peer||NET.peer.destroyed){NET.peer=new Peer();NET.peer.on('open',()=>conectarHost(true));NET.peer.on('error',()=>{})}
+      else if(NET.peer.disconnected){NET.peer.reconnect();setTimeout(()=>conectarHost(true),1500)}
+      else conectarHost(true)}catch(e){}
+    setTimeout(intentar,5000)};
+  intentar()}
 function invitadoRecibe(m){
   NET.vistoHost=Date.now();if(!m||!m.t||m.t==='ping')return;
   if(m.t==='sala'){NET.sala.jugadores=m.jugadores;NET.sala.miSeat=m.tuSeat;NET.sala.diff=m.diff;NET.sala.tiempo=m.tiempo;renderSala()}
   else if(m.t==='lleno')salaEstado(m.txt||'La sala está llena.',true);
-  else if(m.t==='inicio')startMulti(false,m);
+  else if(m.t==='inicio'){NET.token=m.token;startMulti(false,m)}
   else if(!S||S.mode!=='multi')return;
   else if(m.t==='ronda')aplicarRonda(m);
   else if(m.t==='fase')aplicarFase(m);
   else if(m.t==='faltan'){if(m.k===rondaK())S.multi.faltan=m.nombres}
   else if(m.t==='aviso')toast(m.txt);
+  else if(m.t==='vuelta')multiVuelta(m);
 }
 function renderSala(){
   const Sa=NET.sala;if(!Sa)return;const J=Sa.jugadores,host=NET.host;
@@ -4581,8 +4609,8 @@ function renderSala(){
   else{const yo=J.find(j=>j.seat===Sa.miSeat);b.disabled=!yo;b.textContent=yo&&yo.listo?'No estoy listo':'Listo'}
 }
 function botonSala(){
-  if(NET.host){const semilla=Math.floor(Math.random()*4294967296),jug=NET.sala.jugadores.map(({seat,nombre,av})=>({seat,nombre,av}));NET.jugando=true;
-    for(const [seat,c] of Object.entries(NET.conns))mandar(c,{t:'inicio',semilla,diff,jugadores:jug,tuSeat:+seat,tiempo:NET.tiempo});
+  if(NET.host){const semilla=Math.floor(Math.random()*4294967296),jug=NET.sala.jugadores.map(({seat,nombre,av})=>({seat,nombre,av}));NET.jugando=true;NET.tokens={};
+    for(const [seat,c] of Object.entries(NET.conns)){NET.tokens[seat]=Math.random().toString(36).slice(2)+Date.now().toString(36);mandar(c,{t:'inicio',semilla,diff,jugadores:jug,tuSeat:+seat,tiempo:NET.tiempo,token:NET.tokens[seat]})}
     startMulti(true,{semilla,diff,jugadores:jug,tuSeat:0,tiempo:NET.tiempo})}
   else{const yo=NET.sala.jugadores.find(j=>j.seat===NET.sala.miSeat);if(yo)mandar(NET.conn,{t:'listoSala',v:!yo.listo})}
 }
@@ -4642,7 +4670,7 @@ function hostComprobar(k,forzar){
   const jug=S.players.map(p=>({seat:p.seat,nombre:p.seat===0?miNombre():p.name,hp:p.hp,nivel:p.level,vivo:p.alive,puesto:p.place,
     tablero:L[p.seat]?L[p.seat].tablero:ser(p.board)}));
   const m={t:'ronda',k,semilla:Math.floor(Math.random()*4294967296),pares,jug};
-  enviar(m);aplicarRonda(m);
+  M.ultRonda=m;enviar(m);aplicarRonda(m);
 }
 // fin de ronda: cada jugador avisa al acabar su combate (o al elegir en el carrusel); con todos, el anfitrión pasa a la siguiente
 function multiHecho(){const M=S.multi;if(S.phase!=='result'&&S.phase!=='carousel')return; // avisos atrasados de una ronda ya cerrada
@@ -4665,8 +4693,20 @@ function aplicarFase(m){if(!S||S.mode!=='multi')return;const M=S.multi;
   beginRound()}
 function hostCae(seat){const p=porSeat(seat);if(!p||!p.alive)return;p.alive=false;p.place=S.players.filter(x=>x.alive).length+1;log(`${p.name} queda eliminado (${ord(p.place)})`);updateHUD();if(S.phase==='espera')hostComprobar(rondaK());hostComprobarHechos(rondaK())}
 function hostDesconectado(seat){const p=porSeat(seat);if(!p||!p.amigo)return;
-  if(p.alive){p.remoto=false;p.amigo=false;p.name+=' (bot)';const t=`${p.name.replace(' (bot)','')} se ha desconectado: sigue un bot por él.`;toast(t);enviar({t:'aviso',txt:t});aiArrange(p)}
+  if(p.alive){p.remoto=false;p.amigo=false;p.desc=true;p.name+=' (bot)';const t=`${p.name.replace(' (bot)','')} se ha desconectado: sigue un bot por él.`;toast(t);enviar({t:'aviso',txt:t});aiArrange(p)}
   if(S&&S.phase==='espera')hostComprobar(rondaK());if(S)hostComprobarHechos(rondaK())}
+// un invitado que se había caído vuelve: recupera su plaza (fuera el bot) y se le pone al día
+function hostVuelve(seat,c){const viejo=NET.conns[seat];NET.conns[seat]=c;NET.visto[seat]=Date.now();if(viejo&&viejo!==c)try{viejo.close()}catch(e){}
+  if(!S||S.mode!=='multi')return;const p=porSeat(seat),M=S.multi;if(!p)return;
+  if(p.desc&&p.alive){p.remoto=true;p.amigo=true;p.desc=false;p.name=p.name.replace(' (bot)','');const t=`${p.name} ha vuelto a la partida.`;toast(t);enviar({t:'aviso',txt:t})}
+  mandar(c,{t:'vuelta',k:rondaK(),restante:Math.max(1,(M.finPrep-performance.now())/1000),hp:p.hp,vivo:p.alive,puesto:p.place,ronda:M.ultRonda&&M.ultRonda.k===rondaK()?M.ultRonda:null})}
+// el invitado, al volver: se pone en la ronda del anfitrión con la vida que le cuenta él
+function multiVuelta(m){const M=S.multi,hu=H();NET.reconectando=false;toast('Conexión recuperada');
+  hu.hp=m.hp;if(!m.vivo){if(hu.alive){hu.alive=false;hu.place=m.puesto}return multiFin(hu.place)}
+  if(m.k!==rondaK())return aplicarFase({k:m.k,dur:m.restante});
+  M.finPrep=performance.now()+m.restante*1000;
+  if(S.phase==='espera'){if(m.ronda)aplicarRonda(m.ronda);else mandar(NET.conn,{t:'listo',k:rondaK(),seat:M.miSeat,tablero:hu.board.map(u=>u&&{id:u.id,star:u.star,items:u.items.slice()}),hp:hu.hp,nivel:hu.level})}
+  else if(S.phase==='hecho')mandar(NET.conn,{t:'hecho',k:rondaK(),hp:hu.hp})}
 // ---- todos: la ronda contra jugadores ----
 function aplicarRonda(m){
   if(!S||S.mode!=='multi'||m.k!==rondaK())return;const M=S.multi,hu=H();
@@ -5013,7 +5053,7 @@ function dialogoVictoria(n,go){const J=DLG_JEFE[n];if(!J||visto('v'+n))return go
 // 33 y 39 son de supervivencia; 37 y 41 serán por turnos cuando exista el modo (de momento, normales).
 // El 46 es oculto: aparece en el mapa al vencer a Morvane en el 45, tras su transformación.
 // MUNDO3_ABIERTO: mientras falten las imágenes, el mundo sale como «próximamente».
-const MUNDO3_ABIERTO=false;
+const MUNDO3_ABIERTO=true;
 // fuerza de los combates: la curva del nivel 30 escalada por nivel (calibrada con simulaciones, ver docs/modo-historia.md)
 const K30=[0.5,0.575,0.525,0.525,0.845,1.145,0.745,0.745,0.55,0.575,0.525,0.6,0.3,0.5,0.45,0.475,0.525,0.5,0.575,0.35,0.375,0.4,0.72];
 const K3=f=>K30.map(v=>Math.round(v*f*200)/200);
