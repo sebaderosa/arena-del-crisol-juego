@@ -1506,7 +1506,9 @@ const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,gobl
 const ODDS=[[1,0,0,0,0],[1,0,0,0,0],[.75,.25,0,0,0],[.55,.30,.15,0,0],[.45,.33,.20,.02,0],[.30,.40,.25,.05,0],[.19,.35,.35,.10,.01],[.18,.25,.32,.22,.03],[.10,.20,.25,.35,.10]];
 // modo Historia: más probabilidad de los costes altos (allí casi nunca se pasa del nivel 6-7). Por nivel del jugador: coste 1..5
 const ODDS_HIST=[[1,0,0,0,0],[.8,.2,0,0,0],[.55,.25,.1,.05,.05],[.35,.25,.2,.1,.1],[.2,.2,.25,.15,.2],[.1,.15,.25,.2,.3],[.05,.1,.2,.25,.4],[.05,.1,.15,.25,.45],[.05,.05,.15,.25,.5]];
-const POOL_SIZE=[22,18,14,10,8];
+// copias de cada campeón en la reserva, por coste. Un 3★ necesita 9: los de coste 5 tienen justo 9 en la Arena
+// (compartidas con los demás) y 12 en la Historia, donde la reserva es solo tuya (POOL_HIST)
+const POOL_SIZE=[22,18,14,10,9],POOL_HIST=[22,18,14,10,12];
 const XP_NEED=[0,2,2,6,10,20,36,48,72];
 const STAGE_DMG=[0,0,2,5,8,10,12,17];
 const AI_NAMES=[['Hidra','#e07a5f'],['Corvo','#8d99ae'],['Lince','#f2cc8f'],['Brisa','#81b29a'],['Garra','#c9716b'],['Quimera','#b388eb'],['Niebla','#6fb3d2']];
@@ -1546,7 +1548,7 @@ function newPlayer(name,human,col){return {av:'zorro',name,human,col,hp:100,gold
 // historia: {nivel, mazo} para el modo Historia (solo tú contra combates diseñados; la tienda sale de tu mazo)
 function newGame(diff,historia){
   S={diff,mode:historia?'historia':'arena',story:historia||null,stage:1,round:1,phase:'idle',type:'carousel',uid:0,speed:velGuardada(),temaFijo:historia?null:temaTablero(),pool:{},players:[],logs:[],carOpts:null,sel:null,preview:null,opp:null,pairs:null,combat:null};
-  (historia?historia.mazo:ARENA_IDS).forEach(id=>S.pool[id]=POOL_SIZE[CH[id].cost-1]);
+  (historia?historia.mazo:ARENA_IDS).forEach(id=>S.pool[id]=(historia?POOL_HIST:POOL_SIZE)[CH[id].cost-1]);
   S.players.push(newPlayer('Tú',true,'#53c476'));
   if(!historia)AI_NAMES.forEach(([n,c])=>S.players.push(newPlayer(n,false,c)));
   S.players[0].av=myAv||'zorro';const rest=AVK.filter(k=>k!==myAv);S.players.slice(1).forEach((p,i)=>p.av=rest[i%rest.length]);
@@ -1575,6 +1577,7 @@ function tierOf(t,n){let i=-1;TRAITS[t].tiers.forEach((x,k)=>{if(n>=x)i=k});retu
 // Devuelve null si no cabe, o {made: id del objeto completo o null}.
 function equipItem(u,it){
   if(ITEMS[it].especial)return null; // el Quitamanos no se equipa (15i-aumentos.js)
+  if(typeof reglaActual==='function'&&reglaActual()&&reglaActual().sinObjetos)return null; // regla de nivel: sin objetos (también para el jugador automático)
   if(!ITEMS[it].full){const j=u.items.findIndex(x=>!ITEMS[x].full);if(j>=0){const made=RECIPE[u.items[j]+'+'+it];u.items[j]=made;return {made}}}
   if(u.items.length>=3)return null;
   u.items.push(it);return {made:null};
@@ -5335,6 +5338,9 @@ Object.assign(REGLAS,{
  53:{sinObjetos:true,t:'Sin objetos',motivo:'Las sirenas de bruma les cantan a los objetos y el mar se los lleva: en este nivel no se pueden equipar.'},
  57:{minRasgo:'marea',minN:2,siempre:true,t:'Al menos 2 de Marea en el tablero',motivo:'Solo quien entiende el mar puede guiar el barco en la tormenta: necesitas al menos 2 campeones de Marea en todas las rondas.'},
  58:{maxTablero:5,t:'Como mucho 5 en el tablero',motivo:'Las olas barren la cubierta y no cabe todo el equipo: como mucho 5 campeones en el tablero.'}});
+// fuerza: ajuste por nivel calibrado con el simulador (tools/simulador.js, con aumentos) hacia la curva en dientes de sierra
+const AJUSTE_K4={47:.763,48:.536,49:.635,50:.635,51:1.027,52:.706,53:.8,54:.654,56:.972,57:.866,58:.849,60:.686,61:.91};
+NIVELES_M4.forEach(L=>{const m=AJUSTE_K4[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
 NIVELES_M4.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n];
   if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 if(MUNDO4_ABIERTO)NIVELES.push(...NIVELES_M4);
@@ -5415,8 +5421,8 @@ const TN_NIVELES={ // f: fuerza base de los rivales del nivel
  37:{mons:{esqueleto:2,necrofago:2,espectro:1},jefe:[['golemhueso',.7]],f:1.42},
  41:{mons:{espectro:3,necrofago:1,esqueleto:1},jefe:[['espectro',2.3]],f:1.6},
  // Mundo 4 (cerrado; f sin calibrar): el abordaje y el faro negro
- 55:{mons:{marinero:3,cangrejo:1,tentaculo:1},jefe:[['cangrejo',1.6]],f:1.45},
- 59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.35}};
+ 55:{mons:{marinero:3,cangrejo:1,tentaculo:1},jefe:[['cangrejo',1.6]],f:1.42},
+ 59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.3}};
 const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
 let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
