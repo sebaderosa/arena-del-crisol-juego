@@ -1306,6 +1306,9 @@ const TRAITS={
  picaro:{n:'Pícaro',kind:'Clase',col:'#c9a23a',tiers:[2,4],vals:[1,2],d:v=>{const s=String(v),A='al ganar una ronda, 35 % de probabilidad de +2 de oro',B='además, 25 % de probabilidad de un componente extra';return s==='1'?`Pícaros: ${A}.`:s==='2'?`Pícaros: ${A}; ${B}.`:`(2) ${A} · (4) ${B}.`}},
  hermandad:{n:'Hermandad',kind:'Origen',col:'#5ac8d8',tiers:[2],vals:[25],d:v=>`Varg y Vidar juntos: +${v}% de vida y daño. Si uno cae, el otro entra en furia (+50% de velocidad de ataque).`},
  monstruo:{n:'Monstruo',kind:'Origen',col:'#b07a4a',tiers:[2,4,6],vals:[20,40,75],d:v=>`Monstruos: +${v}% de vida máxima y de daño.`},
+ // Mundo 6: Cronauta (rebobina al primer aliado que cae, ver damage en 03-combate.js) y Ensueño (el reino de colores: cura al equipo al lanzar habilidad)
+ cronauta:{n:'Cronauta',kind:'Origen',col:'#5ac8ff',tiers:[2,3],vals:[1,2],d:v=>v>1?`Los ${v} primeros aliados que caen rebobinan 3 s y vuelven con la vida que tenían.`:'El primer aliado que cae rebobina 3 s y vuelve con la vida que tenía.'},
+ ensueno:{n:'Ensueño',kind:'Origen',col:'#ff9ad8',tiers:[2,3],vals:[60,140],d:v=>`Cada vez que un campeón de Ensueño lanza su habilidad, todo el equipo recupera ${v} de vida.`},
 };
 const ROLE={
  tank:{hp:[650,760,880,1020,1250],ad:[48,55,62,72,88],as:.6,ar:40,mr:40},
@@ -1357,7 +1360,14 @@ const CH={};
  ['axi','Axi','Ax',3,['marea','arcano'],'mage',3,70,20,{n:'Burbuja de marea',k:'burbuja',v:[200,300,520],r:1,heal:.6}],
  ['neptus','Neptus','Np',5,['marea','coloso'],'tank',1,100,30,{n:'Gran ola',k:'ola',v:[350,520,1800],r:2,m:30}],
  // Mundo 5, las cenizas del hogar (docs/historia.md)
- ['bram','Bram','Br',4,['forja','guardian'],'tank',1,90,30,{n:'El muro de la Fragua',k:'muroFragua',v:[260,390,1000],d:.8}],
+ ['bram','Bram','Bm',4,['forja','guardian'],'tank',1,90,30,{n:'El muro de la Fragua',k:'muroFragua',v:[260,390,1000],d:.8}],
+ // Mundo 6, los portales del tiempo (docs/historia.md)
+ ['tik','Tik','Tk',3,['cronauta','guardian'],'tank',1,80,30,{n:'Rebobinar',k:'teamHeal',v:[180,270,450],r:1}],
+ ['ione','Capitana Ione','Io',4,['cronauta','tirador'],'ranged',4,70,10,{n:'Disparo de portal',k:'execute',v:[380,570,1500]}],
+ ['dax','Dax','Dx',4,['cronauta','asesino'],'assassin',1,70,20,{n:'Cañón de pulso',k:'aoe',v:[300,450,1150],r:1}],
+ ['luna','Luna','Lu',3,['ensueno','asesino'],'assassin',1,60,10,{n:'Salto de algodón',k:'nuke',v:[260,390,640]}],
+ ['eviel','Eviel','Ev',4,['ensueno','arcano'],'mage',3,90,30,{n:'Luz del arcoíris',k:'teamHeal',v:[260,390,1000],r:2}],
+ ['teffy','Teffy y Peter','TP',5,['ensueno','coloso'],'tank',1,100,30,{n:'¡Al galope, Peter!',k:'aoeSelf',v:[320,480,1600],r:1,d:1}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
@@ -1377,6 +1387,8 @@ CH.legas.story=true;CH.legas.escala=1.05;CH.axi.story=true;CH.axi.escala=.9;CH.a
 CH.neptus.story=true;CH.neptus.escala=1.3;CH.neptus.dobleRasgo='marea';
 // Mundo 5. corazón de padre: si Tovo cae en el combate, Bram entra en frenesí (ver kill en 03-combate.js)
 CH.bram.story=true;CH.bram.escala=1.2;
+// Mundo 6. desmonta: Teffy y Peter son un personaje doble: cuando cae Peter, Teffy sigue a pie con esa parte de la vida y otro ataque
+['tik','ione','dax','luna','eviel','teffy'].forEach(id=>CH[id].story=true);CH.tik.escala=.9;CH.luna.escala=.85;CH.eviel.escala=1.2;CH.teffy.escala=1.35;CH.teffy.pas={desmonta:.55};
 const CH_IDS=Object.keys(CH);
 const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
 const ITEMS={
@@ -1524,12 +1536,17 @@ const CREEPS={
  velia:{name:'Velia, la portaestandarte',glyph:'Ve',hp:4300,ad:110,as:.7,range:3,ar:35,mr:55,col:'#b0a89c'},
  umbravor:{name:'Umbravor',glyph:'Um',hp:8600,ad:185,as:.6,range:1,ar:70,mr:65,col:'#2e2a34'},
  kael:{name:'Kael, el Señor de la Ceniza',glyph:'Ka',hp:9400,ad:200,as:.75,range:1,ar:75,mr:65,col:'#5a4a40',pas:{espinas:.1}},
- // solo hablan (Mundo 5, al final): serán campeones en el Mundo 6
- ione:{name:'Capitana Ione',glyph:'Io',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#6ac8ff'},
- tik:{name:'Tik',glyph:'Tk',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#ffd27a'},
- dax:{name:'Dax',glyph:'Dx',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#9ab0c0'},
+ // Mundo 6. comeMana: su golpe quita maná
+ bestia:{name:'Bestia de ceniza',glyph:'BC',hp:520,ad:58,as:1,range:1,ar:20,mr:20,col:'#7a726c',jump:true},
+ cuervo:{name:'Cuervo de ceniza',glyph:'CC',hp:400,ad:54,as:.8,range:3,ar:10,mr:20,col:'#5a5458'},
+ devorador:{name:'Devorador del tiempo',glyph:'DT',hp:560,ad:50,as:.85,range:1,ar:25,mr:35,col:'#4a5ab8',pas:{comeMana:20}},
+ escarcha:{name:'Lobo de escarcha',glyph:'LE',hp:600,ad:56,as:.9,range:1,ar:25,mr:25,col:'#a8d8f0'},
+ automata:{name:'Autómata de engranaje',glyph:'AE',hp:900,ad:48,as:.6,range:1,ar:55,mr:30,col:'#b08a4a',pas:{espinas:.2}},
+ gris:{name:'Criatura gris',glyph:'CG',hp:680,ad:48,as:.75,range:1,ar:30,mr:30,col:'#9a96a0'},
+ grandevorador:{name:'El Gran Devorador',glyph:'GD',hp:7800,ad:180,as:.65,range:1,ar:60,mr:70,col:'#3a4aa8',pas:{comeMana:30}},
+ reinadevoradora:{name:'La Reina de los Devoradores',glyph:'RD',hp:9000,ad:190,as:.7,range:2,ar:65,mr:70,col:'#6a3ab8',pas:{comeMana:30}},
 };
-const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6,soldado:.85,arquero:.8,sabueso:.85,sable:1.25,corvo:1.3,velia:1.15,umbravor:1.7,kael:1.35};
+const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6,soldado:.85,arquero:.8,sabueso:.85,sable:1.25,corvo:1.3,velia:1.15,umbravor:1.7,kael:1.35,bestia:.85,cuervo:.75,devorador:.85,escarcha:1,automata:1.05,gris:.85,grandevorador:1.6,reinadevoradora:1.4};
 const ODDS=[[1,0,0,0,0],[1,0,0,0,0],[.75,.25,0,0,0],[.55,.30,.15,0,0],[.45,.33,.20,.02,0],[.30,.40,.25,.05,0],[.19,.35,.35,.10,.01],[.18,.25,.32,.22,.03],[.10,.20,.25,.35,.10]];
 // modo Historia: más probabilidad de los costes altos (allí casi nunca se pasa del nivel 6-7). Por nivel del jugador: coste 1..5
 const ODDS_HIST=[[1,0,0,0,0],[.8,.2,0,0,0],[.55,.25,.1,.05,.05],[.35,.25,.2,.1,.1],[.2,.2,.25,.15,.2],[.1,.15,.25,.2,.3],[.05,.1,.2,.25,.4],[.05,.1,.15,.25,.45],[.05,.05,.15,.25,.5]];
@@ -1714,6 +1731,8 @@ function makeFighter(u,team,c,r,cnt){
   if(has('coloso'))f.maxHp+=val('coloso');
   if(has('monstruo')){f.maxHp*=1+val('monstruo')/100;f.ad*=1+val('monstruo')/100}
   if(has('hermandad')){f.maxHp*=1+val('hermandad')/100;f.ad*=1+val('hermandad')/100;f.hermandad=true}
+  if(on('cronauta'))f.rebobina=val('cronauta'); // todo el equipo: cuántos aliados pueden rebobinar en el combate
+  if(has('ensueno'))f.ensueno=val('ensueno');
   if(C.saltar)f.jump=true;
   f.hp=f.maxHp;f.mana=Math.min(f.mana,f.maxMana-1);
   if(P.escudoIni)f.shield+=f.maxHp*P.escudoIni;
@@ -1747,6 +1766,7 @@ class Combat{
     this.rng=rng||null; // duelo: generador con semilla para el paso del combate
     this.f=[...A,...B];this.vis=vis;this.grid=new Map();this.proj=[];this.fx=[];this.parts=[];this.shake=0;this.t=0;this.over=false;this.winner=null;
     for(const f of this.f)this.grid.set(key(f.c,f.r),f);
+    {const RG=typeof reglaActual==='function'&&reglaActual();if(RG&&RG.congelado)this.zonaFria=f=>f.c<=RG.congelado} // Mundo 6: columnas congeladas (0..congelado)
     // auras de objetos: afectan al portador y a sus aliados adyacentes al empezar
     for(const f of this.f){const P=f.pas;if(!P.auraVel&&!P.auraMana&&!P.auraDef)continue;
       for(const a of this.f)if(a.team===f.team&&hexDist(f.c,f.r,a.c,a.r)<=1){
@@ -1825,6 +1845,11 @@ class Combat{
       if(T.aguante&&(t.aguanteN||0)<8){t.aguanteN=(t.aguanteN||0)+1;t.asBonus+=T.aguante}
     }
     if(t.hp<=0&&T.revive&&!t.levantado){t.levantado=true;t.hp=t.maxHp*T.revive;this.callout(t,'Se levanta','#d8d0b8');this.impact('shadow',t.x,t.y,'#c9a8ff')}
+    if(t.hp<=0&&t.rebobina&&!t.rebobinado&&(this.rebob=this.rebob||[0,0])[t.team]<t.rebobina){this.rebob[t.team]++;t.rebobinado=true; // Cronauta: vuelve con la vida de hace 3 s
+      t.hp=Math.max(t.maxHp*.25,(t.hist&&t.hist[0])||t.maxHp*.5);t.stunT=0;t.burnT=0;this.callout(t,'Rebobina','#5ac8ff');if(this.vis){this.addFx({k:'ring',x:t.x,y:t.y,r:.9,col:'#5ac8ff',dur:.6});this.emit(12,t.x,t.y-.4,{col:['#5ac8ff','#d8f4ff'],sp:2,life:.6,glow:1})}}
+    if(t.hp<=0&&T.desmonta&&!t.desmontado){t.desmontado=true;t.maxHp*=T.desmonta;t.hp=t.maxHp;t.range=4;t.ad*=.8;t.look=LOOK.teffy_pie||t.look;t.pie=true; // cae Peter: Teffy sigue a pie
+      t.ab={n:'Lluvia de golosinas',k:'volley',v:[170,190,340],n2:4};t.maxMana=60;t.mana=0;t.move=null;this.callout(t,'¡Peter!','#ff9ad8');this.impact('slam',t.x,t.y,'#ff9ad8',1)}
+    if(t.hp<=0&&T.eco&&!t.ecoHecho){t.ecoHecho=true;t.hp=t.maxHp*T.eco;this.callout(t,'Eco','#9fd8ff');this.impact('sun',t.x,t.y,'#9fd8ff')} // ecos: vuelve una vez
     if(t.hp<=0&&T.renacer&&!t.revived){t.revived=true;t.hp=t.maxHp*T.renacer;this.callout(t,'Renace','#8be29f');this.impact('sun',t.x,t.y,'#fff2b0')}
     if(t.hp>0&&t.hp<t.maxHp*.4&&!t.lowDone&&(T.ultimaCura||T.ultimoEscudo)){t.lowDone=true;
       if(T.ultimaCura){this.heal(t,t.maxHp*T.ultimaCura,t);this.impact('leaves',t.x,t.y,'#8be29f')}
@@ -1845,6 +1870,7 @@ class Combat{
     if(!t.alive)return;
     if(P.rompeAr&&(t.rotoAr||0)<P.rompeAr*6){t.rotoAr=(t.rotoAr||0)+P.rompeAr;t.ar-=P.rompeAr}
     if(P.rompeMr&&(t.rotoMr||0)<P.rompeMr*6){t.rotoMr=(t.rotoMr||0)+P.rompeMr;t.mr-=P.rompeMr}
+    if(P.comeMana&&t.ab&&t.mana>0){t.mana=Math.max(0,t.mana-P.comeMana);if(this.vis)this.emit(3,t.x,t.y-.5,{col:['#7a8aff','#2a3a8a'],sp:1,life:.4,sz:.06,glow:1})} // devoradores: se comen el maná
     if(P.aturdir&&rnd()<P.aturdir){t.stunT=Math.max(t.stunT,1);this.text(t,'Aturdido','#ffe27a')}
     if(P.hechizo&&!t.creep&&!(t.charmT>0)&&rnd()<P.hechizo){t.charmT=P.hechizoT||2;this.text(t,'Hechizado','#ff8ad0');this.addFx({k:'hechizo',f:t,dur:t.charmT})} // la sirena: ataca a los suyos un momento
   }
@@ -1980,6 +2006,7 @@ class Combat{
     if(P.prisa){f.haste=Math.max(f.hasteT>0?f.haste:0,P.prisa);f.hasteT=Math.max(f.hasteT,4)}
     if(P.escudoHab){f.tshield+=P.escudoHab;f.tshieldT=Math.max(f.tshieldT,3);f.shCol=f.shCol||col}
     if(P.curaHab)this.heal(f,f.maxHp*P.curaHab,f);
+    if(f.ensueno)this.allies(f).forEach(a=>{this.heal(a,f.ensueno,f);if(this.vis)this.emit(2,a.x,a.y-.5,{col:['#ff9ad8','#9fe6ff','#ffe58a'],sp:.8,up:-1,life:.5,sz:.06,glow:1})}); // Ensueño
   }
   step(dt){if(!this.rng)return this._step(dt);const p=RNG;RNG=this.rng;try{this._step(dt)}finally{RNG=p}}
   _step(dt){
@@ -1987,7 +2014,8 @@ class Combat{
     this.t+=dt;
     for(const f of this.f){
       if(!f.alive)continue;
-      f.atkCd-=dt;
+      const fr=this.zonaFria&&this.zonaFria(f)?.55:1;f.atkCd-=dt*fr; // tiempo congelado: en su zona todo va más lento
+      if(f.rebobina&&(f.histT=(f.histT||0)+dt)>=1){f.histT-=1;(f.hist=f.hist||[]).push(f.hp);if(f.hist.length>3)f.hist.shift()}
       if(f.stunT>0)f.stunT-=dt;
       if(f.hasteT>0)f.hasteT-=dt;
       if(f.tshieldT>0){f.tshieldT-=dt;if(f.tshieldT<=0)f.tshield=0}
@@ -2000,7 +2028,7 @@ class Combat{
     }
     for(const f of this.f){
       if(!f.alive||f.stunT>0)continue;
-      if(f.move){f.move.t+=dt/f.move.dur;const m=f.move,k=Math.min(1,m.t);f.x=m.fx+(m.tx-m.fx)*k;f.y=m.fy+(m.ty-m.fy)*k;if(m.t>=1)f.move=null;continue}
+      if(f.move){f.move.t+=dt/f.move.dur*(this.zonaFria&&this.zonaFria(f)?.55:1);const m=f.move,k=Math.min(1,m.t);f.x=m.fx+(m.tx-m.fx)*k;f.y=m.fy+(m.ty-m.fy)*k;if(m.t>=1)f.move=null;continue}
       if(f.charmT>0){f.charmT-=dt;const t=this.nearest(f,this.allies(f).filter(a=>a!==f)); // hechizado: ataca al aliado más cercano
         if(t){if(Math.abs(t.x-f.x)>.2)f.face=t.x>f.x?1:-1;if(hexDist(f.c,f.r,t.c,t.r)<=f.range&&f.atkCd<=0){this.attack(f,t);f.atkCd=1/this.curAS(f)}}continue}
       if(!f.target||!f.target.alive){f.locked=false;f.target=this.nearest(f)}
@@ -2762,6 +2790,10 @@ const LOOK={
  bram:{w:'hammer',sh:1,h:'helm',bulk:1.5,skin:'#c68b64'},soldado:{w:'sword',sh:1,h:'helm',skin:'#9a948e'},arquero:{w:'bow',h:'hood',skin:'#a8a098'},
  sable:{w:'sword',h:'hood',skin:'#6a6570'},corvo:{w:'spear',sh:1,h:'helm',bulk:1.45,skin:'#7a7a82'},velia:{w:'staff',h:'hair',hc:'#c8c0b8',skin:'#d8d0c8',orb:'#d8d0c0'},
  kael:{w:'sword',sh:1,h:'crown',bulk:1.45,skin:'#6a5a50'},ione:{w:'orb',h:'hair',hc:'#e8f0ff',skin:'#f0cfb0',orb:'#6ac8ff'},tik:{w:'orb',h:'halo',bulk:1.2,skin:'#b8c8d8',orb:'#ffd27a'},dax:{w:'hammer',h:'mask',bulk:1.3,skin:'#c09070'},
+ // Mundo 6 (provisionales): la bestia y el lobo de escarcha se dibujan como el lobo, y el cuervo como el murciélago
+ luna:{w:'daggers',h:'hair',hc:'#f4f0f8',skin:'#f8e8f0'},eviel:{w:'orb',h:'horns',bulk:1.4,skin:'#f8f4ff',orb:'#ffb8f0'},teffy:{w:'spear',sh:1,h:'hair',hc:'#f0c060',bulk:1.6,skin:'#f3cfb0'},teffy_pie:{w:'bow',h:'hair',hc:'#f0c060',skin:'#f3cfb0'},
+ devorador:{w:'club',h:'horns',skin:'#4a5ab8'},automata:{w:'hammer',sh:1,h:'helm',bulk:1.3,skin:'#b08a4a'},gris:{w:'club',h:'leaf',bulk:1.2,skin:'#9a96a0'},
+ grandevorador:{w:'club',h:'horns',bulk:1.7,skin:'#3a4aa8'},reinadevoradora:{w:'orb',h:'crown',bulk:1.5,skin:'#6a3ab8',orb:'#c8a8ff'},
 };
 const METAL='#b7c2c8',WOOD='#7a5534';
 function circ(g,x,y,r){g.beginPath();g.arc(x,y,r,0,Math.PI*2)}
@@ -2847,7 +2879,7 @@ function drawCreep(g,o,u){
   switch(o.creep){
     case 'roedin':{const sq=1+Math.sin(T*6)*.08+k*.2;for(let i=2;i>=0;i--){g.fillStyle=i?dk:col;g.beginPath();g.ellipse((-i*1.9+k*1.2)*u,-1.8*u*(1/sq),(2.1-i*.3)*u*sq,1.9*u/sq,0,0,Math.PI*2);g.fill()}eye(.8*u+k*1.2*u,-2.6*u,.55*u);break}
     case 'escupidor':{const sw=1+Math.sin(T*3)*.05;g.fillStyle=col;g.beginPath();g.ellipse(0,-3*u,2.8*u*sw,3*u/sw,0,0,Math.PI*2);g.fill();g.fillStyle=dk;circ(g,-1*u,-2*u,.5*u);g.fill();circ(g,.4*u,-4.5*u,.4*u);g.fill();g.fillStyle=C('#6b5a3a');g.save();g.translate(2.2*u,-3.2*u);g.rotate(-.2);g.fillRect(0,-.6*u,(1.6+k*.8)*u,1.2*u);g.restore();eye(.9*u,-4*u,.6*u,'#7a1');break}
-    case 'sabueso':case 'lobo':{const w=o.walk?T*12:0;g.strokeStyle=dk;g.lineWidth=.9*u;for(const [x,ph] of [[-2.4,0],[-1.6,Math.PI],[1.6,Math.PI],[2.4,0]]){const a=o.walk?Math.sin(w+ph)*.5:0;g.beginPath();g.moveTo(x*u,-3.6*u);g.lineTo(x*u+Math.sin(a)*2.8*u,-.2*u);g.stroke()}
+    case 'sabueso':case 'bestia':case 'escarcha':case 'lobo':{const w=o.walk?T*12:0;g.strokeStyle=dk;g.lineWidth=.9*u;for(const [x,ph] of [[-2.4,0],[-1.6,Math.PI],[1.6,Math.PI],[2.4,0]]){const a=o.walk?Math.sin(w+ph)*.5:0;g.beginPath();g.moveTo(x*u,-3.6*u);g.lineTo(x*u+Math.sin(a)*2.8*u,-.2*u);g.stroke()}
       g.strokeStyle=col;g.lineWidth=1*u;g.beginPath();g.moveTo(-3.4*u,-4.4*u);g.quadraticCurveTo(-5.4*u,-5.6*u+Math.sin(T*4)*.5*u,-5.2*u,-6.6*u);g.stroke();
       g.fillStyle=col;g.beginPath();g.ellipse(0,-4.3*u,3.8*u,1.9*u,0,0,Math.PI*2);g.fill();
       g.save();g.translate((3.6+k*1.2)*u,-5.6*u);g.fillStyle=col;circ(g,0,0,1.6*u);g.fill();g.beginPath();g.moveTo(.8*u,-.4*u);g.lineTo(2.9*u,.3*u);g.lineTo(.8*u,1.1*u);g.fill();g.fillStyle=dk;g.beginPath();g.moveTo(-.9*u,-1*u);g.lineTo(-.4*u,-2.6*u);g.lineTo(.2*u,-1.2*u);g.fill();g.fillStyle='#ff6a3a';circ(g,.6*u,-.3*u,.3*u);g.fill();g.restore();break}
@@ -2876,7 +2908,7 @@ function drawCreep(g,o,u){
       else if(o.creep==='reygoblin'){g.rotate(-.9+k);g.fillStyle='#c9a23a';g.fillRect(0,-.25*u,3.4*u,.5*u);g.fillStyle='#ff5a8a';circ(g,3.6*u,0,.6*u);g.fill()}
       else{g.rotate(-.6+k);g.fillStyle='#cfd6da';g.fillRect(0,-.25*u,2.2*u,.5*u)}
       g.restore();g.restore();break}
-    case 'murcielago':{const fl2=Math.sin(T*14)*.9,h=-4.6*u+Math.sin(T*3)*.4*u;g.fillStyle=dk;
+    case 'cuervo':case 'murcielago':{const fl2=Math.sin(T*14)*.9,h=-4.6*u+Math.sin(T*3)*.4*u;g.fillStyle=dk;
       for(const s of [-1,1]){g.save();g.translate(0,h);g.scale(s,1);g.rotate(fl2*.5);g.beginPath();g.moveTo(.4*u,0);g.lineTo(3.6*u,-1.6*u);g.lineTo(3.2*u,.2*u);g.lineTo(2.4*u,-.3*u);g.lineTo(1.6*u,.6*u);g.closePath();g.fill();g.restore()}
       g.fillStyle=col;g.beginPath();g.ellipse(k*u,h,1.2*u,1.4*u,0,0,7);g.fill();g.beginPath();g.moveTo(-.3*u+k*u,h-1.1*u);g.lineTo(-.1*u+k*u,h-2.2*u);g.lineTo(.4*u+k*u,h-1.2*u);g.fill();
       g.fillStyle='#ff4a6a';circ(g,.6*u+k*u,h-.3*u,.25*u);g.fill();break}
@@ -3161,6 +3193,11 @@ function sigilo(g,x,pies,s,k,col){const u=1-k,a=Math.min(1,k*2.2),r=s*(.48+.3*u)
 // campeón a 3 estrellas: chispas doradas que suben y un anillo dorado en el suelo
 function brillo3(g,x,pies,s,t,frente){if(frente)return motas(g,x,pies,s,t,6,1.6,.45,'255,215,110',.9);g.save();g.globalCompositeOperation='lighter';g.translate(x,pies);g.scale(1,.3);
   g.strokeStyle=`rgba(255,210,100,${.45+.2*Math.sin(t*3)})`;g.lineWidth=s*.035;g.beginPath();g.arc(0,0,s*.56,0,7);g.stroke();g.restore()}
+// tiempo congelado (regla del Mundo 6): las columnas 0..congelado del tablero, cubiertas de escarcha que brilla
+function drawZonaFria(s,now){const RG=typeof reglaActual==='function'&&S&&reglaActual();if(!RG||!RG.congelado)return;
+  for(let R=0;R<ROWS;R++)for(let C=0;C<=RG.congelado;C++){const w=world(C,R),x=w.x*s,y=w.y*s+M.pad;hexPath(x,y,s*.95);
+    ctx.fillStyle=`rgba(170,215,255,${.16+.05*Math.sin(now*1.5+C+R*.7)})`;ctx.fill();ctx.strokeStyle='rgba(220,240,255,.45)';ctx.lineWidth=1.2;ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;for(let i=0;i<3;i++){const a=i*Math.PI/3+.3;ctx.beginPath();ctx.moveTo(x-Math.cos(a)*s*.22,y-Math.sin(a)*s*.22);ctx.lineTo(x+Math.cos(a)*s*.22,y+Math.sin(a)*s*.22);ctx.stroke()}}}
 const AURAS={
  // Morvane: halo oscuro, humo que sube por encima de la cabeza y zarcillos de sombra que le rodean (por detrás y por delante)
  morvane:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.15,s*1.65,'26,4,48',.62);charcoSombra(g,x,pies,s,1.1,'22,4,40',.8);
@@ -3206,6 +3243,21 @@ const AURAS={
  soldado:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,3,1.2,.4,'170,165,160',.5)},
  sabueso:{detras:(g,x,pies,s,t)=>humo(g,x,pies,s,t,5,1,.6,'40,36,44',.35,.18)},
  bram:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';charcoSombra(g,x,pies,s,.9,'255,130,50',.28);g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.3,.5,'255,160,80',.75)},
+ // Mundo 6: los Cronautas brillan en azul, el reino de colores con chispas de colores, y los Devoradores tragan luz
+ ione:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.6,.5,'110,200,255',.8)},
+ tik:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';g.translate(x,pies-s*.9);g.strokeStyle=`rgba(255,210,120,${.35+.1*Math.sin(t*3)})`;g.lineWidth=s*.025;g.beginPath();g.arc(0,0,s*.55,0,7);g.stroke();
+   for(let i=0;i<12;i++){const a=i*Math.PI/6;g.beginPath();g.moveTo(Math.cos(a)*s*.5,Math.sin(a)*s*.5);g.lineTo(Math.cos(a)*s*.58,Math.sin(a)*s*.58);g.stroke()}g.rotate(t*1.2);g.beginPath();g.moveTo(0,0);g.lineTo(0,-s*.42);g.stroke();g.restore()}},
+ dax:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,4,1.3,.5,'140,220,255',.7)},
+ luna:{delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,4,1.4,.5,'255,170,220',.8);motas(g,x,pies,s,t+1.5,3,1.4,.5,'170,230,255',.8)}},
+ eviel:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';const cols=['255,120,150','255,200,110','140,230,140','120,190,255','200,140,255'];
+   cols.forEach((c,i)=>{g.strokeStyle=`rgba(${c},${.3+.08*Math.sin(t*2+i)})`;g.lineWidth=s*.045;g.beginPath();g.arc(x,pies-s*.2,s*(.75-i*.08),Math.PI*1.08,Math.PI*1.92);g.stroke()});g.restore()},
+  delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.8,.6,'255,240,255',.75)},
+ teffy:{delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,4,1.6,.6,'255,170,220',.75);motas(g,x,pies,s,t+2,3,1.6,.6,'255,230,140',.75)}},
+ devorador:{detras:(g,x,pies,s,t)=>charcoSombra(g,x,pies,s,.9,'20,24,70',.55)},
+ grandevorador:{detras:(g,x,pies,s,t)=>{charcoSombra(g,x,pies,s,1.6,'10,12,50',.8);g.save();g.translate(x,pies);g.scale(1,.32);g.rotate(-t*1.4);for(let b=0;b<3;b++){g.rotate(Math.PI*2/3);
+   g.strokeStyle='rgba(90,110,255,.45)';g.lineWidth=s*.14;g.beginPath();g.arc(0,0,s*1.05,0,1.6);g.stroke()}g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,10,2.2,.9,'120,140,255',.7)},
+ reinadevoradora:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.2,s*1.6,'30,10,60',.55);charcoSombra(g,x,pies,s,1.4,'20,6,40',.8);humo(g,x,pies,s,t,10,2.4,.8,'40,20,80',.45,.26)},
+  delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,8,2.3,.8,'190,150,255',.8);motas(g,x,pies,s,t+1.4,6,2.1,.8,'255,150,210',.6)}},
  // Mundo 4
  neptus:{detras:(g,x,pies,s,t)=>{g.save();g.translate(x,pies);g.scale(1,.3);g.globalCompositeOperation='lighter';for(let i=0;i<2;i++){g.strokeStyle=`rgba(90,200,255,${.55-.2*i})`;g.lineWidth=s*.06;g.beginPath();g.arc(0,0,s*(.62+.12*i),t*(2-i*.7)+i,t*(2-i*.7)+i+3.6);g.stroke()}g.restore()},
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.4,.4,'160,230,255',.8)},
@@ -3542,6 +3594,7 @@ function draw(){
   drawAvatars(now);
   ctx.save();ctx.translate(M.ox,M.oy);
   ctx.drawImage(BG.board,0,0,M.W,M.H);
+  drawZonaFria(s,now); // Mundo 6: casillas del tiempo congelado
   const dragUnit=drag&&drag.moved&&drag.kind==='unit';
   if(dragUnit&&hover){
     if(hover.cell&&hover.cell[1]>=4){const w=world(hover.cell[0],hover.cell[1]);hexPath(w.x*s,w.y*s+M.pad,s*.95);ctx.fillStyle='rgba(255,217,138,.2)';ctx.fill();ctx.strokeStyle='#ffd98a';ctx.lineWidth=2;ctx.stroke()}
@@ -4204,7 +4257,7 @@ function nivelCueva(n,nombre,tema,de,mons,clan,jefe,K){
   const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const huecos={tank:[[3,0],[2,0],[4,0],[1,0],[5,0],[0,0],[6,0],[3,1]],assassin:[[0,1],[6,1],[1,1],[5,1],[0,0],[6,0]],ranged:[[3,3],[2,3],[4,3],[1,3],[5,3],[0,3],[6,3],[3,2]],mage:[[2,3],[4,3],[3,2],[1,2],[5,2],[0,3],[6,3],[2,2]]};
   const OBJ={tank:['muralla','troll','pua','bastionob','gigante'],assassin:['ocaso','vampira','runica','ojo'],ranged:['vendaval','runica','certero','ocaso'],mage:['sabio','precision','ancestral','egida']};
-  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas',soldado:'Soldados de ceniza',arquero:'Arqueros de ceniza',sabueso:'Sabuesos de humo'};
+  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas',soldado:'Soldados de ceniza',arquero:'Arqueros de ceniza',sabueso:'Sabuesos de humo',bestia:'Bestias de ceniza',cuervo:'Cuervos de ceniza',devorador:'Devoradores',escarcha:'Lobos de escarcha',automata:'Autómatas',gris:'Criaturas grises'};
   const X=[1,1.5,2.1,2.8,3.4],cada=[2,2,3,3,4]; // multiplicador de los monstruos y 1 de cada «cada» unidades es monstruo
   const tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=NFASES;f++){const fila=[],fo=FO[f-1];
@@ -4286,7 +4339,7 @@ const SUPERV_T=60;
 function prepararSuperv(cb,R){if(!R||!R.olas)return;cb.superv={dur:SUPERV_T,k:R.k||1,olas:R.olas.map(o=>({t:o.t,u:o.u}))}}
 // nivel de supervivencia: 2 fases de 4 rondas (la 1-1 es el carrusel). mons: {monstruo: peso}; K: fuerza de las 7 rondas
 function nivelSuperv(n,nombre,tema,de,mons,K,premio,alfa){
-  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin'};let q=0;
+  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank'};let q=0;
   const filas={tank:[0,1],assassin:[1,0],ranged:[3,2]},tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=2;f++){const fila=[];
     for(let r=1;r<=4;r++){if(f===1&&r===1){fila.push(null);continue}
@@ -4305,7 +4358,7 @@ const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70
  reygoblin:{n:'¡Por el botín!',k:'arenga',v:[600],r:2,h:50,d:5,mana:70},
  reinaarana:{n:'Telaraña',k:'telarana',v:[340],r:1,d:1.6,mana:60},
  dracqueen:{n:'Corte de murciélagos',k:'murcielagos',v:[420],n2:3,heal:.5,mana:75}};
-const JEFAS=['matrona','reinaarana','dracqueen','sable','velia'];
+const JEFAS=['matrona','reinaarana','dracqueen','sable','velia','reinadevoradora'];
 
 // ---- colección y progreso (se guarda en este dispositivo) ----
 const HIST_KEY='crisol_historia_v1',MAZO_N=20;
@@ -4347,7 +4400,8 @@ function storyTeam(team){
   }
   const all=out.concat(teamFrom(fake,team)),k=R.k||1,premio=nivelActual().premio;
   if(R.jefe)for(const f of all)if(!f.creep&&f.id===premio&&f.star===3&&!f.jefe){f.jefe=true;f.name+=' (jefe)'} // campeón jefe // k: fuerza del combate (calibrada con simulaciones; ver docs/modo-historia.md)
-  for(const f of all){f.maxHp*=k;f.hp=f.maxHp;f.ad*=k;if(!f.creep)f.ap+=(k-1)*100}
+  const RG=reglaActual(),kb=RG&&RG.bucle?1+.15*(S.bucleN||0):1; // bucle: cada repetición, más fuerte
+  for(const f of all){f.maxHp*=k*kb;f.hp=f.maxHp;f.ad*=k*kb;if(!f.creep)f.ap+=(k*kb-1)*100;if(RG&&RG.ecos)f.pas.eco=RG.ecos}
   return all;
 }
 
@@ -4369,6 +4423,8 @@ function ponerAliado(L){if(!L||!L.aliado||!CH[L.aliado])return;const id=L.aliado
   hu.board[freeBoardSlot(hu,CH[id])]={uid:++S.uid,id,star:1,items:[],aliado:true};
   if(!S.sim)tras(()=>toast(`${CH[id].name} lucha a tu lado: no ocupa plaza del equipo y puedes mejorarlo en la tienda`),600)}
 function storyNext(){
+  const RG=reglaActual(); // bucle (Mundo 6): las rondas 3 y 6 se repiten RG.bucle veces, cada vez más fuertes
+  if(RG&&RG.bucle&&(S.round===3||S.round===6)){if((S.bucleN||0)<RG.bucle){S.bucleN=(S.bucleN||0)+1;toast(`¡Bucle! La ronda se repite (${S.bucleN} de ${RG.bucle})`);return beginRound()}S.bucleN=0}
   if(S.round<roundsIn(S.stage))return nextRound();
   if(S.stage<nFases())return showReward();
   storyWin();
@@ -5774,6 +5830,121 @@ Object.assign(DLG_TRAS_ESCENA,{
   ['ione','Solo hay una forma de arreglarlo: volver al momento en que todo se torció. Pero cada salto la gasta. Si se apaga antes de llegar, no habrá otra oportunidad.'],
   ['crisol','¿Volver… al pasado?'],['dax','Las preguntas, por el camino. ¡Todos dentro, que esto se cierra!']]});
 
+// ================= MUNDO 6: LOS PORTALES DEL TIEMPO (niveles 77-91) =================
+// Historia y diseño en docs/historia.md. La máquina del tiempo de los Cronautas funciona con una chispa prestada que se gasta en cada salto.
+// El mundo sin llama (77-81, el futuro de los Cronautas), los portales (82-86, épocas equivocadas) y el reino de colores (87-91, otra dimensión).
+// 78 es de supervivencia; 84 y 90, por turnos. Reglas nuevas: congelado (82: columnas lentas), bucle (83: las rondas 3 y 6 se repiten)
+// y ecos (85: los rivales vuelven una vez). En el tramo 1 no se puede usar a Crisol (sin magia) ni al Draco (sin fuego).
+// MUNDO6_ABIERTO: mientras falten imágenes y la calibración, sale como «próximamente».
+const MUNDO6_ABIERTO=false;
+// fuerza: la curva del nivel 30 escalada; encima, AJUSTE_K6 por nivel (calibrado con el simulador, ver docs/modo-historia.md)
+const K6=f=>K3(f*.8);
+const TEMA6=THEMES.length;
+THEMES.push(
+ Object.assign({},THEMES[2],{n:'El mundo sin llama',img:'tablero_sinllama',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#141414','#202020'],pa:'#3a3a3a',pb:'#424242',ea:'#363434',eb:'#3e3c3c',line:'#6a6a6a',lineE:'#7a6a6a',side:'#0a0a0a',mid:'rgba(220,220,220,.4)',amb:'snow',ac:['#c8c8c8','#9a9a9a'],deco:'losas'}),
+ Object.assign({},THEMES[2],{n:'Los portales',img:'tablero_portales',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#060c1c','#0e1a34'],pa:'#24304a',pb:'#2a3854',ea:'#2a2a48',eb:'#303050',line:'#5a8ad0',lineE:'#7a6ad0',side:'#040810',mid:'rgba(140,200,255,.5)',amb:'star',ac:['#9fd8ff','#ffffff'],deco:'losas'}),
+ Object.assign({},THEMES[2],{n:'El reino de colores',img:'tablero_colores',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#ffd8ec','#c8e8ff'],pa:'#f0c8e0',pb:'#e8d0f0',ea:'#c8e0f8',eb:'#d0f0e0',line:'#ffffff',lineE:'#b8a8e8',side:'#e8c0dc',mid:'rgba(255,255,255,.7)',amb:'firefly',ac:['#ff9ad8','#9fe6ff'],deco:'losas'}));
+// música: el futuro gris (eólico, muy lento), los portales (tonos enteros, misteriosa) y el reino de colores (mayor, alegre)
+MUSIC.push({root:45,sc:[0,2,3,5,7,8,10],bpm:66,prog:[0,5,3,6]},{root:52,sc:[0,2,4,6,8,10],bpm:100,prog:[0,2,4,1]},{root:60,sc:[0,2,4,5,7,9,11],bpm:112,prog:[0,4,5,3]});
+const CLAN_FUTURO=['ebano','eclipse','ceniza','sombrio','titan','espina','vespa','martillo'],CLAN_TIEMPO=['kalima','nebula','soberana','alba','nerea','coral','abisal','yunque'],CLAN_SUENO=['lira','fresno','rama','musgo','alba','soberana','nebula','kalima'];
+const NIVELES_M6=[
+ nivelCueva(77,'La puerta azul',TEMA6,'de la Llanura',{bestia:3,cuervo:1},CLAN_FUTURO,null,K6(0.6)),
+ nivelSuperv(78,'Ceniza que cae',TEMA6,'del Campamento',{bestia:3,cuervo:1,soldado:1},KS(0.32),null,'bestia'),
+ nivelCueva(79,'El refugio del reloj',TEMA6,'del Refugio',{soldado:2,cuervo:2},CLAN_FUTURO,null,K6(0.62)),
+ nivelCueva(80,'La estatua rota',TEMA6,'de la Plaza gris',{bestia:2,soldado:2},CLAN_FUTURO,null,K6(0.62)),
+ nivelCueva(81,'La jinete del humo',TEMA6,'del Futuro',{bestia:3,cuervo:1},CLAN_FUTURO,
+  {m:'sable',x:1.15,c:3,f:1,premio:'ione',nombre:'Sable, la jinete del Humo',escolta:[Rd('bestia',1,1,3),Rd('bestia',5,1,3),Rd('soldado',3,0,3),Rd('cuervo',2,3,3),['eclipse',2,4,3,['vendaval']]]},K6(1.04)),
+ nivelCueva(82,'La era del hielo eterno',TEMA6+1,'del Hielo',{escarcha:3,devorador:1},CLAN_TIEMPO,null,K6(0.6)),
+ nivelCueva(83,'La ciudad de engranajes',TEMA6+1,'de los Engranajes',{automata:3,devorador:1},CLAN_TIEMPO,null,K6(0.55)),
+ nivelCueva(84,'Un mundo sin Crisol',TEMA6+1,'del Pueblo gris',{devorador:2,automata:2},CLAN_TIEMPO,null,K6(0.55)),
+ nivelCueva(85,'Las ruinas del primer templo',TEMA6+1,'del Templo',{devorador:2,escarcha:1,automata:1},CLAN_TIEMPO,null,K6(0.55)),
+ nivelCueva(86,'El Devorador de portales',TEMA6+1,'del Portal',{devorador:3,automata:1},CLAN_TIEMPO,
+  {m:'grandevorador',x:1.05,c:3,f:1,premio:null,nombre:'El Gran Devorador',escolta:[Rd('devorador',1,1,3.2),Rd('devorador',5,1,3.2),Rd('automata',2,0,3),Rd('automata',4,0,3),['nebula',2,3,3,['sabio']]]},K6(1.06)),
+ nivelCueva(87,'Caída entre nubes',TEMA6+2,'de las Nubes',{devorador:2,gris:2},CLAN_SUENO,null,K6(0.6)),
+ nivelCueva(88,'El bosque de algodón',TEMA6+2,'del Bosque de algodón',{gris:3,devorador:1},CLAN_SUENO,null,K6(0.6)),
+ nivelCueva(89,'El lago de Eviel',TEMA6+2,'del Lago',{devorador:2,gris:2},CLAN_SUENO,null,K6(0.62)),
+ nivelCueva(90,'El torneo de Peter',TEMA6+2,'del Torneo',{gris:2,devorador:2},CLAN_SUENO,null,K6(0.55)),
+ nivelCueva(91,'El corazón del arcoíris',TEMA6+2,'del Arcoíris',{devorador:3,gris:1},CLAN_SUENO,
+  {m:'reinadevoradora',x:1.05,c:3,f:2,premio:null,nombre:'La Reina de los Devoradores',escolta:[Rd('devorador',1,1,3.4),Rd('devorador',5,1,3.4),Rd('gris',2,0,3.2),Rd('gris',4,0,3.2),['soberana',2,3,3,['precision']],['titan',2,3,0,['muralla']]]},K6(1.06)),
+];
+[[77,'tik'],[79,'dax'],[87,'luna'],[89,'eviel'],[90,'teffy']].forEach(([n,id])=>NIVELES_M6.find(L=>L.n===n).premio=id); // se unen al superar su nivel (sin jefe)
+NIVELES_M6.filter(L=>L.n===84||L.n===90).forEach(L=>L.turnos=true);
+{const sin={sinId:['crisol','draco'],t:'Sin Crisol ni el Draco',motivo:'Crisol perdió su magia y el Draco su fuego al apagarse el Crisol. En el mundo sin llama no pueden luchar.'};
+ Object.assign(REGLAS,{77:sin,78:sin,79:sin,80:sin,81:sin,
+  82:{congelado:2,t:'Tiempo congelado',motivo:'En la era del hielo eterno el tiempo está helado: en las tres columnas de la izquierda todo va más lento, para los dos bandos.'},
+  83:{bucle:1,t:'Bucle',motivo:'En la ciudad de engranajes todo se repite: las rondas 3 y 6 vuelven a empezar una vez más, con rivales más fuertes, hasta romper el bucle.'},
+  85:{ecos:.4,t:'Ecos',motivo:'En las ruinas del primer templo el tiempo rebota: cada rival que cae vuelve una vez con parte de su vida.'},
+  88:{sinRasgo:'umbra',t:'Sin campeones Siniestros',motivo:'El bosque de algodón está hecho de alegría y no deja pasar la sombra: los Siniestros se quedan en la puerta.'}})}
+// fuerza: ajuste por nivel calibrado con el simulador (con aumentos). Más fácil que el Mundo 5: normales 31-44 %, jefes 26-28 %, la Reina ~15 %
+const AJUSTE_K6={77:1.14,78:.385,79:1.075,80:1.055,81:1.409,82:1.025,83:1.22,85:.905,86:1.437,87:1.39,88:1.224,89:1.177,91:1.43};
+NIVELES_M6.forEach(L=>{const m=AJUSTE_K6[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
+NIVELES_M6.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n];
+  if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
+if(MUNDO6_ABIERTO)NIVELES.push(...NIVELES_M6);
+// cerrado: sus campeones no salen en el álbum ni en la tienda (ni como silueta)
+else ['tik','ione','dax','luna','eviel','teffy'].forEach(id=>{const i=ALBUM.indexOf(id);if(i>=0)ALBUM.splice(i,1)});
+Object.assign(JEFES,{grandevorador:{n:'Fauces del tiempo',k:'aoe',v:[520],r:1,mana:70},reinadevoradora:{n:'Hambre de colores',k:'aliento',v:[560],r:1,mana:70}});
+MUNDOS.push({n:6,titulo:'Los portales del tiempo',nombre:'Más allá del tiempo',niveles:Array.from({length:15},(_,i)=>77+i),intro:['La máquina del tiempo de los Cronautas funciona con una chispa prestada, y cada salto la gasta. Antes de ir al pasado hay que recargarla… mil años en el futuro.']});
+Object.assign(HISTORIA_CH,{
+ tik:'Pequeño, redondo y con un reloj en el pecho: es la máquina del tiempo de los Cronautas. Lo sabe todo, pero lo cuenta todo desordenado.',
+ ione:'Capitana de los Cronautas. Ha visto fracasar cuarenta y tres intentos de cambiar el pasado. Este es el último.',
+ dax:'Ingeniero mitad cíborg de los Cronautas. Arregla la máquina del tiempo a golpes y no deja que nadie toque sus herramientas.',
+ luna:'Una caniche del reino de colores, la primera en encontraros. Nunca había visto a nadie de fuera y ya no piensa separarse de vosotros.',
+ eviel:'El unicornio del lago del reino de colores. Su agua cura cualquier herida, hasta las que no se ven.',
+ teffy:'Teffy y Peter, su caniche guerrero gigante, guardan el corazón del reino de colores. Si Peter cae, Teffy sigue luchando a pie.'});
+
+// ---- diálogos (docs/historia.md, Mundo 6) ----
+Object.assign(DLG_MUNDO,{6:[
+ ['narra','Por dentro, un portal del tiempo suena como mil relojes a la vez.'],
+ ['tik','¡Agarraos! El primer salto siempre se marea. Bueno: siempre se mareará.'],
+ ['ione','No vamos al pasado todavía. La chispa necesita recargarse, y solo se puede hacer en nuestro refugio. En nuestro tiempo.'],
+ ['tovo','¿Vuestro tiempo? ¿Cuánto falta para… vuestro tiempo?'],
+ ['dax','Mil años. Y no os va a gustar.']]});
+Object.assign(DLG_NIVEL,{
+ 77:[['narra','El portal os deja en una llanura gris. No hay árboles, ni pájaros, ni color. Solo ceniza que cae despacio, como si nevara.'],['crisol','Voy delante. Yo… Ah. Claro. Ya no puedo.'],['ione','Hoy lucharán los demás, Crisol. Guarda fuerzas.']],
+ 78:[['dax','Tik necesita un rato para recargarse. Y las bestias de ceniza huelen la chispa desde muy lejos.'],['tik','Si me desenchufáis, os olvido a todos. Es broma. Creo.']],
+ 79:[['narra','Bajo una torre de relojes parados vive la última gente del futuro. Nadie sonríe. Nadie recuerda cómo se hacía.'],['bram','Tovo, déjame aquí. Yo solo os retraso.'],['tovo','Ni lo sueñes, papá.']],
+ 80:[['narra','En la plaza del futuro hay una estatua de siete figuras. A cuatro les falta la cabeza.'],['ione','Cuarenta y tres. Cuarenta y tres veces volvimos atrás, y cuarenta y tres veces fracasamos.'],
+  ['crisol','¿Y por qué esta vez sería distinto?'],['ione','Porque esta vez lleváis la chispa con vosotros.']],
+ 81:[['ione','Algo nos ha seguido por el portal. Algo que galopa sin cascos.']],
+ 82:[['tik','¡Uy! Esto no es el origen. Esto es… frío.'],['kalima','El viento aquí no sopla. Está congelado en el aire.']],
+ 83:[['tik','¡Primos! ¡Todo el mundo aquí es un reloj!'],['dax','Y todos van a la misma hora. Esto es un bucle: o lo rompemos, o lo repetimos para siempre.']],
+ 84:[['narra','Un pueblo gris, con gente gris que no levanta la vista. Aquí la llama nunca existió.'],['tovo','No hay campeones. Ni uno.'],['crisol','Nadie se atreve a nada…']],
+ 85:[['orion','Este templo es más viejo que la Orden. Aquí empezó todo.'],['morvane','Y aquí hay algo que no quiere que lo veamos.']],
+ 86:[['tik','¡Algo se come el portal! ¡Y tiene hambre!']],
+ 87:[['narra','Caéis sobre algo blando. Muy blando. Es una nube. Y la nube es rosa.'],['tik','Esto no es otra época. Esto es… otro mundo. Otro universo entero.'],
+  ['luna','¡Hola! ¿Venís de fuera? ¡Nunca ha venido nadie de fuera! ¡Cuidado, que también han caído bichos!']],
+ 88:[['luna','El bosque no deja pasar las sombras. Aquí todo está hecho de alegría, y la sombra no cabe.'],['morvane','Ya. Esperaré fuera. Estoy acostumbrado.']],
+ 89:[['eviel','Ese hombre está muy herido. Traedlo al agua.'],['bram','No necesito…'],['tovo','Papá. Déjate ayudar. Por una vez.']],
+ 90:[['teffy','¡Alto! Nadie entra al corazón del reino sin vencer en el torneo. ¿Verdad, Peter?'],['teffy','(Peter dice «¡guau!», que quiere decir que sí.)']],
+ 91:[['luna','¡Algo ha entrado por vuestro portal! ¡Se está comiendo los colores!'],['crisol','Nos ha seguido a nosotros. Esto es culpa nuestra.']]});
+Object.assign(DLG_JEFE,{
+ 77:{despues:[['tik','¡Bien luchado! Os acompañaré. Ya os acompañé. Os acompaño. Tik se une, eso.']]},
+ 78:{despues:[['tik','Batería al doce por ciento. Suficiente para… bueno, para pocos saltos.']]},
+ 79:{despues:[['dax','Llevaba años arreglando esa máquina para nada. Vale. Voy con vosotros. Pero si alguien toca mis herramientas, lo desmonto.']]},
+ 80:{despues:[['ione','En todos nuestros viajes, solo una cosa dejó huella: el portador de la chispa. Por eso os buscamos a vosotros.']]},
+ 81:{antes:[['narra','Un galope sin cascos rompe el silencio del futuro.'],['sable','¿Creíais que un portal me iba a detener? Kael quiere esa chispa apagada. Del todo.']],
+  despues:[['sable','Este mundo… ¿esto es lo que ganamos? ¿Ceniza y nada más?'],['narra','Sable mira la llanura gris y se queda quieta. Por primera vez no sabe hacia dónde galopar.'],
+   ['ione','Cerrad el portal. Ella se queda.'],['tovo','¿Aquí? ¿Sola?'],['ione','En el mundo que ayudó a crear.'],['ione','Y yo voy con vosotros hasta el final.']]},
+ 82:{despues:[['tik','Le quedan cinco saltos a la chispa. O cuatro. Los números son difíciles cuando eres un reloj.']]},
+ 83:{despues:[['dax','Roto. Como todo lo que toco. Esta vez, a propósito.']]},
+ 84:{despues:[['crisol','Así que esto es lo que hacía la llama. No daba poder. Daba valor.'],['crisol','Y yo que pensaba que lo importante era quién la llevaba.']]},
+ 85:{despues:[['narra','En la pared, un mural: siete guardianes alrededor de una llama joven. Cuatro caras están tachadas con ceniza. Las otras tres, borradas por el tiempo.'],['orion','Los tres fieles. ¿Qué fue de vosotros?']]},
+ 86:{antes:[['ione','Un Gran Devorador. Si se traga el salto, caemos fuera de nuestro mundo.']],
+  despues:[['narra','El Devorador cae… pero se lleva un mordisco del portal. Todo da vueltas.'],['tik','¡Rumbo perdido! ¡Agarraos a algo blandito!']]},
+ 87:{despues:[['luna','¡Qué bien peleáis! Me quedo con vosotros. Bueno, vosotros os quedáis conmigo. Da igual: ¡juntos!']]},
+ 88:{despues:[['luna','Ven, Morvane. Aquí no se juzga lo que fuiste, sino lo que haces.'],['morvane','… Gracias.']]},
+ 89:{despues:[['narra','El agua del lago brilla y las heridas de Bram se cierran.'],['bram','Hacía años que no me sentía así de entero.'],['eviel','Os acompañaré. En vuestro mundo hace falta un poco de este.']]},
+ 90:{despues:[['teffy','¡Nos habéis ganado! ¡A nosotros!'],['teffy','Peter dice que vamos con vosotros. Y cuando Peter decide algo, no hay quien le quite la idea.']]},
+ 91:{antes:[['narra','Por el portal roto entra la Reina de los Devoradores. Los colores se apagan donde pisa.']],
+  despues:[['narra','La luz del reino envuelve al Draco, y su fuego vuelve, de todos los colores.'],['draco','Este fuego no es el mío… pero arde igual. Gracias, pequeña.'],['luna','¡De nada!'],
+   ['crisol','¿Ya? ¿Se ha ido? Bien. Muy bien. Era el plan.']]}});
+Object.assign(DLG_TRAS_ESCENA,{
+ 91:[['eviel','Os damos un poco de nuestra luz. Es lo que tenemos.'],['tik','Batería al sesenta por ciento. Suficiente para un salto. Uno. Solo de ida.'],
+  ['ione','Escuchad bien. Detrás de nosotros, los portales se cerrarán. No podremos volver a intentarlo.'],
+  ['ione','Si fracasamos en el pasado, la Orden ganará en todos los tiempos. El mundo gris que habéis visto será el único que exista. Para siempre.'],
+  ['dax','Sin presión, vamos.'],['tovo','Entonces lo haremos bien. A la primera.'],['crisol','Esta vez no voy delante. Vamos todos juntos.']]});
+
 // ================= NIVELES POR TURNOS DEL MODO HISTORIA =================
 // Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 3 fases
 // de 3 combates (el último de cada fase, un jefe). Sin economía: los campeones ganan experiencia y suben de nivel (más
@@ -5793,7 +5964,10 @@ const TN_NIVELES={ // f: fuerza base de los rivales del nivel
  55:{mons:{marinero:3,cangrejo:1,tentaculo:1},jefe:[['cangrejo',1.6]],f:1.42},
  59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.3},
  // Mundo 5 (cerrado): el mercado en ruinas (≈28 %)
- 69:{mons:{soldado:3,sabueso:1,arquero:1},jefe:[['soldado',1.8]],f:1.53}};
+ 69:{mons:{soldado:3,sabueso:1,arquero:1},jefe:[['soldado',1.8]],f:1.53},
+ // Mundo 6 (cerrado): un mundo sin Crisol (≈36 %) y el torneo de Peter (≈30 %)
+ 84:{mons:{devorador:2,automata:2,gris:1},jefe:[['automata',1.8]],f:1.33},
+ 90:{mons:{gris:3,devorador:1},jefe:[['gris',2]],f:1.55}};
 const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
 let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
@@ -5997,10 +6171,12 @@ function tnDerrota(){TN.fin=true;tnSfx('lose');tnFinal(false)}
 // fin del nivel: como uno normal del modo Historia (nivel superado o derrota, con la experiencia de cuenta)
 function tnFinal(gana){const n=TN.nivel,L=NIVELES[n-1],g=TN.ganado,fase=TN.fase+1;TN.fin=true;if(TN.sim)return TN.sim.fin(gana);
   $('#tnOv').hidden=true;$('#tnPremioOv').hidden=true;if(TN.tut){if(TN.tut.i>=TN_TUT.length)tnTutFin();else{tutOcultar();tnTutSuelta()}}
-  if(gana){const primera=!HIST.hechos.includes(n);if(primera){HIST.hechos.push(n);if(NIVELES[n])HIST.sel=n+1}histSave(HIST);
+  if(gana){const primera=!HIST.hechos.includes(n);if(primera){HIST.hechos.push(n);if(NIVELES[n])HIST.sel=n+1}
+    const nuevo=L.premio&&!HIST.col.includes(L.premio);if(nuevo){HIST.col.push(L.premio);if(HIST.mazo.length<MAZO_N)HIST.mazo.push(L.premio)}histSave(HIST); // un nivel por turnos también puede dar campeón (Mundo 6)
     const est=guardarEstrellas(n,TN.equipo.filter(u=>u.vivo).length||1);misionEvento('nivelHist'); // estrellas: campeones en pie al final
     const B=primera?GANA.nivel1:GANA.nivelRep;mostrarCobro(g.xp+B[0],g.asc+B[1]+est.bonus);sfx('over');
-    endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')} · ${TN.equipo.filter(u=>u.vivo).length} de 3 en pie.`,pintaEstrellas(est.e),'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)})}
+    const fin=()=>endScreen('¡Nivel superado!',`${L.nombre} completado con ${TN.equipo.map(u=>u.nombre).join(', ')} · ${TN.equipo.filter(u=>u.vivo).length} de 3 en pie.`+(nuevo?` ${CH[L.premio].name} se une a tu colección.`:''),pintaEstrellas(est.e),'Continuar',()=>{TN=null;openStory();despuesDeNivel(n,primera)});
+    const sigue=()=>nuevo?showUnlock(L.premio,fin):fin();if(nuevo||pendienteVictoria(n))setTimeout(()=>dialogoVictoria(n,sigue),700);else fin()}
   else{mostrarCobro(g.xp,g.asc);endScreen('Derrota',`Nivel ${n} · ${L.nombre}: tu equipo cayó en la fase ${fase} de ${TN_ESCALA.length}.`,`Nivel ${n} · fase ${fase}`,'Reintentar',()=>tnAbrirNivel(n));$('#endPlace').classList.add('corto')}}
 function tnLog(t){if(TN&&TN.sim)return;const l=$('#tnLog');if(!l)return;l.innerHTML=`<div>${t}</div>`+l.innerHTML;while(l.children.length>5)l.lastChild.remove()}
 function tnTexto(u,s,col){if(TN.sim)return;const now=performance.now(),dy=TN.fx.filter(f=>f.u===u&&now-f.t0<350).length;TN.fx.push({u,s,col,t0:now,dy})}
@@ -6559,9 +6735,21 @@ const ESCENAS={
   {img:'m5_final_2',cam:cam(1.3,.5,.4,1,.5,.5),txt:'Crisol metió las manos en el fuego para avivarlo con todo lo que tenía. No bastó.'},
   {img:'m5_final_3',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Bram se puso delante de su hijo. Como siempre había querido hacer.'},
   {img:'m5_final_4',cam:cam(1,.5,.5,1.4,.5,.55),txt:'El Crisol se apagó. La oscuridad cubrió el mundo. Y tu chispa, lo último que quedaba encendido, se apagó con él.'},
-  {img:'m5_final_5',cam:cam(1.35,.5,.5,1,.5,.5),txt:'Y entonces, en la oscuridad, se abrió una puerta.'}]};
+  {img:'m5_final_5',cam:cam(1.35,.5,.5,1,.5,.5),txt:'Y entonces, en la oscuridad, se abrió una puerta.'}],
+ m6_intro:[
+  {img:'m6_intro_1',cam:cam(1.35,.5,.5,1,.5,.5),txt:'La máquina del tiempo os arrastra lejos de todo lo que conocíais.'},
+  {img:'m6_intro_2',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Mil años después, la ceniza sigue cayendo.'},
+  {img:'m6_intro_3',cam:cam(1.3,.3,.5,1.3,.6,.45),txt:'Vuestros campeones están cansados, heridos, rotos.'},
+  {img:'m6_intro_4',cam:cam(1,.5,.5,1.4,.5,.45),txt:'Y una chispa prestada es todo lo que queda.'}],
+ m6_mitad:[
+  {img:'m6_mitad_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'El Devorador se tragó el portal en pleno salto.'},
+  {img:'m6_mitad_2',cam:cam(1.3,.5,.4,1,.5,.6),txt:'Y caísteis fuera de vuestro mundo, a otro universo que nadie había visto nunca.'}],
+ m6_final:[
+  {img:'m6_final_1',cam:cam(1,.5,.5,1.3,.5,.4),txt:'La luz de otro mundo le devolvió el fuego al Draco.'},
+  {img:'m6_final_2',cam:cam(1.3,.5,.5,1,.5,.45),txt:'El reino os dio un poco de su luz. Lo justo para un último salto.'},
+  {img:'m6_final_3',cam:cam(1,.5,.5,1.4,.5,.45),txt:'Solo de ida. Si fracasáis, no habrá otro intento: el destino de todos dependerá de lo que hagáis en el pasado.'}]};
 // nivel que desbloquea la escena de la mitad y la del final de cada mundo (se ven tras el diálogo de victoria de su jefe)
-const ESC_MITAD={1:10,2:20,3:40,4:54,5:68},ESC_FIN={1:15,2:30,3:46,4:61,5:76};
+const ESC_MITAD={1:10,2:20,3:40,4:54,5:68,6:86},ESC_FIN={1:15,2:30,3:46,4:61,5:76,6:91};
 const escImg=sc=>ESCENA_IMG[sc.img]||(sc.alt&&ESCENA_IMG[sc.alt]);
 const escLista=k=>{const L=ESCENAS[k];return L&&L.every(escImg)?L:null};
 // ---- reproductor ----
