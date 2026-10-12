@@ -3119,6 +3119,23 @@ function grietas(g,x,pies,s,t){g.save();g.globalCompositeOperation='lighter';g.l
   const rama=(x0,y0,a,l,prof)=>{let px=x0,py=y0;const pts=[[px,py]];for(let j=1;j<=3;j++){const aj=a+((((prof*11+j*7)%5)-2)*.25);px+=Math.cos(aj)*l/3;py+=Math.sin(aj)*l/3*.45;pts.push([px,py])}return pts};
   const lineas=[];for(let i=0;i<6;i++){const a=i*1.047+.4,p=rama(x+Math.cos(a)*s*.15,pies+Math.sin(a)*s*.06,a,s*.5,i);lineas.push(p);const m=p[2];lineas.push(rama(m[0],m[1],a+(i&1?.7:-.7),s*.2,i+3))}
   for(const [w,c] of [[s*.06,`rgba(140,60,255,${.22+.22*pul})`],[s*.018,`rgba(235,210,255,${.55+.4*pul})`]]){g.strokeStyle=c;g.lineWidth=w;for(const p of lineas){g.beginPath();p.forEach(([px,py],k)=>k?g.lineTo(px,py):g.moveTo(px,py));g.stroke()}}g.restore()}
+function estrella(g,x,y,R,r){g.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/2,q=i&1?r:R;g.lineTo(x+Math.cos(a)*q,y+Math.sin(a)*q)}g.closePath();g.fill()}
+// zarzas que se enroscan a los pies (delante: solo la parte de delante)
+function zarzas(g,x,pies,s,t,frente){g.save();g.lineCap='round';for(let i=0;i<4;i++){const a0=i*1.57+.4,lado=Math.sin(a0)>0;if(!!frente!==lado)continue;const bx=x+Math.cos(a0)*s*.42,by=pies+Math.sin(a0)*s*.12,h=s*(.6+.14*Math.sin(t*1.3+i)),dir=Math.cos(a0)>0?1:-1;
+  for(const [c,w] of [['rgba(20,45,15,.9)',s*.075],['rgba(85,170,60,.95)',s*.045]]){g.strokeStyle=c;g.lineWidth=w;g.beginPath();g.moveTo(bx,by);g.bezierCurveTo(bx+dir*s*.18,by-h*.3,bx-dir*s*.15,by-h*.7,bx+dir*s*.05,by-h);g.stroke()}g.fillStyle='rgba(230,60,110,.9)';g.beginPath();g.arc(bx+dir*s*.05,by-h,s*.045,0,7);g.fill();
+  g.fillStyle='rgba(200,240,170,.9)';for(let k=1;k<=3;k++){const u=k/4,px=bx+dir*s*.18*3*u*(1-u)*(1-u)-dir*s*.15*3*u*u*(1-u)+dir*s*.05*u*u*u,py=by-h*(.9*u*(1-u)*(1-u)+2.1*u*u*(1-u)+u*u*u);g.beginPath();g.moveTo(px,py);g.lineTo(px+dir*s*.06,py-s*.02);g.lineTo(px,py+s*.03);g.fill()}}g.restore()}
+// murciélagos pequeños que giran alrededor
+function murcielagos(g,x,pies,s,t){g.save();for(let i=0;i<3;i++){const a=t*1.8+i*2.09,px=x+Math.cos(a)*s*.7,py=pies-s*1.6+Math.sin(a)*s*.15+Math.sin(t*6+i)*s*.05,al=Math.sin(t*16+i*2)*.5+.5;
+  g.fillStyle='rgba(40,10,25,.85)';g.beginPath();g.moveTo(px,py);g.quadraticCurveTo(px-s*.07,py-s*.06*al-s*.02,px-s*.13,py-s*.01);g.quadraticCurveTo(px-s*.07,py+s*.02,px,py+s*.02);g.quadraticCurveTo(px+s*.07,py+s*.02,px+s*.13,py-s*.01);g.quadraticCurveTo(px+s*.07,py-s*.06*al-s*.02,px,py);g.fill()}g.restore()}
+// círculo de runas en el suelo al lanzar la habilidad (k: 1 al empezar, 0 al acabar)
+function sigilo(g,x,pies,s,k,col){const u=1-k,a=Math.min(1,k*2.2),r=s*(.48+.3*u);g.save();g.translate(x,pies);g.scale(1,.32);g.globalCompositeOperation='lighter';g.rotate(u*1.6);
+  g.strokeStyle=`rgba(${col},${.9*a})`;g.lineWidth=Math.max(1.5,s*.035);g.beginPath();g.arc(0,0,r,0,7);g.stroke();g.lineWidth=Math.max(1,s*.02);g.beginPath();g.arc(0,0,r*.78,0,7);g.stroke();
+  for(let i=0;i<12;i++){const an=i*Math.PI/6;g.beginPath();g.moveTo(Math.cos(an)*r*.8,Math.sin(an)*r*.8);g.lineTo(Math.cos(an)*r*.97,Math.sin(an)*r*.97);g.stroke()}
+  g.beginPath();for(let i=0;i<7;i++){const an=i*Math.PI*4/6;g.lineTo(Math.cos(an)*r*.72,Math.sin(an)*r*.72)}g.stroke();g.beginPath();for(let i=0;i<7;i++){const an=i*Math.PI*4/6+Math.PI/3;g.lineTo(Math.cos(an)*r*.72,Math.sin(an)*r*.72)}g.stroke();
+  const gr=g.createRadialGradient(0,0,0,0,0,r);gr.addColorStop(0,`rgba(${col},${.35*a})`);gr.addColorStop(1,`rgba(${col},0)`);g.fillStyle=gr;g.beginPath();g.arc(0,0,r,0,7);g.fill();g.restore()}
+// campeón a 3 estrellas: chispas doradas que suben y un anillo dorado en el suelo
+function brillo3(g,x,pies,s,t,frente){if(frente)return motas(g,x,pies,s,t,6,1.6,.45,'255,215,110',.9);g.save();g.globalCompositeOperation='lighter';g.translate(x,pies);g.scale(1,.3);
+  g.strokeStyle=`rgba(255,210,100,${.45+.2*Math.sin(t*3)})`;g.lineWidth=s*.035;g.beginPath();g.arc(0,0,s*.56,0,7);g.stroke();g.restore()}
 const AURAS={
  // Morvane: halo oscuro, humo que sube por encima de la cabeza y zarcillos de sombra que le rodean (por detrás y por delante)
  morvane:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.15,s*1.65,'26,4,48',.62);charcoSombra(g,x,pies,s,1.1,'22,4,40',.8);
@@ -3138,6 +3155,21 @@ const AURAS={
    const ciclo=Math.floor(t/.6),u=(t/.6)%1;if(u<.35){g.save();g.globalCompositeOperation='lighter';const al=1-u/.35; // rayo violeta
      for(const [w,c] of [[s*.1,`rgba(150,80,255,${.6*al})`],[s*.035,`rgba(255,240,255,${al})`]]){g.strokeStyle=c;g.lineWidth=w;g.lineJoin='round';g.beginPath();let px=x+((ciclo*53)%9-4)*s*.1,py=pies-s*2.3;g.moveTo(px,py);
        for(let j=1;j<=7;j++){px=x+((ciclo*31+j*17)%11-5)*s*.08;py=pies-s*2.3+j*s*.33;g.lineTo(px,py)}g.stroke()}g.restore()}}},
+ // leyendas del Crisol: un detalle propio y discreto
+ soberana:{delante:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';for(let i=0;i<5;i++){const a=t*1.2+i*Math.PI*2/5,px=x+Math.cos(a)*s*.42,py=pies-s*1.95+Math.sin(a)*s*.1,tw=.6+.4*Math.sin(t*5+i*2);
+   g.fillStyle=`rgba(255,240,170,${.85*tw})`;estrella(g,px,py,s*.1*tw,s*.035);halo(g,px,py,s*.16,'255,230,150',.35*tw)}g.restore();motas(g,x,pies,s,t,7,1.9,.5,'255,235,160',.85)},
+  detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';halo(g,x,pies-s*1.1,s*1.15,'210,180,255',.22+.06*Math.sin(t*2));g.restore()}},
+ titan:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';charcoSombra(g,x,pies,s,.95,'255,140,40',.38);g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,8,1.5,.5,'255,170,70',.85)},
+ espina:{detras:(g,x,pies,s,t)=>zarzas(g,x,pies,s,t),delante:(g,x,pies,s,t)=>zarzas(g,x,pies,s,t+3.1,true)},
+ draco:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';charcoSombra(g,x,pies,s,1.2,'255,110,30',.4);g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,10,1.9,.7,'255,150,60',.85)},
+ dracqueen:{detras:(g,x,pies,s,t)=>humo(g,x,pies,s,t,8,1.7,.6,'150,20,50',.38,.24),delante:(g,x,pies,s,t)=>murcielagos(g,x,pies,s,t)},
+ crisol:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';halo(g,x,pies-s*1.1,s*1.25,'255,120,30',.3+.08*Math.sin(t*3));charcoSombra(g,x,pies,s,1,'255,120,30',.35);g.restore()},
+  delante:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';for(let i=0;i<8;i++){const ph=(t*.7+i/8)%1,px=x+Math.sin(i*2.7+t*1.4)*s*.62,py=pies-s*.3-ph*s*1.7,r=s*.07*(1-ph);
+   const gr=g.createRadialGradient(px,py,0,px,py,r*2.2);gr.addColorStop(0,`rgba(255,240,180,${.9*(1-ph)})`);gr.addColorStop(.4,`rgba(255,140,40,${.7*(1-ph)})`);gr.addColorStop(1,'rgba(255,60,20,0)');g.fillStyle=gr;g.beginPath();g.arc(px,py,r*2.2,0,7);g.fill()}g.restore()}},
+ orion:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';g.translate(x,pies);g.scale(1,.3);g.strokeStyle=`rgba(255,245,190,${.35+.15*Math.sin(t*2)})`;g.lineWidth=s*.03;g.beginPath();g.arc(0,0,s*.6,0,7);g.stroke();g.restore()},
+  delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.7,.45,'255,245,190',.85)},
+ eclipse:{detras:(g,x,pies,s,t)=>{const cy=pies-s*1.25,r=s*.55;g.save();g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(x,cy,r*.7,x,cy,r*1.25);gr.addColorStop(0,'rgba(170,110,255,0)');gr.addColorStop(.5,`rgba(170,110,255,${.55+.12*Math.sin(t*2)})`);gr.addColorStop(1,'rgba(170,110,255,0)');
+   g.fillStyle=gr;g.beginPath();g.arc(x,cy,r*1.25,0,7);g.fill();g.restore()}},
  // Mundo 4
  neptus:{detras:(g,x,pies,s,t)=>{g.save();g.translate(x,pies);g.scale(1,.3);g.globalCompositeOperation='lighter';for(let i=0;i<2;i++){g.strokeStyle=`rgba(90,200,255,${.55-.2*i})`;g.lineWidth=s*.06;g.beginPath();g.arc(0,0,s*(.62+.12*i),t*(2-i*.7)+i,t*(2-i*.7)+i+3.6);g.stroke()}g.restore()},
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.4,.4,'160,230,255',.8)},
@@ -3150,8 +3182,13 @@ const AURAS={
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,12,2,.8,'255,140,60',.85)},
  tentaculo:{detras:(g,x,pies,s,t)=>{g.save();g.translate(x,pies);g.scale(1,.3);for(let i=0;i<2;i++){const u=(t*.6+i*.5)%1;g.strokeStyle=`rgba(140,200,255,${.5*(1-u)})`;g.lineWidth=2;g.beginPath();g.arc(0,0,s*(.35+.5*u),0,7);g.stroke()}g.restore()}}};
 // o: unidad (id, jefe, creep); se llama antes y después de dibujar al personaje
-function drawAuraFondo(o,x,y,s,now){const A=AURAS[o.id];if(!A||!A.detras)return;const k=tamUnidad(o);ctx.save();A.detras(ctx,x,y+s*.32,s*k,now);ctx.restore()}
-function drawAuraFrente(o,x,y,s,now){const A=AURAS[o.id];if(!A||!A.delante)return;const k=tamUnidad(o);ctx.save();A.delante(ctx,x,y+s*.32,s*k,now);ctx.restore()}
+function drawAuraFondo(o,x,y,s,now){const A=AURAS[o.id],k=tamUnidad(o),pies=y+s*.32;ctx.save();
+  if(o.star===3&&!o.creep)brillo3(ctx,x,pies,s*k,now,false);
+  if(o.castFx>0&&!o.creep)sigilo(ctx,x,pies,s*k,o.castFx/.5,hexRgb(o.col)); // runas de la habilidad, del color del rasgo
+  if(A&&A.detras)A.detras(ctx,x,pies,s*k,now);ctx.restore()}
+function drawAuraFrente(o,x,y,s,now){const A=AURAS[o.id],k=tamUnidad(o),pies=y+s*.32;ctx.save();
+  if(o.star===3&&!o.creep)brillo3(ctx,x,pies,s*k,now,true);
+  if(A&&A.delante)A.delante(ctx,x,pies,s*k,now);ctx.restore()}
 
 // ---- proyectiles de habilidades (los llama drawProjectiles) ----
 function anclaDibujo(g,s){g.strokeStyle='#4a5560';g.fillStyle='#6a7884';g.lineWidth=Math.max(2,s*.06);g.lineCap='round';
