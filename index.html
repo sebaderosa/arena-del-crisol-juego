@@ -1356,6 +1356,8 @@ const CH={};
  ['legas','Legas','Lg',4,['guardian','picaro'],'tank',1,80,20,{n:'¡Al abordaje!',k:'ancla',v:[300,450,1200],d:1}],
  ['axi','Axi','Ax',3,['marea','arcano'],'mage',3,70,20,{n:'Burbuja de marea',k:'burbuja',v:[200,300,520],r:1,heal:.6}],
  ['neptus','Neptus','Np',5,['marea','coloso'],'tank',1,100,30,{n:'Gran ola',k:'ola',v:[350,520,1800],r:2,m:30}],
+ // Mundo 5, las cenizas del hogar (docs/historia.md)
+ ['bram','Bram','Br',4,['forja','guardian'],'tank',1,90,30,{n:'El muro de la Fragua',k:'muroFragua',v:[260,390,1000],d:.8}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
@@ -1373,6 +1375,8 @@ CH.varg.story=true;CH.varg.escala=1.3;CH.vidar.story=true;CH.vidar.escala=1.25;C
 // Mundo 4. renacer: la primera vez que cae se regenera con ese % de vida · dobleRasgo: cuenta como 2 para ese rasgo (Neptus, dueño del mar)
 CH.legas.story=true;CH.legas.escala=1.05;CH.axi.story=true;CH.axi.escala=.9;CH.axi.pas={renacer:.3};
 CH.neptus.story=true;CH.neptus.escala=1.3;CH.neptus.dobleRasgo='marea';
+// Mundo 5. corazón de padre: si Tovo cae en el combate, Bram entra en frenesí (ver kill en 03-combate.js)
+CH.bram.story=true;CH.bram.escala=1.2;
 const CH_IDS=Object.keys(CH);
 const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
 const ITEMS={
@@ -1511,8 +1515,21 @@ const CREEPS={
  nonface:{name:'Capitán Nonface',glyph:'NF',hp:3800,ad:120,as:.8,range:1,ar:50,mr:45,col:'#7a8a8a'},
  serpiente:{name:'Serpiente de la bruma',glyph:'SB',hp:4800,ad:135,as:.65,range:2,ar:55,mr:55,col:'#cfe4f0'},
  leviatan:{name:'Leviatán de ceniza',glyph:'LC',hp:7600,ad:175,as:.6,range:1,ar:70,mr:60,col:'#4a4448',pas:{espinas:.15}},
+ // Mundo 5: la Orden de la Ceniza. nubeCeniza: al caer suelta una nube que frena a los enemigos de al lado
+ soldado:{name:'Soldado de ceniza',glyph:'SC',hp:640,ad:50,as:.7,range:1,ar:40,mr:25,col:'#8a8580',pas:{nubeCeniza:1}},
+ arquero:{name:'Arquero de ceniza',glyph:'AC',hp:420,ad:52,as:.75,range:3,ar:10,mr:20,col:'#a09588'},
+ sabueso:{name:'Sabueso de humo',glyph:'SH',hp:470,ad:56,as:1,range:1,ar:15,mr:20,col:'#5a5560',jump:true},
+ sable:{name:'Sable, la jinete del Humo',glyph:'Sa',hp:4600,ad:140,as:.95,range:1,ar:45,mr:45,col:'#4a4650',jump:true},
+ corvo:{name:'Corvo, el jinete de la Lanza',glyph:'Co',hp:5800,ad:160,as:.7,range:1,ar:75,mr:50,col:'#6a6a72',pas:{espinas:.1}},
+ velia:{name:'Velia, la portaestandarte',glyph:'Ve',hp:4300,ad:110,as:.7,range:3,ar:35,mr:55,col:'#b0a89c'},
+ umbravor:{name:'Umbravor',glyph:'Um',hp:8600,ad:185,as:.6,range:1,ar:70,mr:65,col:'#2e2a34'},
+ kael:{name:'Kael, el Señor de la Ceniza',glyph:'Ka',hp:9400,ad:200,as:.75,range:1,ar:75,mr:65,col:'#5a4a40',pas:{espinas:.1}},
+ // solo hablan (Mundo 5, al final): serán campeones en el Mundo 6
+ ione:{name:'Capitana Ione',glyph:'Io',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#6ac8ff'},
+ tik:{name:'Tik',glyph:'Tk',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#ffd27a'},
+ dax:{name:'Dax',glyph:'Dx',hp:1,ad:1,as:1,range:1,ar:0,mr:0,col:'#9ab0c0'},
 };
-const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6};
+const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6,soldado:.85,arquero:.8,sabueso:.85,sable:1.25,corvo:1.3,velia:1.15,umbravor:1.7,kael:1.35};
 const ODDS=[[1,0,0,0,0],[1,0,0,0,0],[.75,.25,0,0,0],[.55,.30,.15,0,0],[.45,.33,.20,.02,0],[.30,.40,.25,.05,0],[.19,.35,.35,.10,.01],[.18,.25,.32,.22,.03],[.10,.20,.25,.35,.10]];
 // modo Historia: más probabilidad de los costes altos (allí casi nunca se pasa del nivel 6-7). Por nivel del jugador: coste 1..5
 const ODDS_HIST=[[1,0,0,0,0],[.8,.2,0,0,0],[.55,.25,.1,.05,.05],[.35,.25,.2,.1,.1],[.2,.2,.25,.15,.2],[.1,.15,.25,.2,.3],[.05,.1,.2,.25,.4],[.05,.1,.15,.25,.45],[.05,.05,.15,.25,.5]];
@@ -1843,6 +1860,8 @@ class Combat{
   kill(t){
     t.alive=false;t.hp=0;this.grid.delete(key(t.c,t.r));
     if(t.hermandad)for(const h of this.f)if(h.alive&&h.hermandad&&h.team===t.team&&!h.furia){h.furia=true;h.asBonus+=.5;this.callout(h,'¡Furia!','#5ac8d8')}
+    if(t.id==='tovo'&&!t.creep)for(const h of this.f)if(h.alive&&h.id==='bram'&&!h.creep&&h.team===t.team&&!h.padre){h.padre=true;h.asBonus+=.5;h.dmgMult*=1.5;this.callout(h,'¡Mi hijo!','#ff8a3a');if(this.vis)this.impact('slam',h.x,h.y,'#ff8a3a',1)} // corazón de padre
+    if(t.pas&&t.pas.nubeCeniza){this.enemies(t).filter(e=>hexDist(t.c,t.r,e.c,e.r)<=1).forEach(e=>{e.asBonus-=.25;e.cenizaT=3});if(this.vis)this.emit(12,t.x,t.y-.2,{col:['rgba(150,145,140,.8)','rgba(90,85,80,.7)'],sp:.8,up:-.6,life:1.2,sz:.16,jit:.4})} // nube de ceniza: frena 3 s
     if(!this.vis)return;sfx('death');
     this.emit(14,t.x,t.y-.45,{col:[t.col,lighten(t.col,.4),'#ffffff'],sp:3,life:.6,sz:.09,glow:1});
     this.emit(5,t.x,t.y-.3,{col:'rgba(220,235,255,.8)',sp:.3,up:-1.6,life:1.1,sz:.12,glow:1,jit:.3});
@@ -1945,7 +1964,9 @@ class Combat{
       case 'robo':if(t){this.damage(f,t,v*sp,'phys');this.impact('slash',t.x,t.y,col);if(t.alive)this.robarObjeto(f,t)}break; // golpe rápido y le quita un objeto
       case 'necro':{const n=Array.isArray(ab.n2)?ab.n2[f.star-1]:ab.n2||2,m=f.creep?f.ad/CREEPS[f.id].ad*.5:[1,1.8,3.2][f.star-1]*sp;
         if(t)shoot(t,'orb',()=>{this.damage(f,t,v*sp,'magic');this.impact('shadow',t.x,t.y,col)},{speed:12});
-        this.summon(f,'esqueleto',n,m);this.impact('shadow',f.x,f.y,'#9a7aff');break} // proyectil oscuro e invoca esqueletos
+        this.summon(f,ab.inv||'esqueleto',n,m);this.impact('shadow',f.x,f.y,'#9a7aff');break} // proyectil oscuro e invoca esqueletos
+      case 'muroFragua':this.allies(f).filter(a=>a.r===f.r).forEach(a=>{const sh=v*sp*(a===f?1:.6);a.tshield+=sh;a.tshieldT=Math.max(a.tshieldT,4);a.shCol=col;f.healing+=sh;this.impact('metal',a.x,a.y,col)}); // escudo a su fila y golpe al suelo
+        this.impact('slam',f.x,f.y,col,1);if(this.vis)this.shakeIt(.25);inR(f.c,f.r,1).filter(e=>e.team!==f.team).forEach(e=>{this.damage(f,e,v*sp*.4,'phys');if(e.alive)e.stunT=Math.max(e.stunT,ab.d||.8)});break;
       case 'materno':this.allies(f).filter(a=>hexDist(f.c,f.r,a.c,a.r)<=ab.r).forEach(a=>{a.tshield+=v*sp;a.tshieldT=Math.max(a.tshieldT,4);a.shCol=col;f.healing+=v*sp;this.impact('metal',a.x,a.y,col)});
         this.impact('slam',f.x,f.y,col,ab.r);inR(f.c,f.r,ab.r).forEach(e=>{e.stunT=Math.max(e.stunT,ab.d)});break;
       case 'shield':f.tshield+=v*sp;f.healing+=v*sp;f.tshieldT=4;f.shCol=col;this.impact(V.imp||'metal',f.x,f.y,col);if(ab.d){this.impact('slam',f.x,f.y,col,1);inR(f.c,f.r,1).forEach(e=>e.stunT=Math.max(e.stunT,ab.d))}break;
@@ -2018,7 +2039,7 @@ class Combat{
     this.over=true;this.winner=1-cae;this.ejecutado=true;
   }
   tick(dt){
-    for(const f of this.f){f.anim=Math.max(0,f.anim-dt*3.2);f.flash=Math.max(0,f.flash-dt);if(f.castFx)f.castFx=Math.max(0,f.castFx-dt);if(!f.alive)f.deadT+=dt}
+    for(const f of this.f){f.anim=Math.max(0,f.anim-dt*3.2);f.flash=Math.max(0,f.flash-dt);if(f.castFx)f.castFx=Math.max(0,f.castFx-dt);if(f.cenizaT>0){f.cenizaT-=dt;if(f.cenizaT<=0)f.asBonus+=.25}if(!f.alive)f.deadT+=dt}
     for(const o of this.fx)o.t+=dt;
     this.fx=this.fx.filter(o=>o.t<o.dur);
     tickVisuals(this,dt);
@@ -2737,6 +2758,10 @@ const LOOK={
  legas:{w:'hammer',h:'hair',hc:'#c0603a',skin:'#f0cfb0'},axi:{w:'staff',h:'horns',skin:'#f0b8d8',orb:'#9fe6ff'},neptus:{w:'staff',h:'crown',bulk:1.5,skin:'#d8e8e8',orb:'#9fe6ff'},
  marinero:{w:'sword',h:'hood',skin:'#b8cccc'},sirena:{w:'orb',h:'hair',hc:'#5a8a7a',skin:'#d8c4ea',orb:'#ffd0f0'},cangrejo:{w:'club',sh:1,h:'helm',bulk:1.3,skin:'#a03a2a'},tentaculo:{w:'club',h:'horns',skin:'#8a4ab0'},
  nonface:{w:'sword',h:'hood',skin:'#8a9a9a'},serpiente:{w:'orb',h:'horns',bulk:1.4,skin:'#cfe4f0',orb:'#e8f6ff'},leviatan:{w:'club',h:'horns',bulk:1.7,skin:'#4a4448'},morvaneoscuro:{w:'staff',h:'horns',bulk:1.5,skin:'#4a2a6a',orb:'#b07aff'},
+ // Mundo 5: figuras provisionales hasta tener sprites (Umbravor se dibuja como el Draco y el sabueso como el lobo, en negro)
+ bram:{w:'hammer',sh:1,h:'helm',bulk:1.5,skin:'#c68b64'},soldado:{w:'sword',sh:1,h:'helm',skin:'#9a948e'},arquero:{w:'bow',h:'hood',skin:'#a8a098'},
+ sable:{w:'sword',h:'hood',skin:'#6a6570'},corvo:{w:'spear',sh:1,h:'helm',bulk:1.45,skin:'#7a7a82'},velia:{w:'staff',h:'hair',hc:'#c8c0b8',skin:'#d8d0c8',orb:'#d8d0c0'},
+ kael:{w:'sword',sh:1,h:'crown',bulk:1.45,skin:'#6a5a50'},ione:{w:'orb',h:'hair',hc:'#e8f0ff',skin:'#f0cfb0',orb:'#6ac8ff'},tik:{w:'orb',h:'halo',bulk:1.2,skin:'#b8c8d8',orb:'#ffd27a'},dax:{w:'hammer',h:'mask',bulk:1.3,skin:'#c09070'},
 };
 const METAL='#b7c2c8',WOOD='#7a5534';
 function circ(g,x,y,r){g.beginPath();g.arc(x,y,r,0,Math.PI*2)}
@@ -2822,7 +2847,7 @@ function drawCreep(g,o,u){
   switch(o.creep){
     case 'roedin':{const sq=1+Math.sin(T*6)*.08+k*.2;for(let i=2;i>=0;i--){g.fillStyle=i?dk:col;g.beginPath();g.ellipse((-i*1.9+k*1.2)*u,-1.8*u*(1/sq),(2.1-i*.3)*u*sq,1.9*u/sq,0,0,Math.PI*2);g.fill()}eye(.8*u+k*1.2*u,-2.6*u,.55*u);break}
     case 'escupidor':{const sw=1+Math.sin(T*3)*.05;g.fillStyle=col;g.beginPath();g.ellipse(0,-3*u,2.8*u*sw,3*u/sw,0,0,Math.PI*2);g.fill();g.fillStyle=dk;circ(g,-1*u,-2*u,.5*u);g.fill();circ(g,.4*u,-4.5*u,.4*u);g.fill();g.fillStyle=C('#6b5a3a');g.save();g.translate(2.2*u,-3.2*u);g.rotate(-.2);g.fillRect(0,-.6*u,(1.6+k*.8)*u,1.2*u);g.restore();eye(.9*u,-4*u,.6*u,'#7a1');break}
-    case 'lobo':{const w=o.walk?T*12:0;g.strokeStyle=dk;g.lineWidth=.9*u;for(const [x,ph] of [[-2.4,0],[-1.6,Math.PI],[1.6,Math.PI],[2.4,0]]){const a=o.walk?Math.sin(w+ph)*.5:0;g.beginPath();g.moveTo(x*u,-3.6*u);g.lineTo(x*u+Math.sin(a)*2.8*u,-.2*u);g.stroke()}
+    case 'sabueso':case 'lobo':{const w=o.walk?T*12:0;g.strokeStyle=dk;g.lineWidth=.9*u;for(const [x,ph] of [[-2.4,0],[-1.6,Math.PI],[1.6,Math.PI],[2.4,0]]){const a=o.walk?Math.sin(w+ph)*.5:0;g.beginPath();g.moveTo(x*u,-3.6*u);g.lineTo(x*u+Math.sin(a)*2.8*u,-.2*u);g.stroke()}
       g.strokeStyle=col;g.lineWidth=1*u;g.beginPath();g.moveTo(-3.4*u,-4.4*u);g.quadraticCurveTo(-5.4*u,-5.6*u+Math.sin(T*4)*.5*u,-5.2*u,-6.6*u);g.stroke();
       g.fillStyle=col;g.beginPath();g.ellipse(0,-4.3*u,3.8*u,1.9*u,0,0,Math.PI*2);g.fill();
       g.save();g.translate((3.6+k*1.2)*u,-5.6*u);g.fillStyle=col;circ(g,0,0,1.6*u);g.fill();g.beginPath();g.moveTo(.8*u,-.4*u);g.lineTo(2.9*u,.3*u);g.lineTo(.8*u,1.1*u);g.fill();g.fillStyle=dk;g.beginPath();g.moveTo(-.9*u,-1*u);g.lineTo(-.4*u,-2.6*u);g.lineTo(.2*u,-1.2*u);g.fill();g.fillStyle='#ff6a3a';circ(g,.6*u,-.3*u,.3*u);g.fill();g.restore();break}
@@ -2831,7 +2856,7 @@ function drawCreep(g,o,u){
       g.strokeStyle='#ff9a3a';g.lineWidth=.3*u;g.shadowColor='#ff9a3a';g.shadowBlur=3*u;g.beginPath();g.moveTo(-1*u,-9*u);g.lineTo(0,-7*u);g.lineTo(-.6*u,-5*u);g.moveTo(1.4*u,-8.6*u);g.lineTo(2*u,-6.4*u);g.stroke();g.shadowBlur=0;
       g.fillStyle=col;g.fillRect(-1.3*u,-12.2*u,2.8*u,2.2*u);g.fillStyle='#ffb04a';g.fillRect(.4*u,-11.5*u,.9*u,.5*u);
       for(const [sx,th] of [[-4.2,-.2],[4.2,a+.2]]){g.save();g.translate(sx*u,-9.4*u);g.rotate(-th);g.fillStyle=dk;g.fillRect(-.9*u,0,1.8*u,4.4*u);g.fillStyle=col;g.fillRect(-1.3*u,4*u,2.6*u,2.2*u);g.restore()}break}
-    case 'draco':{const fl2=Math.sin(T*5)*.5;g.fillStyle=dk;for(const s of [1,.7]){g.save();g.translate(-.5*u,-8*u);g.rotate(-.5-fl2*s);g.beginPath();g.moveTo(0,0);g.lineTo(-7*u*s,-4*u);g.lineTo(-5*u*s,.5*u);g.lineTo(-7.5*u*s,2*u);g.lineTo(-2*u,2.5*u);g.closePath();g.fill();g.restore()}
+    case 'umbravor':case 'draco':{const fl2=Math.sin(T*5)*.5;g.fillStyle=dk;for(const s of [1,.7]){g.save();g.translate(-.5*u,-8*u);g.rotate(-.5-fl2*s);g.beginPath();g.moveTo(0,0);g.lineTo(-7*u*s,-4*u);g.lineTo(-5*u*s,.5*u);g.lineTo(-7.5*u*s,2*u);g.lineTo(-2*u,2.5*u);g.closePath();g.fill();g.restore()}
       g.strokeStyle=col;g.lineWidth=1.6*u;g.beginPath();g.moveTo(-3*u,-4*u);g.quadraticCurveTo(-7*u,-3*u,-8*u,-6*u+Math.sin(T*3)*u);g.stroke();
       g.fillStyle=col;g.beginPath();g.ellipse(0,-5*u,4.2*u,2.8*u,0,0,Math.PI*2);g.fill();g.fillStyle=dk;g.fillRect(-2.6*u,-3*u,1.4*u,3*u);g.fillRect(1.4*u,-3*u,1.4*u,3*u);
       g.strokeStyle=col;g.lineWidth=1.8*u;g.beginPath();g.moveTo(2.6*u,-6.5*u);g.quadraticCurveTo(4*u,-10*u,(5+k)*u,-10.4*u);g.stroke();
@@ -2894,7 +2919,7 @@ function drawUnit(x,y,o){
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
   const esc=!o.creep&&CH[o.id]&&CH[o.id].escala||1;if(esc!==1)ctx.scale(esc,esc);
-  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id]){const mio=o.team!==1&&!o.creep,au=mio&&auraAspecto(o.id); // tus unidades llevan el aspecto equipado (15e-cuenta.js)
+  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='umbravor'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id]){const mio=o.team!==1&&!o.creep,au=mio&&auraAspecto(o.id); // tus unidades llevan el aspecto equipado (15e-cuenta.js)
     if(au){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=.35+.15*Math.sin(o.t*3);const ga=ctx.createRadialGradient(0,-s*.8*sc,s*.1,0,-s*.8*sc,s*1.1*sc);ga.addColorStop(0,au);ga.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=ga;ctx.fillRect(-s*1.2*sc,-s*2*sc,s*2.4*sc,s*2.2*sc);ctx.restore()}
     drawSprite(ctx,o,(mio&&aspectoSpr(o.id))||SPR[o.id],s,sc)}
   else if(!LOOK[o.id]&&CREEPS[o.id])drawCreep(ctx,Object.assign({},o,{creep:o.id,col:CREEPS[o.id].col}),u); // monstruo jugable sin sprite: su dibujo de monstruo
@@ -3170,6 +3195,17 @@ const AURAS={
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.7,.45,'255,245,190',.85)},
  eclipse:{detras:(g,x,pies,s,t)=>{const cy=pies-s*1.25,r=s*.55;g.save();g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(x,cy,r*.7,x,cy,r*1.25);gr.addColorStop(0,'rgba(170,110,255,0)');gr.addColorStop(.5,`rgba(170,110,255,${.55+.12*Math.sin(t*2)})`);gr.addColorStop(1,'rgba(170,110,255,0)');
    g.fillStyle=gr;g.beginPath();g.arc(x,cy,r*1.25,0,7);g.fill();g.restore()}},
+ // Mundo 5: la Orden de la Ceniza. Ceniza gris que sube y brasas apagadas; Umbravor y Kael, con humo negro y ascuas
+ sable:{detras:(g,x,pies,s,t)=>humo(g,x,pies,s,t,9,1.6,.75,'30,28,34',.45,.22),delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.4,.6,'170,165,175',.6)},
+ corvo:{detras:(g,x,pies,s,t)=>{charcoSombra(g,x,pies,s,1,'20,18,22',.6);humo(g,x,pies,s,t,6,1.5,.5,'60,56,60',.35,.2)},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,8,1.8,.5,'200,190,180',.7)},
+ velia:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';halo(g,x,pies-s*1.1,s*1.1,'200,190,170',.18+.05*Math.sin(t*2));g.restore();humo(g,x,pies,s,t,5,1.3,.5,'90,86,80',.3,.2)},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.7,.5,'220,210,190',.6)},
+ umbravor:{detras:(g,x,pies,s,t)=>{charcoSombra(g,x,pies,s,1.5,'10,8,12',.75);humo(g,x,pies,s,t,12,2.6,.9,'14,12,16',.5,.3);g.save();g.globalCompositeOperation='lighter';charcoSombra(g,x,pies,s,1.1,'255,90,30',.18);g.restore()},
+  delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,10,2.2,.8,'255,120,50',.75);motas(g,x,pies,s,t+1.3,8,2.4,.9,'160,150,150',.55)}},
+ kael:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.15,s*1.5,'16,12,14',.55);charcoSombra(g,x,pies,s,1.3,'12,8,10',.8);humo(g,x,pies,s,t,12,2.8,.85,'20,16,18',.55,.28);llamas(g,x,pies,s,t,8,.75,.7,.3,false)},
+  delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,12,2.4,.8,'255,140,60',.8);motas(g,x,pies,s,t+2,8,2.6,.9,'170,160,160',.6)}},
+ soldado:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,3,1.2,.4,'170,165,160',.5)},
+ sabueso:{detras:(g,x,pies,s,t)=>humo(g,x,pies,s,t,5,1,.6,'40,36,44',.35,.18)},
+ bram:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';charcoSombra(g,x,pies,s,.9,'255,130,50',.28);g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.3,.5,'255,160,80',.75)},
  // Mundo 4
  neptus:{detras:(g,x,pies,s,t)=>{g.save();g.translate(x,pies);g.scale(1,.3);g.globalCompositeOperation='lighter';for(let i=0;i<2;i++){g.strokeStyle=`rgba(90,200,255,${.55-.2*i})`;g.lineWidth=s*.06;g.beginPath();g.arc(0,0,s*(.62+.12*i),t*(2-i*.7)+i,t*(2-i*.7)+i+3.6);g.stroke()}g.restore()},
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.4,.4,'160,230,255',.8)},
@@ -3854,6 +3890,7 @@ function abilDesc(ab,star){const v=ab.v[star-1];switch(ab.k){
   case 'necro':return `Lanza un proyectil oscuro de ${v} de daño mágico y levanta ${Array.isArray(ab.n2)?ab.n2[star-1]:ab.n2} esqueletos a su lado.`;
   case 'ancla':return `Lanza el ancla al enemigo más lejano: ${v} de daño mágico, lo arrastra a su lado y lo aturde ${ab.d} s. Gana un escudo de ${Math.round(v*.6)}.`;
   case 'burbuja':return `Lanza una burbuja: ${v} de daño mágico al objetivo y a los enemigos junto a él. Cura ${Math.round(v*(ab.heal||.5))} de vida a los aliados cercanos.`;
+  case 'muroFragua':return `Golpea el suelo: él gana un escudo de ${v} y los aliados de su fila, de ${Math.round(v*.6)}, durante 4 s. Hace ${Math.round(v*.4)} de daño y aturde ${ab.d} s a los enemigos de al lado. Si Tovo cae, entra en frenesí: +50 % de velocidad y de daño.`;
   case 'ola':return `Gran ola: ${v} de daño mágico a los enemigos a ${ab.r} casillas del objetivo, les quita ${ab.m} de maná y los empuja hacia atrás.`;
   case 'teamHeal':return ab.r>50?`Cura ${v} de vida a todos los aliados.`:`Cura ${v} de vida a los aliados a ${ab.r} casillas o menos.`;
 }}
@@ -4167,7 +4204,7 @@ function nivelCueva(n,nombre,tema,de,mons,clan,jefe,K){
   const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const huecos={tank:[[3,0],[2,0],[4,0],[1,0],[5,0],[0,0],[6,0],[3,1]],assassin:[[0,1],[6,1],[1,1],[5,1],[0,0],[6,0]],ranged:[[3,3],[2,3],[4,3],[1,3],[5,3],[0,3],[6,3],[3,2]],mage:[[2,3],[4,3],[3,2],[1,2],[5,2],[0,3],[6,3],[2,2]]};
   const OBJ={tank:['muralla','troll','pua','bastionob','gigante'],assassin:['ocaso','vampira','runica','ojo'],ranged:['vendaval','runica','certero','ocaso'],mage:['sabio','precision','ancestral','egida']};
-  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas'};
+  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas',soldado:'Soldados de ceniza',arquero:'Arqueros de ceniza',sabueso:'Sabuesos de humo'};
   const X=[1,1.5,2.1,2.8,3.4],cada=[2,2,3,3,4]; // multiplicador de los monstruos y 1 de cada «cada» unidades es monstruo
   const tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=NFASES;f++){const fila=[],fo=FO[f-1];
@@ -4235,7 +4272,7 @@ const SUAVE_FASE=.85;
 NIVELES.forEach(L=>{if(L.superv||L.turnos||L.fases.length<4)return;[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 // la regla del nivel de Historia que se está jugando (no en la Torre)
 function reglaActual(){return S&&S.mode==='historia'&&S.story&&!S.story.torre&&NIVELES[S.story.nivel-1]?NIVELES[S.story.nivel-1].regla||null:null}
-function reglaOk(L,id){const R=L&&L.regla;if(!R)return true;if(R.sinRasgo&&CH[id].traits.includes(R.sinRasgo))return false;if(R.maxCoste&&CH[id].cost>R.maxCoste)return false;if(R.minCoste&&CH[id].cost<R.minCoste)return false;return true}
+function reglaOk(L,id){const R=L&&L.regla;if(!R)return true;if(R.sinId&&R.sinId.includes(id))return false;if(R.sinRasgo&&CH[id].traits.includes(R.sinRasgo))return false;if(R.maxCoste&&CH[id].cost>R.maxCoste)return false;if(R.minCoste&&CH[id].cost<R.minCoste)return false;return true}
 // mazo con el que se juega un nivel: tu mazo sin los campeones que la regla prohíbe, completado (hasta 20) con otros de tu colección
 // que sí la cumplen, de más caro a más barato y sin pasar los límites por rasgo
 function mazoNivel(n,mazo,col){const L=NIVELES[n-1];if(!L||!L.regla)return mazo.slice();
@@ -4249,7 +4286,7 @@ const SUPERV_T=60;
 function prepararSuperv(cb,R){if(!R||!R.olas)return;cb.superv={dur:SUPERV_T,k:R.k||1,olas:R.olas.map(o=>({t:o.t,u:o.u}))}}
 // nivel de supervivencia: 2 fases de 4 rondas (la 1-1 es el carrusel). mons: {monstruo: peso}; K: fuerza de las 7 rondas
 function nivelSuperv(n,nombre,tema,de,mons,K,premio,alfa){
-  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged'};let q=0;
+  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin'};let q=0;
   const filas={tank:[0,1],assassin:[1,0],ranged:[3,2]},tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=2;f++){const fila=[];
     for(let r=1;r<=4;r++){if(f===1&&r===1){fila.push(null);continue}
@@ -4268,7 +4305,7 @@ const JEFES={matrona:{n:'Pisotón materno',k:'aoeSelf',v:[320],r:1,d:1.6,mana:70
  reygoblin:{n:'¡Por el botín!',k:'arenga',v:[600],r:2,h:50,d:5,mana:70},
  reinaarana:{n:'Telaraña',k:'telarana',v:[340],r:1,d:1.6,mana:60},
  dracqueen:{n:'Corte de murciélagos',k:'murcielagos',v:[420],n2:3,heal:.5,mana:75}};
-const JEFAS=['matrona','reinaarana','dracqueen'];
+const JEFAS=['matrona','reinaarana','dracqueen','sable','velia'];
 
 // ---- colección y progreso (se guarda en este dispositivo) ----
 const HIST_KEY='crisol_historia_v1',MAZO_N=20;
@@ -5357,7 +5394,7 @@ function dlgSiguiente(){
   if(q==='narra'){pj.hidden=true}
   else{const src=SPRITE_SRC[q]?SPRITE_SRC[q].src:portrait(q);if(pj.dataset.q!==q){pj.dataset.q=q;pj.src=src;pj.classList.remove('entra');void pj.offsetWidth;pj.classList.add('entra')}pj.hidden=false}
   pj.className=pj.className.replace(/\b(izq|der)\b/g,'').trim()+' '+lado;
-  const nb=$('#dlgNombre');nb.textContent=q==='narra'?'':C?C.name:q;nb.style.setProperty('--c',C?TRAITS[C.traits[0]].col:'#e9b44c');nb.hidden=q==='narra';
+  const nb=$('#dlgNombre');const K=!C&&CREEPS[q];nb.textContent=q==='narra'?'':C?C.name:K?K.name.split(',')[0]:q;nb.style.setProperty('--c',C?TRAITS[C.traits[0]].col:K?K.col:'#e9b44c');nb.hidden=q==='narra';
   $('#dialogoOv .dlgCaja').className='dlgCaja '+lado;
   const el=$('#dlgTexto');el.textContent='';let k=0;
   D.timer=setInterval(()=>{k+=2;el.textContent=t.slice(0,k);if(k>=t.length){clearInterval(D.timer);D.timer=null}},28);
@@ -5625,6 +5662,114 @@ Object.assign(DLG_JEFE,{
 Object.assign(DLG_TRAS_ESCENA,{
  54:[['axi','Los otros tres guardianes desaparecieron. Ni siquiera el mar sabe adónde fueron.'],['axi','Pero la llama sigue ardiendo, y mientras arda hay esperanza. Iré con vosotros.']]});
 
+// ================= MUNDO 5: LAS CENIZAS DEL HOGAR (niveles 62-76) =================
+// Historia y diseño en docs/historia.md. La ciudad del Crisol ha caído; hay que llegar a la plaza mientras los cuatro jinetes
+// de la Orden cierran el camino. Las murallas caídas (62-66), el barrio de la Fragua (67-71) y la plaza del Crisol (72-76).
+// 62 y 70 son de supervivencia; 69, por turnos. Regla nueva: sinId (sin un campeón concreto: Tovo en el 63, el Draco en el 76).
+// MUNDO5_ABIERTO: mientras falten imágenes (sprites, escenas, mapa, tableros) y la calibración, sale como «próximamente».
+const MUNDO5_ABIERTO=false;
+// fuerza: la curva del nivel 30 escalada (PROVISIONAL: una prueba rápida con el simulador en el 64 y el 66; calibrar nivel a nivel antes de abrir el mundo)
+const K5=f=>K3(f*.78);
+// escenarios: murallas, Fragua y plaza (las ilustraciones llegarán con tablero_<nombre>; mientras, se dibujan con estos colores)
+const TEMA5=THEMES.length;
+THEMES.push(
+ Object.assign({},THEMES[2],{n:'Las murallas caídas',img:'tablero_murallas',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#121010','#1e1a18'],pa:'#3a3632',pb:'#423d38',ea:'#3a302a',eb:'#423630',line:'#6a625a',lineE:'#7a5a48',side:'#0c0a09',mid:'rgba(220,210,200,.4)',amb:'snow',ac:['#b8b0a8','#ff9a5a'],deco:'losas'}),
+ Object.assign({},THEMES[2],{n:'El barrio de la Fragua',img:'tablero_fragua',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#1a0e08','#2a160c'],pa:'#3e3028',pb:'#46362c',ea:'#40281e',eb:'#482e22',line:'#8a6040',lineE:'#9a5a3a',side:'#100804',mid:'rgba(255,190,140,.4)',amb:'ember',ac:['#ffb070','#ff7a3a'],deco:'losas'}),
+ Object.assign({},THEMES[2],{n:'La plaza del Crisol',img:'tablero_plaza',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#0c0a10','#18141c'],pa:'#34303a',pb:'#3a3542',ea:'#382c30',eb:'#403236',line:'#6a6080',lineE:'#7a5a60',side:'#08060a',mid:'rgba(255,220,160,.4)',amb:'snow',ac:['#a8a0a8','#ffd27a'],deco:'losas'}));
+// música: las murallas (eólico, lento), la Fragua (mixolidio, de yunque) y la plaza (frigio, solemne)
+MUSIC.push({root:48,sc:[0,2,3,5,7,8,10],bpm:76,prog:[0,5,3,4]},{root:50,sc:[0,2,4,5,7,9,10],bpm:96,prog:[0,6,3,0]},{root:45,sc:[0,1,3,5,7,8,10],bpm:88,prog:[0,1,5,4]});
+const CLAN_ORDEN=['ebano','eclipse','ceniza','sombrio','titan','espina','martillo','vespa'],CLAN_CIUDAD=['yunque','martillo','brasa','coral','abisal','soberana','alba','kalima'];
+const NIVELES_M5=[
+ nivelSuperv(62,'La puerta rota',TEMA5,'de la Puerta',{soldado:3,sabueso:1,arquero:1},KS(0.34),'bram','soldado'),
+ nivelCueva(63,'El refugio',TEMA5,'del Refugio',{soldado:2,arquero:2},CLAN_CIUDAD,null,K5(0.6)),
+ nivelCueva(64,'Calles de ceniza',TEMA5,'de las Calles',{soldado:3,sabueso:1},CLAN_ORDEN,null,K5(0.62)),
+ nivelCueva(65,'La torre de vigía',TEMA5,'de la Torre',{arquero:3,soldado:1},CLAN_CIUDAD,null,K5(0.6)),
+ nivelCueva(66,'La carga del humo',TEMA5,'de la Muralla',{sabueso:3,soldado:1},CLAN_ORDEN,
+  {m:'sable',x:1.15,c:3,f:1,premio:null,nombre:'Sable, la jinete del Humo',escolta:[Rd('sabueso',1,1,3),Rd('sabueso',5,1,3),Rd('soldado',2,0,3),Rd('soldado',4,0,3),['eclipse',2,3,3,['vendaval']],['sombrio',2,0,1,['ocaso']]]},K5(1.04)),
+ nivelCueva(67,'La fragua apagada',TEMA5+1,'de la Fragua',{soldado:2,arquero:1,sabueso:1},CLAN_ORDEN,null,K5(0.6)),
+ nivelCueva(68,'Reavivar el fuego',TEMA5+1,'del Horno',{soldado:3,arquero:1},CLAN_CIUDAD,null,K5(0.6)),
+ nivelCueva(69,'El mercado en ruinas',TEMA5+1,'del Mercado',{sabueso:2,soldado:2},CLAN_ORDEN,null,K5(0.55)),
+ nivelSuperv(70,'Barricadas',TEMA5+1,'de las Barricadas',{soldado:3,arquero:1,sabueso:1},KS(0.32),null,'soldado'),
+ nivelCueva(71,'El jinete de la lanza',TEMA5+1,'del Barrio',{soldado:3,arquero:1},CLAN_ORDEN,
+  {m:'corvo',x:1.1,c:3,f:0,premio:null,nombre:'Corvo, el jinete de la Lanza',escolta:[Rd('soldado',1,0,3.2),Rd('soldado',5,0,3.2),Rd('arquero',2,3,3),Rd('arquero',4,3,3),['titan',2,2,0,['muralla']],['ceniza',2,3,3,['sabio']]]},K5(1.1)),
+ nivelCueva(72,'El camino a la plaza',TEMA5+2,'del Camino',{sabueso:2,arquero:2},CLAN_ORDEN,null,K5(0.6)),
+ nivelCueva(73,'El estandarte',TEMA5+2,'del Estandarte',{soldado:3,arquero:1},CLAN_CIUDAD,
+  {m:'velia',x:1.1,c:3,f:3,premio:null,nombre:'Velia, la portaestandarte',escolta:[Rd('soldado',2,0,3.2),Rd('soldado',4,0,3.2),Rd('soldado',3,1,3.2),Rd('arquero',1,3,3),Rd('arquero',5,3,3),['soberana',2,2,3,['precision']]]},K5(1.08)),
+ nivelCueva(74,'La cúpula de ceniza',TEMA5+2,'de la Cúpula',{soldado:2,arquero:1,sabueso:1},CLAN_ORDEN,null,K5(0.62)),
+ nivelCueva(75,'Las alas negras',TEMA5+2,'del Cielo',{sabueso:2,soldado:2},CLAN_ORDEN,
+  {m:'umbravor',x:1.05,c:3,f:1,premio:null,nombre:'Umbravor, el dragón negro',escolta:[Rd('sabueso',1,1,3.4),Rd('sabueso',5,1,3.4),Rd('soldado',3,0,3.2),['eclipse',2,2,3,['vendaval']],['espina',2,6,0,['ocaso']]]},K5(1.08)),
+ nivelCueva(76,'El corazón del Crisol',TEMA5+2,'del Corazón',{soldado:2,arquero:1,sabueso:1},CLAN_ORDEN,
+  {m:'kael',x:1.05,c:3,f:1,premio:null,nombre:'Kael, el Señor de la Ceniza',escolta:[Rd('soldado',1,0,3.6),Rd('soldado',5,0,3.6),Rd('sabueso',0,1,3.4),Rd('arquero',3,3,3.4),['titan',2,2,0,['muralla']],['ebano',2,4,0,['pua']],['ceniza',2,3,3,['sabio']]]},K5(1.08)),
+];
+NIVELES_M5.find(L=>L.n===69).turnos=true;
+Object.assign(REGLAS,{
+ 63:{sinId:['tovo'],t:'Sin Tovo',motivo:'Bram ha encerrado a Tovo en el refugio «por su bien». Este nivel se juega sin él.'},
+ 67:{sinRasgo:'forja',t:'Sin campeones de Forja',motivo:'Las fraguas están frías: sin la llama, los de la Forja no tienen con qué luchar.'},
+ 68:{minRasgo:'forja',minN:3,siempre:true,t:'Al menos 3 de Forja en el tablero',motivo:'Para reavivar la fragua mayor hacen falta manos de herrero: necesitas al menos 3 campeones de Forja en todas las rondas.'},
+ 74:{minRasgo:'astral',minN:2,siempre:true,t:'Al menos 2 Astrales en el tablero',motivo:'Solo la luz abre la cúpula de ceniza: necesitas al menos 2 Astrales en todas las rondas.'},
+ 76:{sinId:['draco'],t:'Sin el Draco',motivo:'El Draco cayó contra Umbravor y su fuego se ha apagado. No puede luchar.'}});
+NIVELES_M5.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n];
+  if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
+if(MUNDO5_ABIERTO)NIVELES.push(...NIVELES_M5);
+// cerrado: Bram no sale en el álbum ni en la tienda (ni como silueta)
+else ['bram'].forEach(id=>{const i=ALBUM.indexOf(id);if(i>=0)ALBUM.splice(i,1)});
+Object.assign(JEFES,{sable:{n:'Carga de humo',k:'aoeSelf',v:[420],r:1,d:1,mana:60},
+ corvo:{n:'Lanza de ceniza',k:'aoe',v:[500],r:1,mana:65},velia:{n:'Estandarte gris',k:'necro',v:[360],n2:3,inv:'soldado',mana:70},
+ umbravor:{n:'Aliento de ceniza',k:'aliento',v:[560],r:1,mana:75},kael:{n:'Ceniza eterna',k:'aoeSelf',v:[540],r:1,d:1.2,mana:70}});
+MUNDOS.push({n:5,titulo:'Las cenizas del hogar',nombre:'La ciudad del Crisol',niveles:Array.from({length:15},(_,i)=>62+i),intro:['La ciudad del Crisol ha caído. Hay que abrirse paso hasta la plaza y devolver la llama antes de que el Crisol se apague.']});
+Object.assign(HISTORIA_CH,{
+ bram:'El padre de Tovo y el mejor guerrero que ha dado la Fragua. Su familia forjó las armas de los siete guardianes. Si alguien toca a su hijo, ni la ceniza lo para.'});
+
+// ---- diálogos (docs/historia.md, Mundo 5) ----
+Object.assign(DLG_MUNDO,{5:[
+ ['narra','El Gaviota Negra llega al puerto de la ciudad del Crisol al amanecer. Nadie sale a recibirlo.'],
+ ['tovo','Las murallas… están en el suelo. Y en la plaza no se ve la luz del santuario.'],
+ ['morvane','Soldados de ceniza en cada esquina. La Orden ya está dentro.'],
+ ['crisol','Entonces no hay tiempo que perder. Llevamos la llama al Crisol, cueste lo que cueste. Y tú, delante: la chispa sabe el camino a casa.'],
+ ['legas','Os espero en el barco… no. Qué demonios. Voy con vosotros.']]});
+Object.assign(DLG_NIVEL,{
+ 62:[['narra','La puerta norte era la más fuerte de la ciudad. Ahora es un montón de piedras, y tras ella resisten los últimos supervivientes.'],['tovo','¡Ese martillo…! ¡Es mi padre! ¡Papá!'],['bram','¿Tovo? No te quedes ahí parado. ¡Si vas a pelear, pelea!']],
+ 63:[['bram','Tovo se queda en el refugio. No es una pregunta.'],['tovo','¡Papá! ¡Abre! ¡No soy un crío!'],['bram','Por eso mismo. Ya he perdido demasiado en esta ciudad.']],
+ 64:[['morvane','Esos soldados… Mirad cómo se mueven. Son los muertos que yo levanté. La Orden los ha vaciado y los ha llenado de ceniza.'],['crisol','No fuiste tú, Morvane.'],['morvane','Fueron mis manos.']],
+ 65:[['narra','En lo alto de la torre aparece alguien con un escudo abollado.'],['tovo','He forzado la cerradura del refugio. Me enseñaste tú, ¿te acuerdas?'],['bram','…'],['bram','Entonces lucha a mi lado, donde pueda verte.']],
+ 66:[['bram','La muralla del este aguanta de milagro. Si cae, entran por todas partes.'],['orion','Algo se acerca por la niebla. Muy deprisa.']],
+ 67:[['narra','El barrio de la Fragua era el corazón que daba calor a la ciudad. Hoy sus hornos están fríos.'],['brasa','No prende. Nada prende. Sin la llama, los de la Forja no tenemos con qué luchar.'],['bram','Entonces luchad los demás, y nosotros buscaremos fuego.']],
+ 68:[['bram','La fragua mayor. Mi padre trabajó aquí, y su padre antes que él. Dicen que aquí se forjaron las armas de los siete guardianes.'],['tovo','Con la chispa podemos encenderla. Juntos, papá.']],
+ 69:[['legas','Los soldados de ceniza se han llevado todo lo que brillaba del mercado.'],['chipilin','¡Robar a unos ladrones! ¡Por fin un trabajo honrado!']],
+ 70:[['bram','Vienen a por la Fragua. ¡Barricadas! ¡Que no pase ni uno!']],
+ 71:[['bram','La salida del barrio da a la plaza. Si la cruzamos, ya no hay vuelta atrás.']],
+ 72:[['narra','La plaza del Crisol está cubierta por una cúpula de ceniza. Debajo, el Crisol late cada vez más despacio.'],['orion','Esa cúpula está hecha de la misma oscuridad que perseguí durante años.'],['crisol','Pues ya sabemos cómo se rompe.']],
+ 73:[['tovo','Cada vez salen más soldados. Salen de… ¿un estandarte?']],
+ 74:[['morvane','Conozco esta magia. Es la misma de mi cadena: cada eslabón, cada nudo. Los llevé siglos.'],['orion','Tú deshaces los nudos y nosotros ponemos la luz.']],
+ 75:[['draco','Huelo a ceniza vieja… y a algo que conocí.']],
+ 76:[['crisol','El corazón del Crisol está ahí mismo. Un último esfuerzo y la llama vuelve a casa.'],['draco','…'],['tovo','Draco, quédate atrás. Ya has hecho bastante.']]});
+Object.assign(DLG_JEFE,{
+ 62:{despues:[['bram','Hijo… ¿dónde aprendiste a cubrir así un flanco?'],['tovo','Contigo. Mirándote.'],['bram','Mi chico ya no es un aprendiz. Contad con mi martillo.']]},
+ 64:{despues:[['morvane','Descansad. Ya no le debéis nada a nadie.']]},
+ 66:{antes:[['narra','Un galope sin cascos atraviesa la niebla. Sobre un corcel de humo negro llega Sable, la jinete del Humo.'],['sable','Así que esta es la chispa que tanto le preocupa a Kael. Qué pequeña.']],
+  despues:[['sable','No está mal… para una brasa de nada.'],['narra','Sable se deshace en humo y desaparece entre las ruinas.'],['bram','Volverá. Siempre vuelven.']]},
+ 68:{despues:[['narra','Padre e hijo acercan la chispa al horno. El fuego vuelve, pequeño y terco.'],['bram','Toma. Era de tu abuelo. Ahora es tuyo.'],['tovo','¿Tu martillo?'],['bram','Tu martillo.']]},
+ 70:{despues:[['bram','La Fragua sigue en pie. Y esta vez, gracias a mi hijo.']]},
+ 71:{antes:[['narra','Un caballero alto bloquea la salida del barrio con una lanza larga y cruel.'],['bram','Esa lanza… La marca de la Fragua en la hoja. Mis abuelos la forjaron. Eres Corvo. El escudo de los siete.'],
+    ['bram','De niño jugaba a ser tú.'],['corvo','El héroe de tus cuentos se quemó hace siglos. Apártate, herrero.']],
+  despues:[['corvo','Herrero… Esta lanza pesa tanto… ¿Cuándo me perdí?'],['bram','Hace mucho. Pero has vuelto al final.'],
+    ['narra','La armadura de Corvo se queda vacía y se deshace en ceniza. Dentro no quedaba nadie desde hacía mucho. Bram recoge la lanza y se queda de rodillas un largo rato.'],
+    ['tovo','Papá…'],['bram','Era mi héroe. No lo olvides nunca, hijo: así es como la Orden te lo quita todo.']]},
+ 73:{antes:[['narra','Ante la cúpula espera la más joven de los cuatro, con un estandarte gris que levanta soldados sin parar.'],['velia','No deberíais haber vuelto. Esto ya está decidido.']],
+  despues:[['velia','Yo… era guardiana. Juré proteger la llama. ¿Qué estoy haciendo?'],['narra','Velia deja caer el estandarte y se aleja sin mirar atrás.'],['crisol','¿La dejamos ir?'],['tovo','Ha dudado. Eso es más de lo que hacen los otros.']]},
+ 74:{despues:[['narra','La cúpula se resquebraja y se abre. Dentro, el Crisol es apenas un rescoldo.']]},
+ 75:{antes:[['narra','Una sombra enorme tapa el cielo: Umbravor, el dragón negro de la Orden.'],['draco','Umbravor… Tus escamas eran blancas como la nieve. Volábamos juntos sobre la plaza.'],['draco','¡Recuérdalo, hermano!'],['narra','Umbravor no responde. Solo abre las fauces.']],
+  despues:[['narra','El Draco se lanza contra Umbravor en pleno vuelo y los dos caen entre las ruinas.'],['narra','Umbravor vuelve a alzarse, herido, hacia el corazón del Crisol. El Draco no.'],['draco','Mi fuego… no prende. ¡Va a por la llama! ¡Corred!']]},
+ 76:{antes:[['kael','Por fin. La chispa, su portador y los mejores campeones de la ciudad… todos aquí, delante de mí.'],['kael','Justo donde quería.']],
+  despues:[['kael','Has ganado. Y aun así, mira detrás de ti.']]}});
+Object.assign(DLG_TRAS_ESCENA,{
+ 76:[['ione','¿Este es el portador? Tik, ¿hemos llegado a tiempo?'],['tik','Llegaremos tarde ayer. Es decir: justo.'],
+  ['ione','Escuchadme, porque no hay tiempo. Venimos de un futuro en el que esto no se arregló nunca.'],
+  ['tik','Esta chispa es del pasado. Del Crisol joven, cuando la ciudad brillaba. Mañana la cogimos. Bueno, hace mucho.'],
+  ['ione','En uno de nuestros viajes llegamos a aquel tiempo un solo instante, y nos trajimos esto. Por eso la máquina siempre tira hacia allí: la chispa quiere volver a casa.'],
+  ['ione','Solo hay una forma de arreglarlo: volver al momento en que todo se torció. Pero cada salto la gasta. Si se apaga antes de llegar, no habrá otra oportunidad.'],
+  ['crisol','¿Volver… al pasado?'],['dax','Las preguntas, por el camino. ¡Todos dentro, que esto se cierra!']]});
+
 // ================= NIVELES POR TURNOS DEL MODO HISTORIA =================
 // Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 3 fases
 // de 3 combates (el último de cada fase, un jefe). Sin economía: los campeones ganan experiencia y suben de nivel (más
@@ -5642,7 +5787,9 @@ const TN_NIVELES={ // f: fuerza base de los rivales del nivel
  41:{mons:{espectro:3,necrofago:1,esqueleto:1},jefe:[['espectro',2.3]],f:1.6},
  // Mundo 4 (cerrado; f sin calibrar): el abordaje y el faro negro
  55:{mons:{marinero:3,cangrejo:1,tentaculo:1},jefe:[['cangrejo',1.6]],f:1.42},
- 59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.3}};
+ 59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.3},
+ // Mundo 5 (cerrado; f sin calibrar): el mercado en ruinas
+ 69:{mons:{soldado:2,sabueso:2,arquero:1},jefe:[['soldado',2]],f:1.5}};
 const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
 let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
@@ -5701,14 +5848,14 @@ const TN_PASIVA={robo:v=>`Se cura el ${pc(v)} % del daño que hace`,omni:v=>`Se 
 const tnPas=(u,k)=>u.creep?0:u.items.reduce((a,it)=>a+((ITEMS[it].p||{})[k]||0),0);
 function tnDescObj(it){const I=ITEMS[it],k=I.p&&Object.keys(I.p)[0],st=statText(I.s).replace('vel. de ataque','velocidad (actúa antes)');return st+(k&&TN_PASIVA[k]?'. '+TN_PASIVA[k](I.p[k]):'')+'.'}
 // habilidades que no necesitan objetivo (área, curas, escudos…)
-const TN_AREA=['aoe','aoeSelf','volley','chain','rayoDiagonal','murcielagos','necro','telarana','aliento','burbuja','ola'],TN_APOYO=['heal','teamHeal','shield','materno','arenga','haste'];
+const TN_AREA=['aoe','aoeSelf','volley','chain','rayoDiagonal','murcielagos','necro','telarana','aliento','burbuja','ola'],TN_APOYO=['heal','teamHeal','shield','materno','arenga','haste','muroFragua'];
 const tnHabSinObjetivo=ab=>TN_AREA.includes(ab.k)||TN_APOYO.includes(ab.k);
 const tnValHab=u=>u.ab.v[tnNivelStar(u.nivel)-1]*(1+tnS(u).ap/100);
 function tnDescHab(u){const k=u.ab.k,v=Math.round(tnValHab(u));
   if(TN_AREA.includes(k))return `${Math.round(v*.65)} de daño mágico a todos los rivales.`;
   if(k==='heal')return `Se cura ${v} de vida.`;
   if(k==='teamHeal'||k==='materno')return `Cura ${Math.round(v*.7)} de vida a todo el equipo.`;
-  if(k==='shield'||k==='arenga')return `Escudo de ${v} al compañero más herido.`;
+  if(k==='shield'||k==='arenga'||k==='muroFragua')return `Escudo de ${v} al compañero más herido.`;
   if(k==='haste')return 'Vuelve a actuar enseguida (turno extra).';
   if(k==='stun')return `${v} de daño mágico a un rival y lo aturde: pierde su próximo turno.`;
   if(k==='execute')return `${v} de daño mágico a un rival; el doble si le queda menos del 40 % de vida.`;
@@ -5811,7 +5958,7 @@ function tnHacer(u,accion,t){
       if(TN_AREA.includes(ab.k)){enemigos.forEach(e=>tnDano(u,e,v*.65,'magic'));TN.flash=.5}
       else if(ab.k==='heal'){u.hp=Math.min(tnS(u).hp,u.hp+v);tnTexto(u,'+'+Math.round(v),'#8be29f')}
       else if(ab.k==='teamHeal'||ab.k==='materno'){aliados.forEach(a=>{const h=v*.7;a.hp=Math.min(tnS(a).hp,a.hp+h);tnTexto(a,'+'+Math.round(h),'#8be29f')})}
-      else if(ab.k==='shield'||ab.k==='arenga'){const a=aliados.sort((x,y)=>x.hp/tnS(x).hp-y.hp/tnS(y).hp)[0];a.escudo+=v;tnTexto(a,'Escudo','#cfe0ea')}
+      else if(ab.k==='shield'||ab.k==='arenga'||ab.k==='muroFragua'){const a=aliados.sort((x,y)=>x.hp/tnS(x).hp-y.hp/tnS(y).hp)[0];a.escudo+=v;tnTexto(a,'Escudo','#cfe0ea')}
       else if(ab.k==='haste'){TN.cola.unshift(u);tnTexto(u,'¡Otro turno!','#ffd98a')}
       else{const tg=t&&t.vivo?t:enemigos[0];tnDano(u,tg,v*(ab.k==='execute'&&tg.hp<tnS(tg).hp*.4?2:1),'magic');
         if(ab.k==='stun'&&tg.vivo){tg.aturdido=1;if(tg.carga)tnRomper(tg)}if(ab.k==='doble'&&tg.vivo)tnDano(u,tg,v*.6,'magic')}
@@ -6394,9 +6541,23 @@ const ESCENAS={
  m4_final:[
   {img:'m4_final_1',cam:cam(1,.5,.5,1.3,.5,.4),txt:'Neptus calma el mar, y una ola enorme y mansa lleva el barco hacia casa.'},
   {img:'m4_final_2',cam:cam(1.3,.3,.5,1.3,.6,.4),txt:'Al amanecer aparece la costa. Y sobre ella, una columna de humo: la ciudad del Crisol arde.'},
-  {img:'m4_final_3',cam:cam(1,.5,.5,1.35,.5,.4),txt:'En el acantilado ondea un estandarte gris con una llama quemada. Os están esperando.'}]};
+  {img:'m4_final_3',cam:cam(1,.5,.5,1.35,.5,.4),txt:'En el acantilado ondea un estandarte gris con una llama quemada. Os están esperando.'}],
+ m5_intro:[
+  {img:'m5_intro_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'La ciudad que te vio partir ya no es la misma.'},
+  {img:'m5_intro_2',cam:cam(1.3,.2,.5,1.3,.8,.5),txt:'Los soldados de ceniza patrullan sus calles. No comen, no duermen, no se cansan.'},
+  {img:'m5_intro_3',cam:cam(1,.5,.55,1.35,.5,.4),txt:'Y en la plaza, junto al Crisol, esperan los cuatro jinetes de la Orden.'},
+  {img:'m5_intro_4',cam:cam(1,.5,.5,1.4,.5,.5),txt:'El Crisol aún late. Pero cada vez más despacio.'}],
+ m5_mitad:[
+  {img:'m5_mitad_1',cam:cam(1.25,.5,.6,1,.5,.5),txt:'Padre e hijo encienden juntos la fragua mayor.'},
+  {img:'m5_mitad_2',cam:cam(1,.5,.5,1.35,.5,.45),txt:'Y un viejo martillo cambia de manos.'}],
+ m5_final:[
+  {img:'m5_final_1',cam:cam(1,.5,.5,1.3,.5,.4),txt:'Mientras luchabas contra Kael, Umbravor llegó al corazón del Crisol.'},
+  {img:'m5_final_2',cam:cam(1.3,.5,.4,1,.5,.5),txt:'Crisol metió las manos en el fuego para avivarlo con todo lo que tenía. No bastó.'},
+  {img:'m5_final_3',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Bram se puso delante de su hijo. Como siempre había querido hacer.'},
+  {img:'m5_final_4',cam:cam(1,.5,.5,1.4,.5,.55),txt:'El Crisol se apagó. La oscuridad cubrió el mundo. Y tu chispa, lo último que quedaba encendido, se apagó con él.'},
+  {img:'m5_final_5',cam:cam(1.35,.5,.5,1,.5,.5),txt:'Y entonces, en la oscuridad, se abrió una puerta.'}]};
 // nivel que desbloquea la escena de la mitad y la del final de cada mundo (se ven tras el diálogo de victoria de su jefe)
-const ESC_MITAD={1:10,2:20,3:40,4:54},ESC_FIN={1:15,2:30,3:46,4:61};
+const ESC_MITAD={1:10,2:20,3:40,4:54,5:68},ESC_FIN={1:15,2:30,3:46,4:61,5:76};
 const escImg=sc=>ESCENA_IMG[sc.img]||(sc.alt&&ESCENA_IMG[sc.alt]);
 const escLista=k=>{const L=ESCENAS[k];return L&&L.every(escImg)?L:null};
 // ---- reproductor ----
