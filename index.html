@@ -5668,7 +5668,7 @@ Object.assign(DLG_TRAS_ESCENA,{
 // 62 y 70 son de supervivencia; 69, por turnos. Regla nueva: sinId (sin un campeón concreto: Tovo en el 63, el Draco en el 76).
 // MUNDO5_ABIERTO: mientras falten imágenes (sprites, escenas, mapa, tableros) y la calibración, sale como «próximamente».
 const MUNDO5_ABIERTO=false;
-// fuerza: la curva del nivel 30 escalada (PROVISIONAL: una prueba rápida con el simulador en el 64 y el 66; calibrar nivel a nivel antes de abrir el mundo)
+// fuerza: la curva del nivel 30 escalada; encima, AJUSTE_K5 por nivel (calibrado con el simulador, ver docs/modo-historia.md)
 const K5=f=>K3(f*.78);
 // escenarios: murallas, Fragua y plaza (las ilustraciones llegarán con tablero_<nombre>; mientras, se dibujan con estos colores)
 const TEMA5=THEMES.length;
@@ -5708,6 +5708,10 @@ Object.assign(REGLAS,{
  68:{minRasgo:'forja',minN:3,siempre:true,t:'Al menos 3 de Forja en el tablero',motivo:'Para reavivar la fragua mayor hacen falta manos de herrero: necesitas al menos 3 campeones de Forja en todas las rondas.'},
  74:{minRasgo:'astral',minN:2,siempre:true,t:'Al menos 2 Astrales en el tablero',motivo:'Solo la luz abre la cúpula de ceniza: necesitas al menos 2 Astrales en todas las rondas.'},
  76:{sinId:['draco'],t:'Sin el Draco',motivo:'El Draco cayó contra Umbravor y su fuego se ha apagado. No puede luchar.'}});
+// fuerza: ajuste por nivel calibrado con el simulador (tools/simulador.js, con aumentos). El Mundo 5 es el más difícil hasta ahora:
+// más que el Mundo 4 y que los mundos 6 y 7 (normales 25-35 %, jefes 15-22 %, Kael en torno al 10 %)
+const AJUSTE_K5={62:.616,63:1.32,64:1.1,65:1.316,66:1.514,67:1.22,68:1.265,70:.695,71:1.04,72:1.24,73:1.318,74:1.05,75:1.461,76:1.409};
+NIVELES_M5.forEach(L=>{const m=AJUSTE_K5[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
 NIVELES_M5.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n];
   if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 if(MUNDO5_ABIERTO)NIVELES.push(...NIVELES_M5);
@@ -5788,8 +5792,8 @@ const TN_NIVELES={ // f: fuerza base de los rivales del nivel
  // Mundo 4 (cerrado; f sin calibrar): el abordaje y el faro negro
  55:{mons:{marinero:3,cangrejo:1,tentaculo:1},jefe:[['cangrejo',1.6]],f:1.42},
  59:{mons:{marinero:2,tentaculo:2,cangrejo:1},jefe:[['tentaculo',2.2]],f:1.3},
- // Mundo 5 (cerrado; f sin calibrar): el mercado en ruinas
- 69:{mons:{soldado:2,sabueso:2,arquero:1},jefe:[['soldado',2]],f:1.5}};
+ // Mundo 5 (cerrado): el mercado en ruinas (≈28 %)
+ 69:{mons:{soldado:3,sabueso:1,arquero:1},jefe:[['soldado',1.8]],f:1.53}};
 const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
 let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
