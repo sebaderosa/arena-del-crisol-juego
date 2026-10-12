@@ -346,6 +346,8 @@ body.en-combate .shoptab{display:block}
 body.en-combate:not(.ver-tienda) #shop{transform:translateY(calc(100% + 8px))}
 body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
 #itemsBar{transition:opacity .2s}
+/* en el ordenador la tienda sigue a la vista durante el combate (se puede comprar, refrescar y vender del banquillo, como en TFT); en el móvil, con la pestaña */
+@media (min-width:901px){body.en-combate:not(.ver-tienda) #shop{transform:none}body.en-combate:not(.ver-tienda) #itemsBar{opacity:1;pointer-events:auto}body.en-combate .shoptab{display:none}}
 #toast{bottom:calc(var(--shopH,120px) + var(--itH,0px) + 10px)}
 #banner{top:45%}
 @media (min-width:901px){
@@ -353,7 +355,7 @@ body.en-combate:not(.ver-tienda) #itemsBar{opacity:0;pointer-events:none}
   #itemsBar{position:fixed;left:8px;width:230px;bottom:calc(var(--shopH,120px) + 6px);z-index:5;min-height:0}
   #players{position:fixed;right:8px;top:calc(var(--topH,60px) + 8px);width:230px;max-height:calc(100vh - var(--topH,60px) - var(--shopH,120px) - 22px)!important;overflow:auto;z-index:5}
   #info{top:calc(var(--topH,60px) + 8px);right:248px}
-  body.en-combate:not(.ver-tienda) #left{bottom:12px}
+
 }
 @media (max-width:900px){
   #top{top:4px;left:4px;right:4px}
@@ -1561,6 +1563,9 @@ function newGame(diff,historia){
 }
 const H=()=>S.players[0];
 function allUnits(p){const o=[];p.board.forEach((u,i)=>u&&o.push({u,where:'board',i}));p.bench.forEach((u,i)=>u&&o.push({u,where:'bench',i}));return o}
+// las que pueden fusionarse ahora: durante el combate, las del tablero están luchando y esperan a que acabe (como en TFT)
+const enCombateHumano=p=>p.human&&S&&S.phase==='combat';
+function fusionables(p){const o=allUnits(p);return enCombateHumano(p)?o.filter(x=>x.where==='bench'):o}
 const boardCount=p=>p.board.filter(Boolean).length;
 function addXP(p,n){const lv0=p.level;addXP0(p,n);if(p.human&&p.level>lv0)sfx('levelup')}
 function addXP0(p,n){p.xp+=n;while(p.level<9&&p.xp>=XP_NEED[p.level]){p.xp-=XP_NEED[p.level];p.level++}if(p.level>=9)p.xp=0}
@@ -1591,7 +1596,7 @@ function equipItem(u,it){
 
 function checkMerge(p,id){
   for(let star=1;star<=2;star++){
-    const list=allUnits(p).filter(o=>o.u.id===id&&o.u.star===star);
+    const list=fusionables(p).filter(o=>o.u.id===id&&o.u.star===star);
     if(list.length>=3){
       const three=list.slice(0,3);
       const items=[].concat(...three.map(o=>o.u.items));
@@ -1609,7 +1614,7 @@ function buy(p,slot){
   const C=CH[id];
   if(p.gold<C.cost){if(p.human)toast('No tienes oro suficiente');return false}
   const free=p.bench.indexOf(null);
-  const copies=allUnits(p).filter(o=>o.u.id===id&&o.u.star===1).length;
+  const copies=fusionables(p).filter(o=>o.u.id===id&&o.u.star===1).length;
   if(free<0&&copies<2){if(p.human)toast('Banquillo lleno: vende o coloca unidades');return false}
   p.gold-=C.cost;p.shop[slot]=null; // la copia ya salió de la reserva al aparecer en la tienda
   const u={uid:++S.uid,id,star:1,items:[]};
@@ -2119,6 +2124,7 @@ function incomeFor(p){
   return 5+interest+(s>=5?3:s>=4?2:s>=2?1:0);
 }
 function beginRound(){
+  {const hu=H();if(hu)[...new Set(allUnits(hu).map(o=>o.u.id))].forEach(id=>checkMerge(hu,id))} // fusiones que esperaban a que acabara el combate
   S.combat=null;S.flip=false;S.resolving=false;S.endT=0;S.preview=null;S.opp=null;S.pairs=null;
   S.type=roundType(S.stage,S.round);
   if(S.type==='carousel'){S.phase='carousel';openCarousel();updateHUD();return}
@@ -3563,7 +3569,7 @@ function updateHUD(){
     const C=CH[id];const n=owned[id]||0;
     if(hu.gold<C.cost)b.classList.add('poor');
     if(n>=2)b.classList.add('up');else if(have.has(id))b.classList.add('own'); // ya lo tienes: parpadea
-    b.disabled=!pl;
+    b.disabled=!(pl||S.phase==='combat'||S.phase==='result'); // también se compra durante el combate (como en TFT)
     b.innerHTML=`<div class="cstrip" style="background:${COST_COL[C.cost-1]}"></div>
       <div class="ctop"><div class="cg" style="background:radial-gradient(circle at 35% 30%,${lighten(TRAITS[C.traits[0]].col,.2)},${shade(TRAITS[C.traits[0]].col,.5)});border-color:${COST_COL[C.cost-1]}"><img src="${portrait(C.id)}" alt=""></div>
         <div class="cinfo"><div class="cname">${C.name}</div>${roleTag(C.role)}<div class="tps">${C.traits.map(traitPill).join('')}</div></div></div>
@@ -3674,7 +3680,7 @@ function showInfo(sel){
   infoPreview=!!sel.preview;
   if(sel.preview){u={id:sel.preview,star:1,items:[]};f=makeFighter(u,0,0,4,{})}
   else if(sel.fighter){f=sel.fighter;u={id:f.id,star:f.star,items:f.items}}
-  else{u=hu[sel.where][sel.i];if(!u){hideInfo();return}f=makeFighter(u,0,0,4,sel.where==='board'?traitCounts(hu.board):{});sellable=S.phase==='planning'}
+  else{u=hu[sel.where][sel.i];if(!u){hideInfo();return}f=makeFighter(u,0,0,4,sel.where==='board'?traitCounts(hu.board):{});sellable=S.phase==='planning'||(sel.where==='bench'&&(S.phase==='combat'||S.phase==='result'))}
   const C=CH[u.id];const el=$('#info');
   el.innerHTML=`<div class="ih"><span class="in">${C.name}</span><span class="istars">${'★'.repeat(u.star)}</span><span class="icost"><span class="coin"></span>${C.cost}</span><button class="ix" aria-label="Cerrar" id="infoX">×</button></div>
    <div class="chips">${C.traits.map(t=>`<span class="chip" style="background:${TRAITS[t].col}">${TRAITS[t].n}</span>`).join('')}</div>
@@ -3707,6 +3713,7 @@ cv.addEventListener('pointerdown',e=>{
   const [x,y]=canvasPos(e);const h=hitAt(x,y);
   if(S.phase==='carousel'){pickCarousel(carouselAt(x,y-M.pad));return}
   if(S.phase==='combat'||S.phase==='result'){
+    if(h.bench!=null&&H().bench[h.bench]){startDrag(e,{kind:'unit',from:{where:'bench',i:h.bench}});return} // el banquillo se puede tocar: mover y vender
     const f=fighterAt(x,y);if(f&&!f.creep){S.selF=f;S.sel=null;showInfo({fighter:f})}else{S.selF=null;hideInfo()}
     // bench units still inspectable
     if(!f&&h.bench!=null&&H().bench[h.bench]){S.sel={where:'bench',i:h.bench};showInfo(S.sel)}
@@ -3730,7 +3737,7 @@ function startDrag(e,d){
 function setGhost(){
   const hu=H();let html='';
   if(drag.kind==='unit'){const u=hu[drag.from.where][drag.from.i];const C=CH[u.id];html=`<div class="g" style="background:radial-gradient(circle at 35% 30%,${lighten(TRAITS[C.traits[0]].col,.3)},${shade(TRAITS[C.traits[0]].col,.4)});border-color:${COST_COL[C.cost-1]}"><img src="${portrait(C.id)}" alt=""></div>`;
-    if(S.phase==='planning'){$('#sellZone').hidden=false;$('#sellZone').innerHTML=`Suelta para vender · +${valueOf(u)} de oro`}}
+    if(S.phase==='planning'||drag.from.where==='bench'){$('#sellZone').hidden=false;$('#sellZone').innerHTML=`Suelta para vender · +${valueOf(u)} de oro`}}
   else html=itemBox(hu.items[drag.idx],'','width:44px;height:44px');
   ghost.innerHTML=html;ghost.hidden=false;
 }
@@ -3755,6 +3762,10 @@ function onDragEnd(e){
   if(d.kind==='unit'&&S.phase==='planning'){
     if(target&&$('#shop').contains(target)){const v=sellAt(hu,d.from.where,d.from.i);toast(`Vendido por ${v} de oro`);S.sel=null}
     else if(loc){moveUnit(hu,d.from,loc)}
+  }else if(d.kind==='unit'&&(S.phase==='combat'||S.phase==='result')&&d.from.where==='bench'){ // durante el combate: solo el banquillo
+    if(target&&$('#shop').contains(target)){const v=sellAt(hu,'bench',d.from.i);toast(`Vendido por ${v} de oro`);S.sel=null}
+    else if(loc&&loc.where==='bench')moveUnit(hu,d.from,loc);
+    else if(loc)toast('Espera a que acabe el combate para cambiar el tablero');
   }else if(d.kind==='item'&&loc){
     const u=hu[loc.where][loc.i];
     if(!u)toast('Suelta el objeto sobre un campeón');
@@ -3778,8 +3789,8 @@ function moveUnit(p,from,to){
   p[to.where][to.i]=a;p[from.where][from.i]=b;sfx('place');
   if(S.sel&&S.sel.where===from.where&&S.sel.i===from.i)S.sel=to;
 }
-$('#bXP').onclick=()=>{const hu=H();if(S.phase!=='planning'||hu.gold<4||hu.level>=9)return;hu.gold-=4;const lv=hu.level;sfx('xp');addXP(hu,4);if(hu.level>lv)toast(`Nivel ${hu.level}: ahora caben ${hu.level} campeones`);updateHUD()};
-$('#bRoll').onclick=()=>{const hu=H();if(S.phase!=='planning'||hu.tiendaCerrada)return;if(hu.rollGratis>0)hu.rollGratis--;else{if(hu.gold<2)return;hu.gold-=2}setShop(hu);sfx('roll');updateHUD()};
+$('#bXP').onclick=()=>{const hu=H();if(!['planning','combat','result'].includes(S.phase)||hu.gold<4||hu.level>=9)return;hu.gold-=4;const lv=hu.level;sfx('xp');addXP(hu,4);if(hu.level>lv)toast(`Nivel ${hu.level}: ahora caben ${hu.level} campeones`);updateHUD()};
+$('#bRoll').onclick=()=>{const hu=H();if(!['planning','combat','result'].includes(S.phase)||hu.tiendaCerrada)return;if(hu.rollGratis>0)hu.rollGratis--;else{if(hu.gold<2)return;hu.gold-=2}setShop(hu);sfx('roll');updateHUD()};
 $('#bLock').onclick=()=>{const hu=H();hu.locked=!hu.locked;updateHUD()};
 $('#bFight').onclick=()=>startCombat();
 function setSpeed(v){if(S)S.speed=v;try{localStorage.setItem('crisol_vel',v)}catch(e){}['sp1','sp2','sp4'].forEach(j=>$('#'+j).setAttribute('aria-pressed',j==='sp'+v))}
@@ -3790,7 +3801,7 @@ window.addEventListener('keydown',e=>{
   if(e.key==='d'||e.key==='D')$('#bRoll').click();
   else if(e.key==='f'||e.key==='F')$('#bXP').click();
   else if(e.key===' '){e.preventDefault();startCombat()}
-  else if((e.key==='e'||e.key==='E')&&S.phase==='planning'&&lastCanvas){const loc=locFromHit(hitAt(...lastCanvas));if(loc&&H()[loc.where][loc.i]){const v=sellAt(H(),loc.where,loc.i);toast(`Vendido por ${v} de oro`);S.sel=null;hideInfo();updateHUD()}}
+  else if((e.key==='e'||e.key==='E')&&['planning','combat','result'].includes(S.phase)&&lastCanvas){const loc=locFromHit(hitAt(...lastCanvas));if(loc&&H()[loc.where][loc.i]&&(S.phase==='planning'||loc.where==='bench')){const v=sellAt(H(),loc.where,loc.i);toast(`Vendido por ${v} de oro`);S.sel=null;hideInfo();updateHUD()}}
   else if(e.key==='Escape'){if(!$('#pausaOv').hidden){$('#bPausaSeguir').click();return}if(S.sel||S.selF||!$('#info').hidden){S.sel=null;S.selF=null;hideInfo()}else abrirPausa()}
 });
 // paneles laterales en móvil (sinergias / jugadores) y pantalla completa
