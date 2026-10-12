@@ -1738,6 +1738,11 @@ function makeFighter(u,team,c,r,cnt){
   if(P.escudoIni)f.shield+=f.maxHp*P.escudoIni;
   return f;
 }
+// las dos diagonales que pasan por la casilla (c0,r0) del lanzador, solo hacia delante (hacia el campo rival). Devuelve la que tiene más enemigos: {cel,en}
+function rayoDesde(f,en,c0,r0){if(c0==null){c0=f.c;r0=f.r}const ax=(c,r)=>c-(r-(r&1))/2,q0=ax(c0,r0),s0=-q0-r0,dir=f.team===0?-1:1;let best=null;
+  for(const eje of ['q','s']){const cel=[];for(let r=r0+dir;r>=0&&r<ROWS;r+=dir)for(let c=0;c<COLS;c++){const q=ax(c,r);if(eje==='q'?q===q0:-q-r===s0)cel.push([c,r])}
+    const hit=en.filter(e=>cel.some(([c,r])=>c===e.c&&r===e.r));if(!best||hit.length>best.en.length)best={cel,en:hit}}
+  return best}
 function makeCreep(k,team,c,r,m){
   const K=CREEPS[k],w=world(c,r);m=m||1;
   return {team,c,r,x:w.x,y:w.y,alive:true,creep:true,id:k,name:K.name,glyph:K.glyph,cost:0,star:1,traits:[],col:K.col,col2:'#3a2a22',
@@ -1814,6 +1819,10 @@ class Combat{
     }
     return null;
   }
+  // Orión: con el maná lleno solo lanza el rayo si alguna de sus dos diagonales apunta a un enemigo; si no, se mueve a una casilla vecina que apunte
+  rayoApunta(f){const en=this.enemies(f);if(rayoDesde(f,en).en.length)return true;if(f.move)return 'mueve';let mejor=null,n=0;
+    for(const [c,r] of neighbors(f.c,f.r)){if(this.grid.has(key(c,r)))continue;const k=rayoDesde(f,en,c,r).en.length;if(k>n){n=k;mejor=[c,r]}}
+    if(mejor){this.moveTo(f,mejor);return 'mueve'}return false}
   moveTo(f,[c,r]){this.grid.delete(key(f.c,f.r));this.grid.set(key(c,r),f);const w=world(c,r);f.move={fx:f.x,fy:f.y,tx:w.x,ty:w.y,t:0,dur:.42};f.c=c;f.r=r}
   // o.atk: viene de un ataque básico · o.extra: daño añadido por un objeto (no dispara otros efectos)
   damage(src,t,amt,type,crit,o){
@@ -1966,13 +1975,10 @@ class Combat{
       case 'murcielagos':{const n=Array.isArray(ab.n2)?ab.n2[f.star-1]:ab.n2||2,m=f.creep?f.ad/CREEPS[f.id].ad*.45:[1,1.7,3][f.star-1]*sp;
         if(t)shoot(t,'orb',()=>{const d=this.damage(f,t,v*sp,'magic');if(ab.heal)this.heal(f,d*ab.heal,f);this.impact('shadow',t.x,t.y,col)},{speed:12});
         this.summon(f,'murcielago',n,m);this.impact('shadow',f.x,f.y,'#ff7aa8');break} // beso vampírico (se cura) y convoca murciélagos
-      case 'rayoDiagonal':{ // rayo de luz que cruza el tablero en diagonal: elige la diagonal con más enemigos
-        const ax=(c,r)=>[c-(r-(r&1))/2,r],en=this.enemies(f);if(!en.length)break;const L={};
-        for(const e of en){const [q,r]=ax(e.c,e.r);for(const k of ['q'+q,'s'+(-q-r)])(L[k]=L[k]||[]).push(e)}
-        const kk=Object.keys(L).sort((a,b)=>L[b].length-L[a].length||(L[b].includes(t)?1:0)-(L[a].includes(t)?1:0))[0],lin=L[kk];
-        const celdas=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const [q]=ax(c,r);if(kk[0]==='q'?'q'+q===kk:'s'+(-q-r)===kk)celdas.push(world(c,r))}
-        if(celdas.length>1){const a=celdas[0],b=celdas[celdas.length-1];this.addFx({k:'rayo',x1:a.x,y1:a.y,x2:b.x,y2:b.y,col:'#fff5c0',dur:.6})}
-        if(this.vis){sfx('cast');this.shakeIt(.35)}lin.forEach(e=>{this.damage(f,e,v*sp,'magic');this.impact('sun',e.x,e.y,'#fff2b0')});break}
+      case 'rayoDiagonal':{ // rayo de luz que sale de Orión en diagonal hacia el campo rival, por la diagonal (de sus dos) con más enemigos
+        const B=rayoDesde(f,this.enemies(f));const fin=B.cel.length?world(...B.cel[B.cel.length-1]):{x:f.x,y:f.y};
+        this.addFx({k:'rayo',x1:f.x,y1:f.y,x2:fin.x,y2:fin.y,col:'#fff5c0',dur:.6});
+        if(this.vis){sfx('cast');this.shakeIt(.35)}B.en.forEach(e=>{this.damage(f,e,v*sp,'magic');this.impact('sun',e.x,e.y,'#fff2b0')});break}
       case 'ancla':{ // lanza el ancla al enemigo más lejano, lo arrastra a su lado y gana un escudo
         const en=this.enemies(f);if(!en.length)break;const e=en.reduce((a,b)=>hexDist(f.c,f.r,b.c,b.r)>hexDist(f.c,f.r,a.c,a.r)?b:a);
         shoot(e,'ancla',()=>{if(!e.alive)return;this.damage(f,e,v*sp,'magic');this.impact('splash',e.x,e.y,col);if(!e.alive||e.fijo||!f.alive)return;
@@ -2034,7 +2040,7 @@ class Combat{
       if(!f.target||!f.target.alive){f.locked=false;f.target=this.nearest(f)}
       if(!f.target)continue;
       if(Math.abs(f.target.x-f.x)>.2)f.face=f.target.x>f.x?1:-1;
-      if(f.ab&&f.mana>=f.maxMana){this.cast(f);continue}
+      if(f.ab&&f.mana>=f.maxMana){const ok=f.ab.k!=='rayoDiagonal'||this.rayoApunta(f);if(ok===true){this.cast(f);continue}if(ok==='mueve')continue}
       const d=hexDist(f.c,f.r,f.target.c,f.target.r);
       if(d<=f.range){if(f.atkCd<=0){this.attack(f,f.target);f.atkCd=1/this.curAS(f)}}
       else{
@@ -2297,11 +2303,12 @@ function gameOver(place){
 }
 
 // carousel
-function carTiers(){const s=S.stage;if(S.mode==='historia')return [1];return s===1?[1]:s===2?[1,2]:s===3?[2,3]:s===4?[3,4]:[3,4,5]}
+function carTiers(){const s=S.stage;if(S.mode==='historia'){for(let c=1;c<=5;c++)if(CH_IDS.some(id=>CH[id].cost===c&&S.pool[id]>0))return [c];return [1]} // Historia: el coste más barato que haya (sin coste 1 y 2 en el 36)
+  return s===1?[1]:s===2?[1,2]:s===3?[2,3]:s===4?[3,4]:[3,4,5]}
 // El carrusel se juega sobre el campo: los 5 campeones esperan de pie en semicírculo, cada uno con su objeto.
 // Se elige tocando o haciendo clic en uno (14-controles.js); se dibuja en 10-avatares.js.
 function openCarousel(){
-  if(!S.carOpts){const tiers=carTiers();S.carOpts=Array.from({length:5},()=>{const ex=maxed(H()),id=drawTier(pick(tiers),ex)||drawTier(1,ex)||drawTier(1);return {id,item:pick(ITEM_IDS)}})}
+  if(!S.carOpts){const tiers=carTiers();S.carOpts=Array.from({length:5},()=>{const ex=maxed(H()),id=drawTier(pick(tiers),ex)||drawTier(tiers[0])||drawTier(1,ex)||drawTier(1);return {id,item:pick(ITEM_IDS)}})}
   S.carPick=null;S.carHover=-1;hideInfo();
   banner('Carrusel','Elige un campeón: su objeto va a tu inventario');sfx('carousel');
 }
@@ -3938,7 +3945,7 @@ function abilDesc(ab,star){const v=ab.v[star-1];switch(ab.k){
   case 'telarana':return `Lanza una telaraña: ${v} de daño mágico al objetivo y a los enemigos a ${ab.r} casilla, que quedan atrapados ${ab.d} s y envenenados (${Math.round(v*.3)} de daño en 3 s).`;
   case 'murcielagos':return `Beso vampírico: ${v} de daño mágico al objetivo (se cura la mitad) y convoca ${Array.isArray(ab.n2)?ab.n2[star-1]:ab.n2} murciélagos que roban vida.`;
   case 'materno':return `Protege a su camada: ella y los aliados adyacentes ganan un escudo de ${v} durante 4 s, y aturde ${ab.d} s a los enemigos adyacentes.`;
-  case 'rayoDiagonal':return `Un rayo de luz cruza el tablero en diagonal (la que tenga más enemigos): ${v} de daño mágico a cada uno.`;
+  case 'rayoDiagonal':return `Dispara un rayo de luz en diagonal desde su casilla hacia el campo rival (por la diagonal con más enemigos): ${v} de daño mágico a cada uno. Si no tiene a nadie en sus diagonales, se mueve para apuntar.`;
   case 'robo':return `Golpe rápido de ${v} de daño físico que le roba un objeto a su objetivo durante el combate.`;
   case 'necro':return `Lanza un proyectil oscuro de ${v} de daño mágico y levanta ${Array.isArray(ab.n2)?ab.n2[star-1]:ab.n2} esqueletos a su lado.`;
   case 'ancla':return `Lanza el ancla al enemigo más lejano: ${v} de daño mágico, lo arrastra a su lado y lo aturde ${ab.d} s. Gana un escudo de ${Math.round(v*.6)}.`;
@@ -5522,7 +5529,7 @@ Object.assign(REGLAS,{
  46:{minRasgo:'astral',minN:2,t:'Al menos 2 Astrales contra el jefe',motivo:'Solo la luz puede romper la maldición de Morvane: en la ronda final necesitarás al menos 2 Astrales en el tablero.'}});
 NIVELES_M3.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n]});
 // fuerza: ajuste por nivel (calibrado con la curva del Mundo 3: empieza tranquilo y acaba en el 20 %) y escalones suaves
-const AJUSTE_K3={31:1.021,32:1.042,33:0.912,34:1.045,36:1.01,38:1.055,39:0.71,40:1.04,42:1.03,43:1.084,44:1.055,45:1.06,46:1.025};
+const AJUSTE_K3={31:1.021,32:1.042,33:0.895,34:1.045,36:1.01,38:1.055,39:0.71,40:1.04,42:1.03,43:1.084,44:1.055,45:1.06,46:1.025};
 NIVELES_M3.forEach(L=>{const m=AJUSTE_K3[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000});
   if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 if(MUNDO3_ABIERTO)NIVELES.push(...NIVELES_M3);
