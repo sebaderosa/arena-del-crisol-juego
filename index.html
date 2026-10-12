@@ -584,6 +584,11 @@ body.historia .stage .lbl{text-transform:none;letter-spacing:.02em}
 .goldPill b{font-family:var(--display);font-weight:400;font-size:22px;line-height:1;color:var(--gold-hi);text-shadow:0 2px 0 #000}
 .goldPill small{font-size:12px;color:#d7b878}
 body.en-combate .goldPill{display:none}
+/* probabilidad de cada coste en la tienda, con el color del coste (como en las cartas) */
+.oddsPill{position:absolute;right:14px;top:-12px;display:flex;align-items:center;gap:8px;padding:2px 10px;border-radius:14px;background:rgba(14,19,25,.94);border:1px solid var(--line);font-size:12px;font-weight:700;line-height:18px;cursor:help;z-index:1}
+.oddsPill:empty{display:none}
+body.en-combate .oddsPill{display:none}
+@media (max-width:900px){.oddsPill{right:8px;gap:6px;padding:1px 8px;font-size:11px}}
 #shop{margin-top:10px}
 @media (max-width:900px){#itemsBar{margin-bottom:12px}}
 .place.corto{font-size:44px}
@@ -1024,6 +1029,7 @@ body.en-combate .goldPill{display:none}
 
   <footer id="shop">
     <div class="goldPill" title="Tu oro"><span class="coin"></span><b id="goldv">0</b><small id="intv"></small></div>
+    <div class="oddsPill" id="odds"></div>
     <button id="bShopTab" class="shoptab" aria-label="Mostrar u ocultar la tienda">Tienda</button>
     <div class="shopCtl">
       <button class="btn" id="bXP"><span>Subir nivel</span><span class="pr"><span class="coin"></span>4</span></button>
@@ -3532,6 +3538,9 @@ function updateHUD(){
   for(let r=1;r<=roundsIn(S.stage);r++){const d=document.createElement('i');d.className='pip '+roundType(S.stage,r)+(r<S.round?' done':r===S.round?' cur':'');d.title=({pvp:'Combate contra jugador',pve:'Monstruos',carousel:'Carrusel'})[roundType(S.stage,r)];pips.appendChild(d)}
   $('#hpv').textContent=Math.max(0,hu.hp);
   $('#goldv').textContent=hu.gold;
+  {const T=S.mode==='historia'?ODDS_HIST:ODDS,nv=Math.max(1,Math.min(hu.level,T.length)),od=T[nv-1]; // probabilidades de la tienda a tu nivel
+   $('#odds').innerHTML=od.map((p,i)=>p>0?`<span style="color:${COST_COL[i]}">${Math.round(p*100)}%</span>`:'').join('');
+   $('#odds').title=`Probabilidad de cada coste en la tienda a nivel ${nv}: `+od.map((p,i)=>p>0?`coste ${i+1}, ${Math.round(p*100)} %`:'').filter(Boolean).join(' · ')}
   const inter=Math.min(hu.intMax||5,Math.floor(hu.gold/10));$('#intv').textContent=`interés +${inter}`+(Math.abs(hu.streak)>=2?` · racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:'');
   $('#lvlv').textContent=hu.level;
   const need=XP_NEED[hu.level]||0;$('#xpfill').style.width=hu.level>=9?'100%':(hu.xp/need*100)+'%';$('#xpv').textContent=hu.level>=9?'máx.':`${hu.xp}/${need}`;
