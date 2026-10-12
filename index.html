@@ -589,8 +589,9 @@ body.en-combate .goldPill{display:none}
 /* probabilidad de cada coste en la tienda, con el color del coste (como en las cartas) */
 .oddsPill{position:absolute;right:14px;top:-12px;display:flex;align-items:center;gap:8px;padding:2px 10px;border-radius:14px;background:rgba(14,19,25,.94);border:1px solid var(--line);font-size:12px;font-weight:700;line-height:18px;cursor:help;z-index:1}
 .oddsPill:empty{display:none}
+.oddsPill small{font-size:.78em;margin-left:1px;opacity:.85}
 body.en-combate .oddsPill{display:none}
-@media (max-width:900px){.oddsPill{right:8px;gap:6px;padding:1px 8px;font-size:11px}}
+@media (max-width:900px){.oddsPill{right:4px;gap:5px;padding:1px 7px;font-size:10.5px;letter-spacing:-.2px}}
 #shop{margin-top:10px}
 @media (max-width:900px){#itemsBar{margin-bottom:12px}}
 .place.corto{font-size:44px}
@@ -1566,7 +1567,7 @@ function allUnits(p){const o=[];p.board.forEach((u,i)=>u&&o.push({u,where:'board
 // las que pueden fusionarse ahora: durante el combate, las del tablero están luchando y esperan a que acabe (como en TFT)
 const enCombateHumano=p=>p.human&&S&&S.phase==='combat';
 function fusionables(p){const o=allUnits(p);return enCombateHumano(p)?o.filter(x=>x.where==='bench'):o}
-const boardCount=p=>p.board.filter(Boolean).length;
+const boardCount=p=>p.board.filter(u=>u&&!u.aliado).length; // un aliado del nivel (Orión en el 33) no ocupa plaza del equipo
 function addXP(p,n){const lv0=p.level;addXP0(p,n);if(p.human&&p.level>lv0)sfx('levelup')}
 function addXP0(p,n){p.xp+=n;while(p.level<9&&p.xp>=XP_NEED[p.level]){p.xp-=XP_NEED[p.level];p.level++}if(p.level>=9)p.xp=0}
 function maxed(p){const x=new Set();if(p)allUnits(p).forEach(o=>{if(o.u.star===3)x.add(o.u.id)});return x}
@@ -1601,7 +1602,7 @@ function checkMerge(p,id){
       const three=list.slice(0,3);
       const items=[].concat(...three.map(o=>o.u.items));
       three.forEach(o=>p[o.where][o.i]=null);
-      const nu={uid:++S.uid,id,star:star+1,items:[]};
+      const nu={uid:++S.uid,id,star:star+1,items:[]};if(three.some(o=>o.u.aliado))nu.aliado=true; // sigue siendo aliado al mejorarlo
       items.sort((a,b)=>ITEMS[b].full-ITEMS[a].full).forEach(it=>{if(!equipItem(nu,it))p.items.push(it)});
       const d=three[0];p[d.where][d.i]=nu;
       if(star+1===3){const ex=maxed(p);p.shop=p.shop.map(x=>{if(x!==id)return x;S.pool[x]++;return drawOne(p.level,ex)})}
@@ -1631,6 +1632,7 @@ function pushMerge(p,u){
 }
 function sellAt(p,where,i){
   const u=p[where][i];if(!u)return 0;
+  if(u.aliado){if(p.human)toast(`${CH[u.id].name} lucha a tu lado en este nivel: no se puede vender`);return 0}
   if(p.human){sfx('sell');FXQ.push({k:'sell',where,i})}
   const v=valueOf(u);p.gold+=v;S.pool[u.id]+=pow3(u.star);p.items.push(...u.items);p[where][i]=null;
   return v;
@@ -2060,11 +2062,12 @@ function scout(opp){
   return {carryCol,assassins};
 }
 function aiArrange(p,intel){
-  const units=allUnits(p).map(o=>o.u);
-  const cnt=traitCounts(units);
+  const todas=allUnits(p).map(o=>o.u),aliados=todas.filter(u=>u.aliado),units=todas.filter(u=>!u.aliado); // los aliados del nivel van siempre al tablero y no ocupan plaza
+  const cnt=traitCounts(todas);
   const score=u=>valueOf(u)*10+u.items.length*4+CH[u.id].traits.reduce((s,t)=>s+Math.min(cnt[t]||0,4),0)+(p.focus&&CH[u.id].traits.includes(p.focus)?6:0);
   units.sort((a,b)=>score(b)-score(a));
   p.board.fill(null);p.bench.fill(null);
+  aliados.forEach(u=>{p.board[freeBoardSlot(p,CH[u.id])]=u});
   const top=units.slice(0,maxEq(p)),rest=units.slice(maxEq(p));
   if(!intel){
     top.sort((a,b)=>(CH[a.id].role==='tank'?0:1)-(CH[b.id].role==='tank'?0:1));
@@ -3545,7 +3548,7 @@ function updateHUD(){
   $('#hpv').textContent=Math.max(0,hu.hp);
   $('#goldv').textContent=hu.gold;
   {const T=S.mode==='historia'?ODDS_HIST:ODDS,nv=Math.max(1,Math.min(hu.level,T.length)),od=T[nv-1]; // probabilidades de la tienda a tu nivel
-   $('#odds').innerHTML=od.map((p,i)=>p>0?`<span style="color:${COST_COL[i]}">${Math.round(p*100)}%</span>`:'').join('');
+   $('#odds').innerHTML=od.map((p,i)=>p>0?`<span style="color:${COST_COL[i]}">${Math.round(p*100)}<small>%</small></span>`:'').join('');
    $('#odds').title=`Probabilidad de cada coste en la tienda a nivel ${nv}: `+od.map((p,i)=>p>0?`coste ${i+1}, ${Math.round(p*100)} %`:'').filter(Boolean).join(' · ')}
   const inter=Math.min(hu.intMax||5,Math.floor(hu.gold/10));$('#intv').textContent=`interés +${inter}`+(Math.abs(hu.streak)>=2?` · racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:'');
   $('#lvlv').textContent=hu.level;
@@ -3785,6 +3788,7 @@ function onDragEnd(e){
 function moveUnit(p,from,to){
   if(from.where===to.where&&from.i===to.i)return;
   const a=p[from.where][from.i],b=p[to.where][to.i];
+  if((a&&a.aliado&&to.where==='bench')||(b&&b.aliado&&from.where==='bench')){toast(`${CH[(a&&a.aliado?a:b).id].name} lucha a tu lado en este nivel: se queda en el tablero`);return}
   if(from.where==='bench'&&to.where==='board'&&!b&&boardCount(p)>=maxEq(p)){toast(`Tablero lleno (${maxEq(p)}/${maxEq(p)}): sube de nivel para colocar más`);return}
   p[to.where][to.i]=a;p[from.where][from.i]=b;sfx('place');
   if(S.sel&&S.sel.where===from.where&&S.sel.i===from.i)S.sel=to;
@@ -4138,10 +4142,16 @@ function storyLoot(p){const got=S.round===3||S.round===6?[pick(ITEM_IDS)]:[];p.i
 function startStory(nivel){
   const L=NIVELES[nivel-1];audioInit();
   if(L.turnos)return tnAbrirNivel(nivel); // nivel por turnos (15h-turnos.js)
-  newGame('normal',{nivel,tema:L.tema,mazo:mazoNivel(nivel,HIST.mazo,HIST.col)});
+  newGame('normal',{nivel,tema:L.tema,mazo:mazoNivel(nivel,HIST.mazo,HIST.col)});ponerAliado(L);
   document.body.classList.add('historia');dmgCb=null;renderDmg();
   ['#startOv','#storyOv','#deckOv','#endOv','#rewardOv'].forEach(s=>$(s).hidden=true);layout();beginRound();
 }
+// aliado del nivel (L.aliado, p. ej. Orión en el 33): empieza en el tablero sin ocupar plaza, no se vende ni va al banquillo,
+// y sus copias salen en la tienda para mejorarlo
+function ponerAliado(L){if(!L||!L.aliado||!CH[L.aliado])return;const id=L.aliado,hu=H();
+  if(S.pool[id]==null)S.pool[id]=POOL_HIST[CH[id].cost-1];S.pool[id]=Math.max(0,S.pool[id]-1);
+  hu.board[freeBoardSlot(hu,CH[id])]={uid:++S.uid,id,star:1,items:[],aliado:true};
+  if(!S.sim)tras(()=>toast(`${CH[id].name} lucha a tu lado: no ocupa plaza del equipo y puedes mejorarlo en la tienda`),600)}
 function storyNext(){
   if(S.round<roundsIn(S.stage))return nextRound();
   if(S.stage<nFases())return showReward();
@@ -5217,7 +5227,7 @@ const NIVELES_M3=[
  nivelCueva(46,'El corazón maldito',12,'del Corazón maldito',{espectro:2,golemhueso:1},CLAN_OSCURO,
   {m:'morvaneoscuro',x:1,c:3,f:2,premio:'morvane',nombre:'Morvane, forma oscura',escolta:[Rd('espectro',1,1,3.4),Rd('espectro',5,1,3.4),Rd('golemhueso',3,0,3),['crisol',2,2,3,['sabio']],['eclipse',2,4,3,['vendaval']]]},K3(0.99)),
 ];
-NIVELES_M3.find(L=>L.n===46).oculto=true;NIVELES_M3.filter(L=>L.n===37||L.n===41).forEach(L=>L.turnos=true);
+NIVELES_M3.find(L=>L.n===46).oculto=true;NIVELES_M3.find(L=>L.n===33).aliado='orion'; // Orión aguanta la oleada contigoNIVELES_M3.filter(L=>L.n===37||L.n===41).forEach(L=>L.turnos=true);
 // Chipilín aparece entre los rivales del 32 (y te roba objetos)
 NIVELES_M3.find(L=>L.n===32).fases.forEach((F,i)=>{if(i>0)F[2].u.push(Rd('chipilin',3,1,.9+i*.3))});
 Object.assign(REGLAS,{
@@ -5230,7 +5240,7 @@ Object.assign(REGLAS,{
  46:{minRasgo:'astral',minN:2,t:'Al menos 2 Astrales contra el jefe',motivo:'Solo la luz puede romper la maldición de Morvane: en la ronda final necesitarás al menos 2 Astrales en el tablero.'}});
 NIVELES_M3.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n]});
 // fuerza: ajuste por nivel (calibrado con la curva del Mundo 3: empieza tranquilo y acaba en el 20 %) y escalones suaves
-const AJUSTE_K3={31:1.021,32:1.042,33:0.76,34:1.045,36:1.01,38:1.055,39:0.71,40:1.04,42:1.03,43:1.084,44:1.055,45:1.06,46:1.025};
+const AJUSTE_K3={31:1.021,32:1.042,33:0.912,34:1.045,36:1.01,38:1.055,39:0.71,40:1.04,42:1.03,43:1.084,44:1.055,45:1.06,46:1.025};
 NIVELES_M3.forEach(L=>{const m=AJUSTE_K3[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000});
   if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
 if(MUNDO3_ABIERTO)NIVELES.push(...NIVELES_M3);
