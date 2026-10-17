@@ -992,6 +992,44 @@ body.en-combate .oddsPill{display:none}
 .tDib.conImg .tCol{background:rgba(14,10,6,.62);border-color:rgba(160,120,60,.7);backdrop-filter:blur(1px)}
 @media (max-width:760px){.tDib.conImg{min-height:30vh}}
 
+/* ===== tienda v2 (v95): cartas con el campeón en grande, rasgos en el borde y coste abajo; interés en puntos; botón de luchar de brasa ===== */
+.card.v2{border:2px solid var(--cc);background:#121a20;min-height:96px;padding:0;display:block;box-shadow:0 3px 0 rgba(0,0,0,.45);transition:transform .15s,box-shadow .15s}
+.card.v2:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.5),0 0 0 1px var(--cc)}
+.card.v2 .cart{position:absolute;inset:0;overflow:hidden}
+.card.v2 .cart::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(6,10,14,.92) 88%)}
+.card.v2 .cfig{position:absolute;left:50%;top:5%;height:185%;width:auto;transform:translateX(-50%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));pointer-events:none;-webkit-user-drag:none}
+.card.v2 .cfig.pt{top:0;height:100%}
+.card.v2 .ctraits{position:absolute;left:4px;top:4px;display:flex;flex-direction:column;gap:3px;z-index:1}
+.card.v2 .ti{font:700 9px/14px system-ui,sans-serif;padding:0 4px;border-radius:7px;color:#fff;background:color-mix(in srgb,var(--c) 70%,#000);border:1px solid var(--c);text-shadow:0 1px 1px #000;letter-spacing:.02em}
+.card.v2 .crol{position:absolute;right:4px;top:4px;z-index:1;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgba(6,10,14,.75);color:var(--gold);border:1px solid rgba(255,255,255,.15)}
+.card.v2 .cfoot{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;gap:4px;padding:0 6px 4px;z-index:1}
+.card.v2 .cname{font-family:var(--display);font-size:15px;line-height:1.1;color:#fff;text-shadow:0 1px 2px #000,0 0 6px #000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.card.v2 .ccost{position:static;flex:none;display:flex;align-items:center;gap:2px;padding:1px 6px 1px 3px;border-radius:9px;background:rgba(6,10,14,.85);border:1px solid var(--cc);color:#fff;font-weight:800;font-size:13px}
+.card.v2 .cown{left:50%;right:auto;top:6px;bottom:auto;transform:translateX(-50%);z-index:1}
+.card.v2.poor{filter:saturate(.35) brightness(.75)}.card.v2.poor .cname{opacity:1}
+.card.v2.c4::before,.card.v2.c5::before{content:'';position:absolute;z-index:2;top:-50%;left:-60%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transform:rotate(20deg);animation:cBrillo 3.2s ease-in-out infinite;pointer-events:none}
+.card.v2.c5::before{animation-duration:2.4s}
+@keyframes cBrillo{0%,60%{left:-60%}100%{left:130%}}
+.card.v2.sold{border:2px dashed #3a4b55;background:transparent}
+.ipips{display:flex;gap:3px;align-items:center}
+.ipips i{width:7px;height:7px;border-radius:50%;background:#3a2c14;border:1px solid #8a6a2a}
+.ipips i.f{background:var(--gold-hi);border-color:#fff3c0;box-shadow:0 0 5px var(--gold)}
+.shopCtl .bico{width:16px;height:16px;flex:none;color:var(--gold)}
+#bFight{background:linear-gradient(180deg,#ff8a4a,#e0532a 55%,#b8381e);border:2px solid #ffc08a;color:#fff;text-shadow:0 2px 0 #7a1e0e,0 0 2px #7a1e0e;box-shadow:0 4px 0 #7a2412,0 0 16px rgba(255,110,50,.35);letter-spacing:.02em}
+#bFight:hover:not(:disabled){filter:brightness(1.1)}
+#bFight:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #7a2412}
+#bFight small{color:#ffe0c8;text-shadow:0 1px 0 #7a1e0e}
+#bFight:disabled{background:linear-gradient(180deg,#5a4a40,#3a302a);border-color:#6a5a4a;box-shadow:none;color:#c8b8a8;text-shadow:none}
+@media (max-width:900px){
+  .card.v2{min-height:78px}
+  .card.v2 .cname{font-size:12px}
+  .card.v2 .ccost{font-size:11px;padding:0 4px 0 2px}
+  .card.v2 .ti{font-size:8px;line-height:12px;padding:0 3px}
+  .card.v2 .crol{display:none}
+  .card.v2 .cfoot{flex-direction:column;align-items:center;gap:1px;padding:0 3px 3px}
+  .card.v2 .cown{top:4px}
+}
+
 </style>
 
 <div id="app">
@@ -1039,12 +1077,12 @@ body.en-combate .oddsPill{display:none}
   <div id="itemsBar"><button class="diBtn" id="bDiario" title="Diario de objetos: combinaciones y qué le conviene a cada campeón" aria-label="Diario de objetos"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7l-9.6 9.6-1.6-1.6L7.6 21 6.2 19.6l1.4-1.4-2.8-2.8-1.4 1.4L2 15.4l3.2-3.2-1.6-1.6z" fill="currentColor"/></svg></button><span class="lbl">Objetos</span><div id="inv"></div><span class="hint" id="invHint">Arrastra un objeto sobre un campeón (máx. 3)</span></div>
 
   <footer id="shop">
-    <div class="goldPill" title="Tu oro"><span class="coin"></span><b id="goldv">0</b><small id="intv"></small></div>
+    <div class="goldPill" title="Tu oro"><span class="coin"></span><b id="goldv">0</b><span class="ipips" id="ipips"></span><small id="intv"></small></div>
     <div class="oddsPill" id="odds"></div>
     <button id="bShopTab" class="shoptab" aria-label="Mostrar u ocultar la tienda">Tienda</button>
     <div class="shopCtl">
-      <button class="btn" id="bXP"><span>Subir nivel</span><span class="pr"><span class="coin"></span>4</span></button>
-      <button class="btn" id="bRoll"><span>Refrescar</span><span class="pr"><span class="coin"></span>2</span></button>
+      <button class="btn" id="bXP"><svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 16V9M8.5 12L12 8.5 15.5 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Subir nivel</span><span class="pr"><span class="coin"></span>4</span></button>
+      <button class="btn" id="bRoll"><svg class="bico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Refrescar</span><span class="pr"><span class="coin"></span>2</span></button>
       <button class="btn" id="bLock" aria-pressed="false" title="Bloquear tienda para la próxima ronda">
         <svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><rect x="1" y="7" width="12" height="8" rx="2" fill="currentColor"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
         <span id="lockTxt">Bloquear</span></button>
@@ -3945,7 +3983,8 @@ function updateHUD(){
   {const T=S.mode==='historia'?ODDS_HIST:ODDS,nv=Math.max(1,Math.min(hu.level,T.length)),od=T[nv-1]; // probabilidades de la tienda a tu nivel
    $('#odds').innerHTML=od.map((p,i)=>p>0?`<span style="color:${COST_COL[i]}">${Math.round(p*100)}<small>%</small></span>`:'').join('');
    $('#odds').title=`Probabilidad de cada coste en la tienda a nivel ${nv}: `+od.map((p,i)=>p>0?`coste ${i+1}, ${Math.round(p*100)} %`:'').filter(Boolean).join(' · ')}
-  const inter=Math.min(hu.intMax||5,Math.floor(hu.gold/10));$('#intv').textContent=`interés +${inter}`+(Math.abs(hu.streak)>=2?` · racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:'');
+  const inter=Math.min(hu.intMax||5,Math.floor(hu.gold/10)),imax=hu.intMax||5;$('#intv').textContent=Math.abs(hu.streak)>=2?`racha ${Math.abs(hu.streak)}${hu.streak>0?'V':'D'}`:''; // interés: un punto por cada 10 de oro
+  {const ip=$('#ipips');if(ip){ip.innerHTML=Array.from({length:imax},(_,i)=>`<i${i<inter?' class="f"':''}></i>`).join('');ip.title=`Interés: +${inter} de oro al final de la ronda (1 por cada 10 que guardes, máximo ${imax})`}}
   $('#lvlv').textContent=hu.level;
   const need=XP_NEED[hu.level]||0;$('#xpfill').style.width=hu.level>=9?'100%':(hu.xp/need*100)+'%';$('#xpv').textContent=hu.level>=9?'máx.':`${hu.xp}/${need}`;
   $('#bXP').disabled=!pl||hu.gold<4||hu.level>=9;
@@ -3962,17 +4001,19 @@ function updateHUD(){
   const cards=$('#cards');cards.innerHTML='';
   const owned={},have=new Set();allUnits(hu).forEach(o=>{have.add(o.u.id);if(o.u.star===1)owned[o.u.id]=(owned[o.u.id]||0)+1});
   for(let i=0;i<5;i++){
-    const id=hu.shop[i];const b=document.createElement('button');b.className='card';
+    const id=hu.shop[i];const b=document.createElement('button');b.className='card v2';
     if(!id){b.classList.add('sold');b.disabled=true;b.innerHTML=hu.shop.length?'<span class="soldTxt">Comprado</span>':'';cards.appendChild(b);continue} // tienda aún vacía (primer carrusel): huecos sin texto
     const C=CH[id];const n=owned[id]||0;
     if(hu.gold<C.cost)b.classList.add('poor');
     if(n>=2)b.classList.add('up');else if(have.has(id))b.classList.add('own'); // ya lo tienes: parpadea
     b.disabled=!(pl||S.phase==='combat'||S.phase==='result'); // también se compra durante el combate (como en TFT)
-    b.innerHTML=`<div class="cstrip" style="background:${COST_COL[C.cost-1]}"></div>
-      <div class="ctop"><div class="cg" style="background:radial-gradient(circle at 35% 30%,${lighten(TRAITS[C.traits[0]].col,.2)},${shade(TRAITS[C.traits[0]].col,.5)});border-color:${COST_COL[C.cost-1]}"><img src="${portrait(C.id)}" alt=""></div>
-        <div class="cinfo"><div class="cname">${C.name}</div>${roleTag(C.role)}<div class="tps">${C.traits.map(traitPill).join('')}</div></div></div>
+    const spr=SPRITE_SRC[C.id],t1=TRAITS[C.traits[0]].col,t2=TRAITS[C.traits[1]].col; // carta: el campeón en grande, rasgos en el borde y coste abajo
+    b.style.setProperty('--cc',COST_COL[C.cost-1]);b.classList.add('c'+C.cost);
+    b.innerHTML=`<div class="cart" style="background:radial-gradient(120% 90% at 50% 20%,${lighten(t1,.15)},${shade(t1,.45)} 60%,${shade(t2,.65)})"><img class="${spr?'cfig':'cfig pt'}" src="${spr?spr.src:portrait(C.id)}" alt="" draggable="false"></div>
+      <div class="ctraits">${C.traits.map(t=>`<span class="ti" style="--c:${TRAITS[t].col}" title="${TRAITS[t].n}">${TRAITS[t].n.slice(0,3)}</span>`).join('')}</div>
+      <div class="crol" title="${(ROLE_TAG[C.role]||ROLE_TAG.tank)[0]}"><svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" fill="currentColor">${(ROLE_TAG[C.role]||ROLE_TAG.tank)[1]}</svg></div>
       <div class="cown">${n?`<i class="f"></i>${n>1?'<i class="f"></i>':'<i></i>'}<i></i>`:''}</div>
-      <div class="ccost"><span class="coin"></span>${C.cost}</div>`;
+      <div class="cfoot"><span class="cname">${C.name}</span><span class="ccost"><span class="coin"></span>${C.cost}</span></div>`;
     // tocar o hacer clic: comprar. Ficha: al pasar el ratón (ordenador) o al mantener pulsado (móvil), sin comprar.
     let lp=0,held=false;
     b.onclick=()=>{if(held){held=false;return}if(infoPreview)hideInfo();if(buy(hu,i)){updateHUD()}};
