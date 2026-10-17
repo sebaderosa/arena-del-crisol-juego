@@ -2651,7 +2651,8 @@ function pintaFuego(g,F,detras){if(!F||!F.length)return;g.save();
 // op.soloEfectos: solo actualiza y pinta las partículas (encima de una pose dibujada); op.sinEfectos: solo el cuerpo (fundidos)
 function drawMarioneta(g,o,h,op){op=op||{};const R=RIGS[o.id],H=R.huesos,[P,ex]=poseMarioneta(o),M=matricesRig(H,P),k=h/R.alto,im=RIG_IMG[o.id];
   g.save();g.scale(k,k);g.translate(0,-R.pies);
-  const F=R.efecto&&!op.sinEfectos?fuegoMarioneta(o,R,M,ex,op.soloEfectos):null; // encima de una pose dibujada, la mitad (ya trae sus efectos)pintaFuego(g,F,true); // las llamas de detrás, antes que el cuerpo
+  const F=R.efecto&&!op.sinEfectos?fuegoMarioneta(o,R,M,ex,op.soloEfectos):null; // encima de una pose dibujada, la mitad (ya trae sus efectos)
+  pintaFuego(g,F,true); // las llamas de detrás, antes que el cuerpo
   if(R.extra&&!op.sinEfectos&&o.st)R.extra(g,o,ex,M,o.st,'detras',R);
   if(op.soloEfectos){pintaFuego(g,F,false);g.restore();return}
   const capas=Object.entries(H).filter(([,b])=>b.img).sort((a,b)=>a[1].z-b[1].z),fl=o.flash>0?Math.min(1,o.flash*7)*.75:0;
@@ -5701,7 +5702,8 @@ const NIVELES_M3=[
  nivelCueva(46,'El corazón maldito',12,'del Corazón maldito',{espectro:2,golemhueso:1},CLAN_OSCURO,
   {m:'morvaneoscuro',x:1,c:3,f:2,premio:'morvane',nombre:'Morvane, forma oscura',escolta:[Rd('espectro',1,1,3.4),Rd('espectro',5,1,3.4),Rd('golemhueso',3,0,3),['crisol',2,2,3,['sabio']],['eclipse',2,4,3,['vendaval']]]},K3(0.99)),
 ];
-NIVELES_M3.find(L=>L.n===46).oculto=true;NIVELES_M3.find(L=>L.n===33).aliado='orion'; // Orión aguanta la oleada contigoNIVELES_M3.filter(L=>L.n===37||L.n===41).forEach(L=>L.turnos=true);
+NIVELES_M3.find(L=>L.n===46).oculto=true;NIVELES_M3.find(L=>L.n===33).aliado='orion'; // Orión aguanta la oleada contigo
+NIVELES_M3.filter(L=>L.n===37||L.n===41).forEach(L=>L.turnos=true);
 // Chipilín aparece entre los rivales del 32 (y te roba objetos)
 NIVELES_M3.find(L=>L.n===32).fases.forEach((F,i)=>{if(i>0)F[2].u.push(Rd('chipilin',3,1,.9+i*.3))});
 Object.assign(REGLAS,{
