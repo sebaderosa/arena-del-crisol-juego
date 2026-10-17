@@ -1422,6 +1422,14 @@ const CH={};
  ['luna','Luna','Lu',3,['ensueno','asesino'],'assassin',1,60,10,{n:'Salto de algodón',k:'nuke',v:[260,390,640]}],
  ['eviel','Eviel','Ev',4,['ensueno','arcano'],'mage',3,90,30,{n:'Luz del arcoíris',k:'teamHeal',v:[260,390,1000],r:2}],
  ['teffy','Teffy y Peter','TP',5,['ensueno','coloso'],'tank',1,100,30,{n:'¡Al galope, Peter!',k:'aoeSelf',v:[320,480,1600],r:1,d:1}],
+ // Mundo 7: los siete guardianes jóvenes. Solo luchan como aliados fijos del nivel (L.aliados); no se coleccionan
+ ['g_kael','Kael','Ka',5,['guardian','astral'],'tank',1,90,30,{n:'Llama del líder',k:'aoeSelf',v:[300,450,1200],r:1,d:1}],
+ ['g_sable','Sable','Sa',5,['asesino','astral'],'assassin',1,70,20,{n:'Galope de luz',k:'execute',v:[360,540,1400]}],
+ ['g_corvo','Corvo','Co',5,['guardian','forja'],'tank',1,90,40,{n:'El escudo de los siete',k:'materno',v:[260,390,1000],r:1,d:1}],
+ ['g_velia','Velia','Ve',5,['arcano','guardian'],'mage',3,80,30,{n:'Estandarte de los siete',k:'arenga',v:[400,600,1500],r:2,h:40,d:5}],
+ ['aurelia','Aurelia','Au',5,['forja','tirador'],'ranged',4,80,20,{n:'Fuego de la guardiana',k:'aliento',v:[320,480,1300],r:1}],
+ ['thalos','Thalos','Th',5,['astral','arcano'],'mage',3,90,30,{n:'Rayo del primer Vigía',k:'rayoDiagonal',v:[380,570,1500]}],
+ ['mirel','Mirel','Mi',5,['bosque','arcano'],'mage',3,80,30,{n:'Manos que curan',k:'teamHeal',v:[220,330,900],r:99}],
 ].forEach(([id,name,glyph,cost,traits,role,range,mana,start,ab])=>{
   const R=ROLE[role];
   CH[id]={id,name,glyph,cost,traits,role,range,mana,start,ab,hp:R.hp[cost-1],ad:R.ad[cost-1],as:R.as,ar:R.ar,mr:R.mr};
@@ -1442,7 +1450,9 @@ CH.neptus.story=true;CH.neptus.escala=1.3;CH.neptus.dobleRasgo='marea';
 // Mundo 5. corazón de padre: si Tovo cae en el combate, Bram entra en frenesí (ver kill en 03-combate.js)
 CH.bram.story=true;CH.bram.escala=1.2;
 // Mundo 6. desmonta: Teffy y Peter son un personaje doble: cuando cae Peter, Teffy sigue a pie con esa parte de la vida y otro ataque
-['tik','ione','dax','luna','eviel','teffy'].forEach(id=>CH[id].story=true);CH.tik.escala=.9;CH.luna.escala=.85;CH.eviel.escala=1.2;CH.teffy.escala=1.35;CH.teffy.pas={desmonta:.55};
+['tik','ione','dax','luna','eviel','teffy'].forEach(id=>CH[id].story=true);
+['g_kael','g_sable','g_corvo','g_velia','aurelia','thalos','mirel'].forEach(id=>{CH[id].story=true;CH[id].guardian=true}); // los siete jóvenes (Mundo 7)
+CH.tik.escala=.9;CH.luna.escala=.85;CH.eviel.escala=1.2;CH.teffy.escala=1.35;CH.teffy.pas={desmonta:.55};
 const CH_IDS=Object.keys(CH);
 const ARENA_IDS=CH_IDS.filter(id=>!CH[id].story); // la Arena libre usa solo los campeones clásicos
 const ITEMS={
@@ -1599,8 +1609,17 @@ const CREEPS={
  gris:{name:'Criatura gris',glyph:'CG',hp:680,ad:48,as:.75,range:1,ar:30,mr:30,col:'#9a96a0'},
  grandevorador:{name:'El Gran Devorador',glyph:'GD',hp:7800,ad:180,as:.65,range:1,ar:60,mr:70,col:'#3a4aa8',pas:{comeMana:30}},
  reinadevoradora:{name:'La Reina de los Devoradores',glyph:'RD',hp:9000,ad:190,as:.7,range:2,ar:65,mr:70,col:'#6a3ab8',pas:{comeMana:30}},
+ // Mundo 7: el Vacío y sus criaturas. eco: vuelve una vez con parte de la vida (los ecos de ceniza, lo que los guardianes podrían llegar a ser)
+ sombra:{name:'Sombra del Vacío',glyph:'SV',hp:560,ad:60,as:.9,range:1,ar:20,mr:40,col:'#3a2a4a',jump:true},
+ susurro:{name:'Susurro',glyph:'Su',hp:430,ad:48,as:.75,range:3,ar:10,mr:40,col:'#6a5a8a',pas:{hechizo:.18}},
+ ecoceniza:{name:'Eco de ceniza',glyph:'EC',hp:820,ad:56,as:.65,range:1,ar:45,mr:30,col:'#7a7068',pas:{eco:.35}},
+ corvojoven:{name:'Corvo, el escudo de los siete',glyph:'Co',hp:2600,ad:95,as:.7,range:1,ar:70,mr:50,col:'#c8b080'},
+ kaeljoven:{name:'Kael y Umbravor',glyph:'KU',hp:6400,ad:165,as:.75,range:1,ar:65,mr:60,col:'#e8e0c8'},
+ corvoposeido:{name:'Corvo poseído',glyph:'CP',hp:6200,ad:170,as:.7,range:1,ar:75,mr:55,col:'#4a3a5a',pas:{espinas:.12}},
+ kaelsombra:{name:'Kael, envuelto en sombra',glyph:'KS',hp:8200,ad:190,as:.75,range:1,ar:70,mr:65,col:'#3a2a3a'},
+ vacio:{name:'El Vacío',glyph:'Va',hp:11000,ad:200,as:.7,range:2,ar:70,mr:75,col:'#1a1024',pas:{hechizo:.1}},
 };
-const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6,soldado:.85,arquero:.8,sabueso:.85,sable:1.25,corvo:1.3,velia:1.15,umbravor:1.7,kael:1.35,bestia:.85,cuervo:.75,devorador:.85,escarcha:1,automata:1.05,gris:.85,grandevorador:1.6,reinadevoradora:1.4};
+const CREEP_SCALE={roedin:.72,escupidor:.8,lobo:1.05,matrona:1.3,draco:1.55,goblin:.75,hondero:.75,murcielago:.7,arana:.85,trol:1.3,reygoblin:1.2,reinaarana:1.35,dracqueen:1.15,esqueleto:.8,necrofago:.9,espectro:.85,golemhueso:1.35,chipilin:.85,varg:1.35,vidar:1.3,morvane:1.15,morvaneoscuro:1.5,marinero:.85,sirena:.85,cangrejo:.95,tentaculo:.95,nonface:1.2,serpiente:1.45,leviatan:1.6,soldado:.85,arquero:.8,sabueso:.85,sable:1.25,corvo:1.3,velia:1.15,umbravor:1.7,kael:1.35,bestia:.85,cuervo:.75,devorador:.85,escarcha:1,automata:1.05,gris:.85,grandevorador:1.6,reinadevoradora:1.4,sombra:.85,susurro:.8,ecoceniza:.95,corvojoven:1.2,kaeljoven:1.7,corvoposeido:1.3,kaelsombra:1.35,vacio:1.7};
 const ODDS=[[1,0,0,0,0],[1,0,0,0,0],[.75,.25,0,0,0],[.55,.30,.15,0,0],[.45,.33,.20,.02,0],[.30,.40,.25,.05,0],[.19,.35,.35,.10,.01],[.18,.25,.32,.22,.03],[.10,.20,.25,.35,.10]];
 // modo Historia: más probabilidad de los costes altos (allí casi nunca se pasa del nivel 6-7). Por nivel del jugador: coste 1..5
 const ODDS_HIST=[[1,0,0,0,0],[.8,.2,0,0,0],[.55,.25,.1,.05,.05],[.35,.25,.2,.1,.1],[.2,.2,.25,.15,.2],[.1,.15,.25,.2,.3],[.05,.1,.2,.25,.4],[.05,.1,.15,.25,.45],[.05,.05,.15,.25,.5]];
@@ -2856,6 +2875,11 @@ const LOOK={
  luna:{w:'daggers',h:'hair',hc:'#f4f0f8',skin:'#f8e8f0'},eviel:{w:'orb',h:'horns',bulk:1.4,skin:'#f8f4ff',orb:'#ffb8f0'},teffy:{w:'spear',sh:1,h:'hair',hc:'#f0c060',bulk:1.6,skin:'#f3cfb0'},teffy_pie:{w:'bow',h:'hair',hc:'#f0c060',skin:'#f3cfb0'},
  devorador:{w:'club',h:'horns',skin:'#4a5ab8'},automata:{w:'hammer',sh:1,h:'helm',bulk:1.3,skin:'#b08a4a'},gris:{w:'club',h:'leaf',bulk:1.2,skin:'#9a96a0'},
  grandevorador:{w:'club',h:'horns',bulk:1.7,skin:'#3a4aa8'},reinadevoradora:{w:'orb',h:'crown',bulk:1.5,skin:'#6a3ab8',orb:'#c8a8ff'},
+ // Mundo 7 (provisionales): los siete guardianes jóvenes y el Vacío (Kael y Umbravor se dibujan como el Draco, en blanco)
+ g_kael:{w:'sword',sh:1,h:'crown',bulk:1.3,skin:'#f0cfb0'},g_sable:{w:'daggers',h:'hair',hc:'#2a2a3a',skin:'#f0cfb0'},g_corvo:{w:'spear',sh:1,h:'helm',bulk:1.4,skin:'#d9a27a'},
+ g_velia:{w:'staff',h:'hair',hc:'#f0e0b0',skin:'#f3cfb0',orb:'#fff0b0'},aurelia:{w:'bow',h:'hair',hc:'#d83a2a',skin:'#f3cfb0'},thalos:{w:'orb',h:'hood',skin:'#e8d0b0',orb:'#fff5c0'},mirel:{w:'staff',h:'leaf',skin:'#f0d0b0',orb:'#9dff8a'},
+ sombra:{w:'daggers',h:'hood',skin:'#3a2a4a'},susurro:{w:'orb',h:'hood',skin:'#6a5a8a',orb:'#c8a8ff'},ecoceniza:{w:'sword',sh:1,h:'helm',skin:'#8a8078'},
+ corvojoven:{w:'spear',sh:1,h:'helm',bulk:1.4,skin:'#d9a27a'},corvoposeido:{w:'spear',sh:1,h:'helm',bulk:1.45,skin:'#4a3a5a'},kaelsombra:{w:'sword',sh:1,h:'crown',bulk:1.45,skin:'#3a2a3a'},vacio:{w:'orb',h:'horns',bulk:1.8,skin:'#1a1024',orb:'#8a5aff'},
 };
 const METAL='#b7c2c8',WOOD='#7a5534';
 function circ(g,x,y,r){g.beginPath();g.arc(x,y,r,0,Math.PI*2)}
@@ -2950,7 +2974,7 @@ function drawCreep(g,o,u){
       g.strokeStyle='#ff9a3a';g.lineWidth=.3*u;g.shadowColor='#ff9a3a';g.shadowBlur=3*u;g.beginPath();g.moveTo(-1*u,-9*u);g.lineTo(0,-7*u);g.lineTo(-.6*u,-5*u);g.moveTo(1.4*u,-8.6*u);g.lineTo(2*u,-6.4*u);g.stroke();g.shadowBlur=0;
       g.fillStyle=col;g.fillRect(-1.3*u,-12.2*u,2.8*u,2.2*u);g.fillStyle='#ffb04a';g.fillRect(.4*u,-11.5*u,.9*u,.5*u);
       for(const [sx,th] of [[-4.2,-.2],[4.2,a+.2]]){g.save();g.translate(sx*u,-9.4*u);g.rotate(-th);g.fillStyle=dk;g.fillRect(-.9*u,0,1.8*u,4.4*u);g.fillStyle=col;g.fillRect(-1.3*u,4*u,2.6*u,2.2*u);g.restore()}break}
-    case 'umbravor':case 'draco':{const fl2=Math.sin(T*5)*.5;g.fillStyle=dk;for(const s of [1,.7]){g.save();g.translate(-.5*u,-8*u);g.rotate(-.5-fl2*s);g.beginPath();g.moveTo(0,0);g.lineTo(-7*u*s,-4*u);g.lineTo(-5*u*s,.5*u);g.lineTo(-7.5*u*s,2*u);g.lineTo(-2*u,2.5*u);g.closePath();g.fill();g.restore()}
+    case 'kaeljoven':case 'umbravor':case 'draco':{const fl2=Math.sin(T*5)*.5;g.fillStyle=dk;for(const s of [1,.7]){g.save();g.translate(-.5*u,-8*u);g.rotate(-.5-fl2*s);g.beginPath();g.moveTo(0,0);g.lineTo(-7*u*s,-4*u);g.lineTo(-5*u*s,.5*u);g.lineTo(-7.5*u*s,2*u);g.lineTo(-2*u,2.5*u);g.closePath();g.fill();g.restore()}
       g.strokeStyle=col;g.lineWidth=1.6*u;g.beginPath();g.moveTo(-3*u,-4*u);g.quadraticCurveTo(-7*u,-3*u,-8*u,-6*u+Math.sin(T*3)*u);g.stroke();
       g.fillStyle=col;g.beginPath();g.ellipse(0,-5*u,4.2*u,2.8*u,0,0,Math.PI*2);g.fill();g.fillStyle=dk;g.fillRect(-2.6*u,-3*u,1.4*u,3*u);g.fillRect(1.4*u,-3*u,1.4*u,3*u);
       g.strokeStyle=col;g.lineWidth=1.8*u;g.beginPath();g.moveTo(2.6*u,-6.5*u);g.quadraticCurveTo(4*u,-10*u,(5+k)*u,-10.4*u);g.stroke();
@@ -3013,7 +3037,7 @@ function drawUnit(x,y,o){
   ctx.scale(o.face||1,1);
   const L=o.look;if(L&&L.bulk>1.3&&!SPR[o.id]){const k=1+(L.bulk-1.3)*.35;ctx.scale(k,k)}
   const esc=!o.creep&&CH[o.id]&&CH[o.id].escala||1;if(esc!==1)ctx.scale(esc,esc);
-  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='umbravor'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id]){const mio=o.team!==1&&!o.creep,au=mio&&auraAspecto(o.id); // tus unidades llevan el aspecto equipado (15e-cuenta.js)
+  if(o.creep&&SPR[o.creep])drawSprite(ctx,o,SPR[o.creep],s,sc*(CREEP_SCALE[o.creep]||1));else if(o.creep){if(o.creep==='draco'||o.creep==='umbravor'||o.creep==='kaeljoven'||o.creep==='matrona')ctx.scale(1.15,1.15);drawCreep(ctx,o,u)}else if(SPR[o.id]){const mio=o.team!==1&&!o.creep,au=mio&&auraAspecto(o.id); // tus unidades llevan el aspecto equipado (15e-cuenta.js)
     if(au){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha*=.35+.15*Math.sin(o.t*3);const ga=ctx.createRadialGradient(0,-s*.8*sc,s*.1,0,-s*.8*sc,s*1.1*sc);ga.addColorStop(0,au);ga.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=ga;ctx.fillRect(-s*1.2*sc,-s*2*sc,s*2.4*sc,s*2.2*sc);ctx.restore()}
     drawSprite(ctx,o,(mio&&aspectoSpr(o.id))||SPR[o.id],s,sc)}
   else if(!LOOK[o.id]&&CREEPS[o.id])drawCreep(ctx,Object.assign({},o,{creep:o.id,col:CREEPS[o.id].col}),u); // monstruo jugable sin sprite: su dibujo de monstruo
@@ -3320,6 +3344,21 @@ const AURAS={
    g.strokeStyle='rgba(90,110,255,.45)';g.lineWidth=s*.14;g.beginPath();g.arc(0,0,s*1.05,0,1.6);g.stroke()}g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,10,2.2,.9,'120,140,255',.7)},
  reinadevoradora:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.2,s*1.6,'30,10,60',.55);charcoSombra(g,x,pies,s,1.4,'20,6,40',.8);humo(g,x,pies,s,t,10,2.4,.8,'40,20,80',.45,.26)},
   delante:(g,x,pies,s,t)=>{motas(g,x,pies,s,t,8,2.3,.8,'190,150,255',.8);motas(g,x,pies,s,t+1.4,6,2.1,.8,'255,150,210',.6)}},
+ // Mundo 7: el Vacío y sus criaturas, oscuros; los guardianes jóvenes, con luz
+ sombra:{detras:(g,x,pies,s,t)=>{charcoSombra(g,x,pies,s,.9,'10,4,18',.6);humo(g,x,pies,s,t,5,1.2,.5,'20,8,34',.4,.2)}},
+ susurro:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.8,.6,'190,150,255',.6)},
+ ecoceniza:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,4,1.4,.5,'180,170,160',.55)},
+ kaeljoven:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,10,2.2,.8,'255,240,190',.8)},
+ corvoposeido:{detras:(g,x,pies,s,t)=>{charcoSombra(g,x,pies,s,1.1,'14,6,24',.7);humo(g,x,pies,s,t,9,2,.7,'24,10,40',.5,.26)},delante:(g,x,pies,s,t)=>zarcillos(g,x,pies,s,t,3,'150,100,230',.6,.025,true,.8)},
+ kaelsombra:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.15,s*1.5,'14,6,20',.6);charcoSombra(g,x,pies,s,1.3,'10,4,16',.8);humo(g,x,pies,s,t,12,2.6,.85,'20,8,30',.55,.28)},
+  delante:(g,x,pies,s,t)=>{zarcillos(g,x,pies,s,t,4,'14,6,20',.9,.09,true,.95);zarcillos(g,x,pies,s,t,4,'180,120,255',.7,.025,true,.95)}},
+ vacio:{detras:(g,x,pies,s,t)=>{halo(g,x,pies-s*1.2,s*2.2,'8,2,14',.7);g.save();g.globalCompositeOperation='lighter';halo(g,x,pies-s*1.2,s*2.4,'110,50,220',.25*(.8+.2*Math.sin(t*2)));g.restore();
+   charcoSombra(g,x,pies,s,1.8,'6,0,12',.9);grietas(g,x,pies,s,t);humo(g,x,pies,s,t,16,3.4,1,'8,2,14',.6,.32);zarcillos(g,x,pies,s,t,5,'8,2,14',.9,.12,false,1.2);zarcillos(g,x,pies,s,t,5,'190,130,255',.8,.03,false,1.2)},
+  delante:(g,x,pies,s,t)=>{zarcillos(g,x,pies,s,t,5,'8,2,14',.9,.12,true,1.2);zarcillos(g,x,pies,s,t,5,'190,130,255',.8,.03,true,1.2);motas(g,x,pies,s,t,16,3,.9,'200,150,255',.9)}},
+ aurelia:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.6,.5,'255,150,60',.8)},
+ thalos:{detras:(g,x,pies,s,t)=>{g.save();g.globalCompositeOperation='lighter';halo(g,x,pies-s*1.1,s*1.1,'255,245,190',.2+.05*Math.sin(t*2));g.restore()},delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.8,.5,'255,245,190',.8)},
+ mirel:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,6,1.6,.5,'160,255,140',.75)},
+ g_kael:{delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.7,.5,'255,230,150',.75)},
  // Mundo 4
  neptus:{detras:(g,x,pies,s,t)=>{g.save();g.translate(x,pies);g.scale(1,.3);g.globalCompositeOperation='lighter';for(let i=0;i<2;i++){g.strokeStyle=`rgba(90,200,255,${.55-.2*i})`;g.lineWidth=s*.06;g.beginPath();g.arc(0,0,s*(.62+.12*i),t*(2-i*.7)+i,t*(2-i*.7)+i+3.6);g.stroke()}g.restore()},
   delante:(g,x,pies,s,t)=>motas(g,x,pies,s,t,5,1.4,.4,'160,230,255',.8)},
@@ -4450,7 +4489,7 @@ function nivelCueva(n,nombre,tema,de,mons,clan,jefe,K){
   const mezcla=(a,rr)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rr()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const huecos={tank:[[3,0],[2,0],[4,0],[1,0],[5,0],[0,0],[6,0],[3,1]],assassin:[[0,1],[6,1],[1,1],[5,1],[0,0],[6,0]],ranged:[[3,3],[2,3],[4,3],[1,3],[5,3],[0,3],[6,3],[3,2]],mage:[[2,3],[4,3],[3,2],[1,2],[5,2],[0,3],[6,3],[2,2]]};
   const OBJ={tank:['muralla','troll','pua','bastionob','gigante'],assassin:['ocaso','vampira','runica','ojo'],ranged:['vendaval','runica','certero','ocaso'],mage:['sabio','precision','ancestral','egida']};
-  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas',soldado:'Soldados de ceniza',arquero:'Arqueros de ceniza',sabueso:'Sabuesos de humo',bestia:'Bestias de ceniza',cuervo:'Cuervos de ceniza',devorador:'Devoradores',escarcha:'Lobos de escarcha',automata:'Autómatas',gris:'Criaturas grises'};
+  const ROLM={goblin:'tank',trol:'tank',hondero:'ranged',murcielago:'assassin',arana:'assassin',esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank',sombra:'assassin',susurro:'ranged',ecoceniza:'tank'},NOM={goblin:'Goblins',hondero:'Honderos',murcielago:'Murciélagos',arana:'Arañas',trol:'Troles',esqueleto:'Esqueletos',necrofago:'Necrófagos',espectro:'Espectros',golemhueso:'Gólems',marinero:'Marineros fantasma',cangrejo:'Cangrejos',tentaculo:'Tentáculos',sirena:'Sirenas',soldado:'Soldados de ceniza',arquero:'Arqueros de ceniza',sabueso:'Sabuesos de humo',bestia:'Bestias de ceniza',cuervo:'Cuervos de ceniza',devorador:'Devoradores',escarcha:'Lobos de escarcha',automata:'Autómatas',gris:'Criaturas grises',sombra:'Sombras del Vacío',susurro:'Susurros',ecoceniza:'Ecos de ceniza'};
   const X=[1,1.5,2.1,2.8,3.4],cada=[2,2,3,3,4]; // multiplicador de los monstruos y 1 de cada «cada» unidades es monstruo
   const tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=NFASES;f++){const fila=[],fo=FO[f-1];
@@ -4532,7 +4571,7 @@ const SUPERV_T=60;
 function prepararSuperv(cb,R){if(!R||!R.olas)return;cb.superv={dur:SUPERV_T,k:R.k||1,olas:R.olas.map(o=>({t:o.t,u:o.u}))}}
 // nivel de supervivencia: 2 fases de 4 rondas (la 1-1 es el carrusel). mons: {monstruo: peso}; K: fuerza de las 7 rondas
 function nivelSuperv(n,nombre,tema,de,mons,K,premio,alfa){
-  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank'};let q=0;
+  const fases=[],ROL={esqueleto:'tank',golemhueso:'tank',necrofago:'assassin',espectro:'assassin',marinero:'assassin',cangrejo:'tank',tentaculo:'tank',sirena:'ranged',soldado:'tank',arquero:'ranged',sabueso:'assassin',bestia:'assassin',cuervo:'ranged',devorador:'assassin',escarcha:'assassin',automata:'tank',gris:'tank',sombra:'assassin',susurro:'ranged',ecoceniza:'tank'};let q=0;
   const filas={tank:[0,1],assassin:[1,0],ranged:[3,2]},tot=Object.values(mons).reduce((a,b)=>a+b,0);
   for(let f=1;f<=2;f++){const fila=[];
     for(let r=1;r<=4;r++){if(f===1&&r===1){fila.push(null);continue}
@@ -4611,10 +4650,13 @@ function startStory(nivel){
 }
 // aliado del nivel (L.aliado, p. ej. Orión en el 33): empieza en el tablero sin ocupar plaza, no se vende ni va al banquillo,
 // y sus copias salen en la tienda para mejorarlo
-function ponerAliado(L){if(!L||!L.aliado||!CH[L.aliado])return;const id=L.aliado,hu=H();
+function ponerAliado(L){if(L&&L.aliados){ponerAliados(L);return}if(!L||!L.aliado||!CH[L.aliado])return;const id=L.aliado,hu=H();
   if(S.pool[id]==null)S.pool[id]=POOL_HIST[CH[id].cost-1];S.pool[id]=Math.max(0,S.pool[id]-1);
   hu.board[freeBoardSlot(hu,CH[id])]={uid:++S.uid,id,star:1,items:[],aliado:true};
   if(!S.sim)tras(()=>toast(`${CH[id].name} lucha a tu lado: no ocupa plaza del equipo y puedes mejorarlo en la tienda`),600)}
+// varios aliados fijos (L.aliados, Mundo 7: los guardianes jóvenes): a 2 estrellas, sin ocupar plaza, sin copias en la tienda
+function ponerAliados(L){const hu=H();for(const id of L.aliados){if(!CH[id])continue;hu.board[freeBoardSlot(hu,CH[id])]={uid:++S.uid,id,star:2,items:[],aliado:true}}
+  if(!S.sim)tras(()=>toast(`${L.aliados.map(id=>CH[id].name).join(', ')} luchan a tu lado: no ocupan plaza del equipo`),600)}
 function storyNext(){
   const RG=reglaActual(); // bucle (Mundo 6): las rondas 3 y 6 se repiten RG.bucle veces, cada vez más fuertes
   if(RG&&RG.bucle&&(S.round===3||S.round===6)){if((S.bucleN||0)<RG.bucle){S.bucleN=(S.bucleN||0)+1;toast(`¡Bucle! La ronda se repite (${S.bucleN} de ${RG.bucle})`);return beginRound()}S.bucleN=0}
@@ -6139,6 +6181,133 @@ Object.assign(DLG_TRAS_ESCENA,{
   ['ione','Si fracasamos en el pasado, la Orden ganará en todos los tiempos. El mundo gris que habéis visto será el único que exista. Para siempre.'],
   ['dax','Sin presión, vamos.'],['tovo','Entonces lo haremos bien. A la primera.'],['crisol','Esta vez no voy delante. Vamos todos juntos.']]});
 
+// ================= MUNDO 7: EL ORIGEN (niveles 92-106, el final de la historia) =================
+// Historia y diseño en docs/historia.md. El salto es solo de ida: siglos atrás, con los siete guardianes aún jóvenes y buenos.
+// La ciudad joven (92-96), los susurros (97-101) y el día de la ceniza (102-106). 100 es de supervivencia; 94, por turnos.
+// Aliados fijos (L.aliados): los guardianes jóvenes luchan a tu lado en 104, 105 y 106. No hay campeones nuevos que coleccionar.
+// MUNDO7_ABIERTO: mientras falten imágenes y la calibración, sale como «próximamente».
+const MUNDO7_ABIERTO=false;
+// fuerza: la curva del nivel 30 escalada; encima, AJUSTE_K7 por nivel (calibrado, ver docs/modo-historia.md)
+const K7=f=>K3(f*.8);
+const TEMA7=THEMES.length;
+THEMES.push(
+ Object.assign({},THEMES[2],{n:'La ciudad joven',img:'tablero_ciudadjoven',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#1a2a4a','#3a5a8a'],pa:'#4a6a5a',pb:'#527262',ea:'#6a5a40',eb:'#726248',line:'#9ab8a0',lineE:'#c0a070',side:'#101828',mid:'rgba(255,240,190,.55)',amb:'firefly',ac:['#ffe8a0','#ffffff'],deco:'losas'}),
+ Object.assign({},THEMES[2],{n:'Los susurros',img:'tablero_susurros',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#1a1028','#2a1a3a'],pa:'#3a3450',pb:'#423a58',ea:'#3a2a40',eb:'#423048',line:'#7a6aa0',lineE:'#8a5a80',side:'#0c0812',mid:'rgba(200,170,255,.5)',amb:'wisp',ac:['#c8a8ff','#7a5ad0'],deco:'runas'}),
+ Object.assign({},THEMES[2],{n:'El día de la ceniza',img:'tablero_diaceniza',fx:.5,fy:.55,frx:.33,fry:.27,sky:['#140c08','#2a1a10'],pa:'#4a3a30',pb:'#524036',ea:'#3a2028',eb:'#42262e',line:'#c0905a',lineE:'#8a4a5a',side:'#0a0604',mid:'rgba(255,200,120,.5)',amb:'ember',ac:['#ffd27a','#ff8a4a'],deco:'marmol'}));
+// música: la ciudad joven (jónico, luminoso), los susurros (locrio, inquieto) y el día de la ceniza (eólico, épico y rápido)
+MUSIC.push({root:55,sc:[0,2,4,5,7,9,11],bpm:96,prog:[0,5,3,4]},{root:47,sc:[0,1,3,5,6,8,10],bpm:80,prog:[0,1,4,5]},{root:45,sc:[0,2,3,5,7,8,10],bpm:116,prog:[0,5,6,4]});
+const CLAN_VACIO=['ebano','eclipse','ceniza','sombrio','espina','vespa','martillo','titan'];
+const GUARDIANES_J=['g_kael','g_sable','g_corvo','g_velia','aurelia','thalos','mirel'];
+const NIVELES_M7=[
+ nivelCueva(92,'El último salto',TEMA7,'de la Ciudad joven',{sombra:3,susurro:1},CLAN_VACIO,null,K7(0.6)),
+ nivelCueva(93,'La fragua de los siete',TEMA7,'de la Fragua joven',{sombra:2,ecoceniza:2},CLAN_VACIO,null,K7(0.6)),
+ nivelCueva(94,'La prueba del escudo',TEMA7,'de la Prueba',{ecoceniza:2,sombra:2},CLAN_VACIO,null,K7(0.55)),
+ nivelCueva(95,'Las primeras sombras',TEMA7,'de las Sombras',{sombra:3,susurro:1},CLAN_VACIO,null,K7(0.62)),
+ nivelCueva(96,'El jinete blanco',TEMA7,'de la Plaza joven',{sombra:2,ecoceniza:2},CLAN_VACIO,
+  {m:'kaeljoven',x:1.05,c:3,f:1,premio:null,nombre:'Kael y Umbravor',escolta:[Rd('ecoceniza',2,0,3),Rd('ecoceniza',4,0,3),Rd('sombra',1,1,3),Rd('sombra',5,1,3),['titan',2,3,0,['muralla']],['eclipse',2,3,3,['vendaval']]]},K7(1.04)),
+ nivelCueva(97,'El fuego de Aurelia',TEMA7+1,'de las Murallas',{sombra:2,susurro:2},CLAN_VACIO,null,K7(0.6)),
+ nivelCueva(98,'La escuela de Mirel',TEMA7+1,'de la Escuela',{susurro:2,sombra:2},CLAN_VACIO,null,K7(0.6)),
+ nivelCueva(99,'Susurros',TEMA7+1,'de los Susurros',{susurro:3,sombra:1},CLAN_VACIO,null,K7(0.58)),
+ nivelSuperv(100,'La carrera de Sable',TEMA7+1,'de la Carrera',{sombra:3,susurro:1,ecoceniza:1},KS(0.32),null,'ecoceniza'),
+ nivelCueva(101,'El escudo roto',TEMA7+1,'del Escudo',{ecoceniza:2,sombra:2},CLAN_VACIO,
+  {m:'corvoposeido',x:1.05,c:3,f:0,premio:null,nombre:'Corvo poseído',escolta:[Rd('ecoceniza',1,0,3.2),Rd('ecoceniza',5,0,3.2),Rd('susurro',2,3,3),Rd('susurro',4,3,3),['ceniza',2,3,3,['sabio']],['ebano',2,2,0,['pua']]]},K7(1.08)),
+ nivelCueva(102,'La noche antes',TEMA7+2,'de la Noche',{sombra:2,ecoceniza:2},CLAN_VACIO,null,K7(0.62)),
+ nivelCueva(103,'La puerta del Vacío',TEMA7+2,'de la Puerta',{sombra:2,susurro:1,ecoceniza:1},CLAN_VACIO,null,K7(0.62)),
+ nivelCueva(104,'Los siete contra la sombra',TEMA7+2,'de la Sombra',{sombra:3,ecoceniza:1},CLAN_VACIO,null,K7(0.7)),
+ nivelCueva(105,'Kael elige',TEMA7+2,'del Corazón',{sombra:2,susurro:1,ecoceniza:1},CLAN_VACIO,
+  {m:'kaelsombra',x:1.05,c:3,f:1,premio:null,nombre:'Kael, envuelto en sombra',escolta:[Rd('sombra',1,1,3.4),Rd('sombra',5,1,3.4),Rd('ecoceniza',3,0,3.2),Rd('susurro',3,3,3.2),['titan',2,2,0,['muralla']],['eclipse',2,4,3,['vendaval']]]},K7(1.12)),
+ nivelCueva(106,'El Vacío',TEMA7+2,'del Vacío',{sombra:2,susurro:1,ecoceniza:1},CLAN_VACIO,
+  {m:'vacio',x:1.05,c:3,f:2,premio:null,nombre:'El Vacío',escolta:[Rd('sombra',1,1,3.6),Rd('sombra',5,1,3.6),Rd('ecoceniza',2,0,3.4),Rd('ecoceniza',4,0,3.4),Rd('susurro',1,3,3.4),Rd('susurro',5,3,3.4),['ceniza',2,3,3,['sabio']],['espina',2,6,0,['ocaso']]]},K7(1.2)),
+];
+NIVELES_M7.find(L=>L.n===94).turnos=true;
+NIVELES_M7.find(L=>L.n===104).aliados=['aurelia','thalos','mirel','g_velia'];
+NIVELES_M7.find(L=>L.n===105).aliados=['aurelia','thalos','mirel','g_velia','g_sable','g_corvo'];
+NIVELES_M7.find(L=>L.n===106).aliados=GUARDIANES_J.slice();
+Object.assign(REGLAS,{
+ 93:{minRasgo:'forja',minN:3,siempre:true,t:'Al menos 3 de Forja en el tablero',motivo:'En la fragua de los siete solo entran los que saben de fuego y martillo: necesitas al menos 3 campeones de Forja en todas las rondas.'},
+ 98:{sinRasgo:'umbra',t:'Sin campeones Siniestros',motivo:'Mirel cura a todos, pero su escuela no deja entrar la sombra: los Siniestros esperan fuera.'},
+ 99:{t:'Los susurros',motivo:'El Vacío se mete en las cabezas: el golpe de los susurros hace que tus campeones ataquen a sus aliados un momento.'},
+ 103:{minRasgo:'astral',minN:2,siempre:true,t:'Al menos 2 Astrales en el tablero',motivo:'Solo la luz abre la puerta del Vacío: necesitas al menos 2 Astrales en todas las rondas.'},
+ 104:{t:'Los guardianes luchan contigo',motivo:'Aurelia, Thalos, Mirel y Velia luchan a tu lado: no ocupan plaza del equipo.'},
+ 105:{t:'Los guardianes luchan contigo',motivo:'Seis de los siete guardianes luchan a tu lado. El séptimo, Kael, está a punto de caer.'},
+ 106:{t:'Los siete luchan contigo',motivo:'Los siete guardianes jóvenes luchan a tu lado contra el Vacío.'}});
+// fuerza: ajuste por nivel calibrado con el simulador (con aumentos). Por debajo del Mundo 5: normales 30-40 %, jefes 23-26 %, Kael ~18 % y el Vacío ~15 %.
+// 104-106 llevan a los guardianes de aliados, así que sus rivales son mucho más fuertes (×1,4 a ×2,8)
+const AJUSTE_K7={92:.978,93:.949,95:1.069,96:1.265,97:1.11,98:1.118,99:1.14,100:.565,101:1.362,102:1.039,103:1.082,104:1.381,105:2.76,106:2.62};
+NIVELES_M7.forEach(L=>{const m=AJUSTE_K7[L.n];if(m)L.fases.flat().forEach(c=>{if(c)c.k=Math.round(c.k*m*1000)/1000})});
+NIVELES_M7.forEach(L=>{if(REGLAS[L.n])L.regla=REGLAS[L.n];
+  if(!L.superv&&!L.turnos&&L.fases.length>=4)[2,3].forEach(f=>{const R=L.fases[f][0];if(R&&!R.jefe)R.k=Math.round(R.k*SUAVE_FASE*1000)/1000})});
+if(MUNDO7_ABIERTO)NIVELES.push(...NIVELES_M7);
+// los guardianes jóvenes no se coleccionan: nunca salen en el álbum
+GUARDIANES_J.forEach(id=>{const i=ALBUM.indexOf(id);if(i>=0)ALBUM.splice(i,1)});
+Object.assign(JEFES,{kaeljoven:{n:'Aliento blanco',k:'aliento',v:[480],r:1,mana:70},corvoposeido:{n:'Lanza de sombra',k:'aoe',v:[500],r:1,mana:65},
+ kaelsombra:{n:'Ceniza del Vacío',k:'aoeSelf',v:[540],r:1,d:1.2,mana:65},vacio:{n:'La nada',k:'necro',v:[440],n2:3,inv:'sombra',mana:65}});
+MUNDOS.push({n:7,titulo:'El origen',nombre:'La ciudad joven',niveles:Array.from({length:15},(_,i)=>92+i),intro:['El último salto os lleva siglos atrás, al día en que todo se torció. No hay camino de vuelta: esta vez hay que hacerlo bien.']});
+
+// ---- diálogos (docs/historia.md, Mundo 7) ----
+Object.assign(DLG_MUNDO,{7:[
+ ['narra','El portal se cierra detrás de vosotros con un chasquido. Ya no hay camino de vuelta.'],
+ ['narra','Delante, una ciudad que conocéis… y que no conocéis. Murallas nuevas. Fraguas encendidas. Gente que ríe por la calle.'],
+ ['tovo','Es nuestra ciudad. Pero… joven.'],
+ ['crisol','Y mirad la plaza. El Crisol. Nunca lo había visto arder así.']]});
+Object.assign(DLG_NIVEL,{
+ 92:[['tik','Llegamos. Llegaremos. Llegamos, sí. Y… ¡ay!'],['narra','La chispa sale volando del pecho de Tik y vuelve al Crisol de la plaza, de donde salió.'],
+  ['tik','Se ha ido a casa. Y yo ya no puedo saltar más.'],['ione','Entonces no hay más intentos. Solo este.']],
+ 93:[['bram','Esa es la fragua mayor. Recién construida. Y ese herrero… tiene la nariz de mi abuelo.'],['tovo','Y tus manos.']],
+ 94:[['g_corvo','No sé de dónde venís ni qué queréis de los siete. Pero si queréis hablar con ellos, primero pasáis por mi escudo.']],
+ 95:[['g_velia','¡Esas cosas salen de la nada! ¡Ayudadme!']],
+ 96:[['narra','Un dragón blanco como la nieve aterriza en la plaza. Sobre él, un guardián de armadura dorada.']],
+ 97:[['narra','En lo alto de las murallas, una guardiana de pelo rojo juega con una cría de dragón.'],['draco','…'],['aurelia','¿Por qué me miras así, dragón viejo? Se parece a mi pequeño.']],
+ 98:[['mirel','Aquí curamos a todo el que llega, sin preguntar de qué bando viene.'],['morvane','Aquí aprendieron todos los sanadores. Aquí habría aprendido yo, en otra vida.']],
+ 99:[['thalos','¿Lo oís? Es una voz que no es de nadie.'],['orion','Es lo que persiguieron los míos durante siglos. Sin saber cómo se llamaba.']],
+ 100:[['g_sable','¿Corréis o no? ¡El último hasta la torre lava los establos!']],
+ 101:[['bram','Corvo está raro desde esta mañana. No contesta. Y la sombra lo sigue a todas partes.']],
+ 102:[['narra','La última noche antes del día de la ceniza. Los siete guardianes y vuestro equipo, alrededor del Crisol.'],['g_velia','Estoy cosiendo un estandarte nuevo. Con siete llamas. Y una más.'],
+  ['tovo','¿Una más?'],['g_velia','Por vosotros.']],
+ 103:[['thalos','Solo la luz abre esta puerta.'],['orion','El primer Vigía y el último, juntos. Mi abuelo no se lo creería.']],
+ 104:[['aurelia','¡Guardianes! ¡Hoy no peleamos por la llama!'],['g_velia','¡Peleamos por los que la necesitan!']],
+ 105:[['narra','En el centro de la plaza, Kael no se mueve. La sombra le rodea despacio.']],
+ 106:[['narra','La sombra que lo empezó todo sale por fin a la luz.'],['crisol','Todos juntos. Esta vez, todos juntos.']]});
+Object.assign(DLG_JEFE,{
+ 92:{despues:[['ione','Unas sombras sin forma. Las he visto antes, en los mil años de ceniza. Ya están aquí.']]},
+ 93:{despues:[['bram','Están forjando una lanza. La lanza de Corvo. La he tenido en mis manos, hijo. Ya quemada.']]},
+ 94:{despues:[['g_corvo','Peleáis como si os fuera la vida en ello.'],['bram','Nos va. Y la tuya también.']]},
+ 95:{despues:[['g_velia','Os miro y siento que ya os conozco. Como si hubiera dudado de algo… que todavía no ha pasado.'],['g_velia','Os escucharé. Contadme lo que sabéis.']]},
+ 96:{antes:[['g_kael','Así que vosotros sois los que hablan del futuro. Demostradme que no sois espías.'],['draco','Umbravor…']],
+  despues:[['g_kael','Peleáis bien. No os creo… todavía.'],['g_kael','Tenéis hasta el día de la ceniza para demostrar que decís la verdad.']]},
+ 97:{despues:[['draco','Te esperé siglos.'],['aurelia','No te entiendo… pero algo me dice que me esperaste bien.'],['narra','Aurelia le acaricia el hocico. Igual que antes.']]},
+ 98:{despues:[['mirel','Tienes una marca en la muñeca. Una cadena.'],['morvane','Ya no está.'],['mirel','Por fuera, no. Déjame curar la de dentro.']]},
+ 99:{despues:[['thalos','Fundaré una orden para vigilar esta sombra. La llamaré los Vigías de la luz.'],['orion','…'],['orion','Buen nombre.']]},
+ 100:{despues:[['ione','En mi tiempo, te vi sola en un mundo gris. No sabías hacia dónde galopar.'],['g_sable','¿Yo hice eso?'],['g_sable','Entonces, esta vez, me quedaré con los míos.']]},
+ 101:{antes:[['narra','Una sombra entra en Corvo. Sus ojos se apagan.'],['bram','¡Corvo! ¡Escúchame! ¡No otra vez!']],
+  despues:[['g_corvo','¿Qué… ha pasado?'],['bram','De niño jugaba a ser tú. El escudo de los siete.'],['g_corvo','Entonces no seré ese de tus cuentos que se quemó. Te lo prometo, herrero.']]},
+ 102:{despues:[['narra','Todos duermen. Todos menos Kael, que mira la llama en silencio.']]},
+ 103:{despues:[['thalos','Detrás de esta puerta está lo que nos susurra.']]},
+ 104:{despues:[['narra','Las sombras retroceden. Pero en el centro de la plaza, Kael no se mueve.']]},
+ 105:{antes:[['g_kael','La voz tiene razón. Si el Crisol no es mío, morirá. Si no lo protejo yo, nadie lo hará.'],['narra','La sombra le envuelve. Umbravor gruñe, confuso.']],
+  despues:[['narra','Umbravor se pone entre Kael y la sombra, y le mira a los ojos.'],['g_kael','… No. El Crisol no es mío. Es de todos.'],['g_kael','Perdonadme. Y gracias por no dejarme caer.']]},
+ 106:{despues:[['crisol','Me he quedado sin chispa. Del todo. Y nunca me había sentido tan… ligero.']]}});
+Object.assign(DLG_TRAS_ESCENA,{
+ 101:[['draco','La he visto. Viva. Joven. Riéndose.'],['tovo','¿Y no se lo vas a contar todo?'],['draco','No hace falta. Esta vez no la perderé.']],
+ 106:[['g_kael','El Crisol no arde con poder. Arde con lo que se comparte. Lo has dicho tú, sin decirlo.'],
+  ['tik','Y ahora, ¿cómo volvemos? Yo ya no salto. Ni saltaré. Ni salté.'],
+  ['g_kael','Antes de que os vayáis. Siete guardianes cuidan esta llama. Desde hoy, ocho.'],
+  ['g_velia','Por eso cosí una llama más. Tómalo: es tuyo, octavo guardián.'],
+  ['tik','Ione… mis manos. Se ven a través. Se verán. Se ven.'],
+  ['ione','Nuestro futuro ya no va a pasar. Y nosotros con él.'],
+  ['tovo','¿Os vais a… desaparecer? ¡No es justo!'],
+  ['ione','Es lo más justo que ha pasado nunca. Si desaparecemos, es que lo habéis hecho bien.'],
+  ['dax','Cuarenta y cuatro intentos. Ha merecido la pena. Y que nadie toque mis herramientas.'],
+  ['tik','Me acordaré de vosotros. Me acordé. Me acuerdo. Siempre.'],
+  ['narra','Los tres Cronautas se deshacen en luz azul, despacio, como la ceniza que ya nunca caerá.'],
+  ['luna','¿Y nosotros? ¿Volvemos a casa?'],
+  ['teffy','Nuestra casa es donde está la gente que lucha así. ¿Verdad, Peter? (Peter dice «¡guau!».)'],
+  ['narra','El Crisol de la plaza crece, enorme y dorado, y os envuelve a todos.'],
+  ['g_velia','La llama os devuelve a casa. Es lo menos que puede hacer.']]});
+// el final de la historia: tras la despedida (DLG_TRAS_ESCENA[106]) vienen el epílogo (m7_epilogo) y estas últimas palabras (trasEscena, 15m-escenas.js)
+const DLG_FIN=[['crisol','Bueno. Pues ya está. La ciudad, la llama, todo en su sitio.'],['tovo','Y tú, octavo guardián. Suena bien, ¿eh?'],
+ ['narra','Aquí termina esta historia. Pero el Crisol sigue ardiendo, y siempre hará falta alguien que lo cuide.'],['narra','Gracias por jugar.']];
+
 // ================= NIVELES POR TURNOS DEL MODO HISTORIA =================
 // Algunos niveles (L.turnos: 13, 28, 37 y 41) se juegan distinto: eliges 3 campeones de tu mazo y recorres 3 fases
 // de 3 combates (el último de cada fase, un jefe). Sin economía: los campeones ganan experiencia y suben de nivel (más
@@ -6161,7 +6330,9 @@ const TN_NIVELES={ // f: fuerza base de los rivales del nivel
  69:{mons:{soldado:3,sabueso:1,arquero:1},jefe:[['soldado',1.8]],f:1.53},
  // Mundo 6 (cerrado): un mundo sin Crisol (≈36 %) y el torneo de Peter (≈30 %)
  84:{mons:{devorador:2,automata:2,gris:1},jefe:[['automata',1.8]],f:1.33},
- 90:{mons:{gris:3,devorador:1},jefe:[['gris',2]],f:1.55}};
+ 90:{mons:{gris:3,devorador:1},jefe:[['gris',2]],f:1.55},
+ // Mundo 7 (cerrado): la prueba del escudo de Corvo (≈37 %)
+ 94:{mons:{ecoceniza:2,sombra:2},jefe:[['corvojoven',1]],f:.93}};
 const TN_ESCALA=[1,1.8,2.6],TN_JEFE=[1,.8,1]; // 3 fases: fuerza de los rivales por fase y extra del jefe de cada una (con 3 fases, tnVictoria da algo más de experiencia)
 let TN_DOS=1.4,TN_SOLO=1.1,TN_SUAVE=.85; // combates normales de 2 rivales (cada uno más fuerte), el jefe solo y el primer combate de las fases 2 y 3, más suave
 // golpe cargado de cada jefe: [nombre, 1 si golpea a todos]
@@ -6941,9 +7112,27 @@ const ESCENAS={
  m6_final:[
   {img:'m6_final_1',cam:cam(1,.5,.5,1.3,.5,.4),txt:'La luz de otro mundo le devolvió el fuego al Draco.'},
   {img:'m6_final_2',cam:cam(1.3,.5,.5,1,.5,.45),txt:'El reino os dio un poco de su luz. Lo justo para un último salto.'},
-  {img:'m6_final_3',cam:cam(1,.5,.5,1.4,.5,.45),txt:'Solo de ida. Si fracasáis, no habrá otro intento: el destino de todos dependerá de lo que hagáis en el pasado.'}]};
+  {img:'m6_final_3',cam:cam(1,.5,.5,1.4,.5,.45),txt:'Solo de ida. Si fracasáis, no habrá otro intento: el destino de todos dependerá de lo que hagáis en el pasado.'}],
+ m7_intro:[
+  {img:'m7_intro_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Siglos atrás, la ciudad del Crisol era joven y brillaba.'},
+  {img:'m7_intro_2',cam:cam(1.3,.5,.4,1,.5,.5),txt:'Siete guardianes la cuidaban.'},
+  {img:'m7_intro_3',cam:cam(1,.5,.5,1.4,.5,.45),txt:'Pero algo ya les susurraba al oído.'},
+  {img:'m7_intro_4',cam:cam(1.3,.5,.5,1,.5,.5),txt:'Y vosotros no teníais camino de vuelta.'}],
+ m7_mitad:[
+  {img:'m7_mitad_1',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Un herrero le contó a su héroe quién llegaría a ser.'},
+  {img:'m7_mitad_2',cam:cam(1.3,.5,.45,1,.5,.5),txt:'Y un dragón viejo volvió a ver a su guardiana.'}],
+ m7_final:[
+  {img:'m7_final_1',cam:cam(1,.5,.5,1.35,.5,.45),txt:'Crisol entregó su última chispa. Y entendió, por fin, de qué está hecha la llama.'},
+  {img:'m7_final_2',cam:cam(1.3,.5,.5,1,.5,.5),txt:'La sombra que lo empezó todo se deshizo en la luz.'}],
+ m7_epilogo:[
+  {img:'m7_final_3',cam:cam(1,.5,.5,1.3,.5,.45),txt:'Los Cronautas se desvanecieron con el futuro que ya nunca ocurriría.'},
+  {img:'m7_final_4',cam:cam(1.3,.5,.45,1,.5,.5),txt:'Y los siete guardianes os nombraron el octavo.'},
+  {img:'m7_final_5',cam:cam(1,.5,.5,1.35,.5,.5),txt:'La llama os devolvió a casa.'},
+  {img:'m7_epilogo_1',cam:cam(1.3,.5,.5,1,.5,.5),txt:'La ciudad seguía en pie, como si nada hubiera pasado.'},
+  {img:'m7_epilogo_2',cam:cam(1,.5,.45,1.35,.5,.4),txt:'En la plaza hay una estatua de siete guardianes. Una de ellas sonríe.'},
+  {img:'m7_epilogo_3',cam:cam(1.3,.5,.5,1,.5,.5),txt:'Y el Crisol tiene un guardián más: el octavo. Tú.'}]};
 // nivel que desbloquea la escena de la mitad y la del final de cada mundo (se ven tras el diálogo de victoria de su jefe)
-const ESC_MITAD={1:10,2:20,3:40,4:54,5:68,6:86},ESC_FIN={1:15,2:30,3:46,4:61,5:76,6:91};
+const ESC_MITAD={1:10,2:20,3:40,4:54,5:68,6:86,7:101},ESC_FIN={1:15,2:30,3:46,4:61,5:76,6:91,7:106};
 const escImg=sc=>ESCENA_IMG[sc.img]||(sc.alt&&ESCENA_IMG[sc.alt]);
 const escLista=k=>{const L=ESCENAS[k];return L&&L.every(escImg)?L:null};
 // ---- reproductor ----
@@ -7006,7 +7195,10 @@ function escMusicaFin(M){const ac=SND.ac;if(!ac)return;
 const _dialogoVictoria=dialogoVictoria;
 const escenaDe=n=>{const m=mundoDe(n)+1;return ESC_MITAD[m]===n?`m${m}_mitad`:ESC_FIN[m]===n?`m${m}_final`:null};
 // tras las escenas, lo que se dice justo después (DLG_TRAS_ESCENA), una sola vez
-const trasEscena=(n,go)=>{if(!DLG_TRAS_ESCENA[n]||visto('t2_'+n))return go();marcarVisto('t2_'+n);dialogo(DLG_TRAS_ESCENA[n],go,fondoMundo(n))};
+// tras el diálogo de después de las escenas, el epílogo del final de la historia (106: m7_epilogo y DLG_FIN, en 15g5-mundo7.js)
+const ESC_EPILOGO={106:'m7_epilogo'};
+const epilogo=(n,go)=>{if(!ESC_EPILOGO[n])return go();escena(ESC_EPILOGO[n],()=>{if(visto('fin_'+n)||typeof DLG_FIN==='undefined')return go();marcarVisto('fin_'+n);dialogo(DLG_FIN,go,fondoMundo(n))})};
+const trasEscena=(n,go)=>{if(!DLG_TRAS_ESCENA[n]||visto('t2_'+n))return epilogo(n,go);marcarVisto('t2_'+n);dialogo(DLG_TRAS_ESCENA[n],()=>epilogo(n,go),fondoMundo(n))};
 dialogoVictoria=function(n,go){const k=escenaDe(n);
   _dialogoVictoria(n,k?()=>escena(k,()=>trasEscena(n,go)):go)};
 const _pendienteVictoria=pendienteVictoria;
