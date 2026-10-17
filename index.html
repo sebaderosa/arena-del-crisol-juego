@@ -270,8 +270,11 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
   #top .lbl{font-size:10px}
   .stat b,#stageLbl{font-size:17px}
   .xpbar{width:44px}
-  #pips{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH,60px) + 2px);z-index:5;gap:3px!important;padding:2px 6px;pointer-events:none}
-  #pips .rd{width:18px;height:18px}#pips .rd svg{width:11px;height:11px}#pips .rdl{width:4px}
+  /* las rondas en la segunda línea de la barra de arriba, junto a Sinergias (sin las rayitas, el título ni, en la Historia, el «3/6»: la barra ya lo dice) */
+  .stage{order:99;flex:1 1 auto;justify-content:flex-end;gap:5px!important;margin-right:0!important}
+  #stageTit,body.historia #stageLbl{display:none}
+  #pips{gap:3px!important;padding:2px 5px}
+  #pips .rd{width:19px;height:19px}#pips .rd svg{width:11px;height:11px}#pips .rdl{display:none}
   .snd button,.speed button{padding:3px 6px;font-size:12px}
   .drawerBtns{display:contents}
   .snd .lg{display:none}.snd .sm{display:inline}
