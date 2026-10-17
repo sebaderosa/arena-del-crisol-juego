@@ -3348,7 +3348,7 @@ const BG={key:null,scene:null,board:null,stars:[]};
 const TEMA_IMG={};
 function temaImg(k){if(!MENU_IMG[k])return null;let im=TEMA_IMG[k];if(!im){im=TEMA_IMG[k]=new Image();im.onload=()=>{BG.key=null};im.src=MENU_IMG[k]}return im.complete&&im.naturalWidth?im:null}
 function ensureCache(){
-  const th=curTheme(),fi=th.img&&temaImg(th.img),k=th.n+'|'+M.size+'|'+M.CW+'|'+M.H+'|'+DPR+'|'+!!fi;if(BG.key===k)return;BG.key=k;
+  const th=curTheme(),fi=th.img&&temaImg(th.img),k=th.n+'|'+M.size+'|'+M.CW+'|'+M.H+'|'+DPR+'|'+!!fi+'|'+islaNombre();if(BG.key===k)return;BG.key=k;
   const s=M.size,pad=M.pad;
   // --- scene (full canvas) ---
   const [sc,g]=mkCanvas(M.CW,M.H);
@@ -3358,30 +3358,16 @@ function ensureCache(){
     const fx=th.fx||.5,fy=th.fy||.5,rx=(th.frx||(th.fr||.45)*ih/iw)*iw,ry=(th.fry||th.fr||.45)*ih;
     // escala: llena la pantalla, el óvalo cubre el tablero y el centro del suelo puede quedar bajo el centro del tablero sin enseñar bordes
     const k2=Math.max(M.CW/iw,M.H/ih,Math.hypot(bw/rx,bh/ry)*.95,cx/(fx*iw),(M.CW-cx)/((1-fx)*iw),cy/(fy*ih),(M.H-cy)/((1-fy)*ih));let x=cx-fx*iw*k2,y=cy-fy*ih*k2;
-    x=Math.min(0,Math.max(M.CW-iw*k2,x));y=Math.min(0,Math.max(M.H-ih*k2,y));g.drawImage(fi,x,y,iw*k2,ih*k2);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,0,M.CW,M.H)}
+    x=Math.min(0,Math.max(M.CW-iw*k2,x));y=Math.min(0,Math.max(M.H-ih*k2,y));g.save();g.filter='blur(3px)';g.drawImage(fi,x,y,iw*k2,ih*k2);g.restore();g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,0,M.CW,M.H)}
   else drawProps(g,th,s);
   const vg=g.createRadialGradient(M.CW/2,M.H/2,M.H*.3,M.CW/2,M.H/2,Math.max(M.CW,M.H)*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');g.fillStyle=vg;g.fillRect(0,0,M.CW,M.H);
+  islaBase(g,th,s);islaAdornos(g,th,s);islaCartel(g,s,islaNombre()); // la isla, sus adornos y el cartel (09b-isla.js)
   BG.scene=sc;
   // --- board (F frame) ---
   const [bc,b]=mkCanvas(M.W,M.H);
   // con imagen de fondo (fi): sin sombra ni relleno, solo un contorno claro muy tenue en cada casilla
-  if(!fi)for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){const w=world(C,R);hexPathG(b,w.x*s,w.y*s+pad+s*.16,s*.95);b.fillStyle='rgba(0,0,0,.5)';b.fill()}
-  for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){
-    const w=world(C,R),x=w.x*s,y=w.y*s+pad,mine=R>=4,rr=srand(R*97+C*13+themeIdx()*7+3);
-    if(fi){hexPathG(b,x,y,s*.95);b.strokeStyle='rgba(255,255,255,.16)';b.lineWidth=1;b.stroke();continue}
-    const base=mine?((R+C)%2?th.pa:th.pb):((R+C)%2?th.ea:th.eb);
-    hexPathG(b,x,y+s*.08,s*.95);b.fillStyle=shade(base,.45);b.fill();
-    hexPathG(b,x,y,s*.95);b.fillStyle=base;b.fill();
-    b.save();b.clip();
-    for(let q=0;q<16;q++){b.fillStyle=rr()<.5?'rgba(255,255,255,.035)':'rgba(0,0,0,.09)';b.beginPath();b.arc(x+(rr()-.5)*s*1.7,y+(rr()-.5)*s*1.7,s*(.04+rr()*.17),0,7);b.fill()}
-    if(rr()<.4){b.strokeStyle='rgba(0,0,0,.22)';b.lineWidth=1;b.beginPath();let px=x+(rr()-.5)*s,py=y+(rr()-.5)*s;b.moveTo(px,py);for(let j=0;j<3;j++){px+=(rr()-.5)*s*.6;py+=(rr()-.5)*s*.6;b.lineTo(px,py)}b.stroke()}
-    const lg=b.createLinearGradient(0,y-s,0,y+s);lg.addColorStop(0,'rgba(255,255,255,.09)');lg.addColorStop(.5,'rgba(255,255,255,0)');lg.addColorStop(1,'rgba(0,0,0,.2)');b.fillStyle=lg;b.fillRect(x-s,y-s,2*s,2*s);
-    tileDeco(b,th,x,y,s,rr,C);
-    b.restore();
-    hexPathG(b,x,y,s*.95);b.strokeStyle=mine?th.line:th.lineE;b.lineWidth=1.3;b.stroke();
-    hexPathG(b,x,y-.5,s*.86);b.strokeStyle='rgba(255,255,255,.05)';b.lineWidth=1;b.stroke();
-  }
-  const my=(world(0,3).y+world(0,4).y)/2*s+pad;b.strokeStyle=th.mid;b.lineWidth=1.5;b.setLineDash([6,6]);b.beginPath();b.moveTo(4,my);b.lineTo(M.W-4,my);b.stroke();b.setLineDash([]);
+  for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){ // el tablero en isla (09b-isla.js): casillas en relieve, tu mitad y la del rival de distinto color
+    const w=world(C,R),rr=srand(R*97+C*13+themeIdx()*7+3);islaCasilla(b,th,w.x*s,w.y*s+pad,s,R>=4,rr,C,fi)}
   for(let i=0;i<9;i++){const x=i*M.slot+3,y=M.benchY,w=M.slot-6;rrG(b,x,y+2,w,w-2,7);b.fillStyle='rgba(0,0,0,.45)';b.fill();rrG(b,x,y,w,w-2,7);const bg=b.createLinearGradient(0,y,0,y+w);bg.addColorStop(0,shade(th.pa,.15));bg.addColorStop(1,shade(th.pa,.55));b.fillStyle=bg;b.fill();b.strokeStyle=th.line;b.lineWidth=1.2;b.stroke()}
   BG.board=bc;
   // star field for the astral theme
@@ -3542,6 +3528,109 @@ function drawFrameFx(){
   ctx.restore();
 }
 
+// ================= EL TABLERO EN ISLA =================
+// El tablero es un trozo de terreno recortado: una base con grosor (tierra o piedra según el escenario), un borde que asoma
+// alrededor de las casillas, adornos del escenario en ese borde (árboles, rocas, cristales…) y un cartel con el nombre del nivel.
+// La base y los adornos se pintan en el lienzo del escenario (BG.scene, que cubre toda la pantalla) y las casillas en BG.board.
+const ISLA={borde:1.3,fondo:.5}; // radio del borde (en casillas) y grosor de la base (lo que cabe hasta el banquillo)
+const mixHex=(a,b,k)=>{const A=hexToRgb(a),B=hexToRgb(b),f=i=>Math.round(A[i]+(B[i]-A[i])*k).toString(16).padStart(2,'0');return '#'+f(0)+f(1)+f(2)};
+// colores de la isla según el escenario: hierba/tierra para los de bosque, piedra para cuevas y castillos, nieve…
+const ISLA_COL={hierba:['#5a8a3a','#6b4a2c'],brasas:['#5a4a42','#3a2620'],arena:['#c8b07a','#6a5a3a'],runas:['#4a4058','#2a2234'],estrellas:['#4a4c80','#24264a'],
+ musgo:['#3a5a4a','#2a3230'],cristal:['#4a4c6a','#2a2a40'],marmol:['#6a5058','#3a262c'],losas:['#5a6a62','#3a3a34'],nieve:['#d8e4f0','#5a6478'],tumbas:['#4a4c50','#2a2a2e']};
+// casillas de cada escenario: [tu mitad, la del rival]. Siempre se distinguen: la tuya más clara, la del rival más oscura o cálida
+const ISLA_CAS={hierba:['#6aa84a','#b88a52'],brasas:['#6e625a','#8e4a34'],arena:['#d6c088','#c88a7e'],runas:['#5e5480','#6e3a5c'],estrellas:['#4e5ea6','#6e4a9e'],
+ musgo:['#4e7e60','#6a5a7e'],cristal:['#5e6e9e','#8a5a7a'],marmol:['#8e7e84','#8a3a46'],losas:['#6e8e88','#8e7a5a'],nieve:['#d2e2f2','#8ea2be'],tumbas:['#5e6e5e','#5e4a62']};
+const islaCol=th=>ISLA_COL[th.deco]||[mixHex(th.pa,'#ffffff',.15),shade(th.pa,.5)];
+// las casillas del tablero (centro en px, sin el margen de arriba)
+const islaCeldas=s=>{const o=[];for(let R=0;R<ROWS;R++)for(let C=0;C<COLS;C++){const w=world(C,R);o.push([w.x*s,w.y*s,R,C])}return o};
+function islaBase(g,th,s){
+  const [cTop,cSide]=islaCol(th),cel=islaCeldas(s),B=ISLA.borde,D=s*ISLA.fondo;
+  g.save();g.translate(M.ox,M.oy+M.pad);
+  // sombra en el suelo del escenario
+  g.save();g.filter='blur(10px)';g.fillStyle='rgba(0,0,0,.45)';for(const [x,y] of cel){hexPathG(g,x,y+D+s*.35,s*B);g.fill()}g.restore();
+  // el grosor: la misma silueta apilada hacia abajo, de oscuro a menos oscuro
+  for(let i=8;i>=1;i--){g.fillStyle=mixHex(shade(cSide,.35),cSide,1-i/8);for(const [x,y] of cel){hexPathG(g,x,y+D*i/8,s*B);g.fill()}}
+  // estratos de la tierra en el grosor
+  g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=1;for(const [x,y,R] of cel)if(R===ROWS-1){g.beginPath();g.moveTo(x-s*B*.86,y+s*B*.5+D*.55);g.lineTo(x+s*B*.86,y+s*B*.5+D*.55);g.stroke()}
+  // la cara de arriba del borde, con un brillo en el canto
+  for(const [x,y] of cel){hexPathG(g,x,y,s*B+1.5);g.fillStyle=shade(cTop,.25);g.fill()}
+  for(const [x,y] of cel){hexPathG(g,x,y,s*B);g.fillStyle=cTop;g.fill()}
+  const rr=srand(themeIdx()*7+5);g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<70;i++){const [x,y]=cel[Math.floor(rr()*cel.length)];g.beginPath();g.arc(x+(rr()-.5)*s*2.4,y+(rr()-.5)*s*2,s*(.05+rr()*.12),0,7);g.fill()}
+  // juntas entre casillas: un fondo oscuro donde se apoyan
+  g.fillStyle='rgba(0,0,0,.42)';for(const [x,y] of cel){hexPathG(g,x,y,s*1.02);g.fill()}
+  g.restore();
+}
+// ---- adornos del borde ----
+const ADORNOS={hierba:['arbol','arbusto','arbusto','flores','roca'],brasas:['roca','brasa','roca'],arena:['coral','concha','roca'],runas:['runa','roca','roca'],
+ estrellas:['cristal','roca'],musgo:['seta','seta','roca','arbusto'],cristal:['cristal','cristal','roca'],marmol:['columna','roca'],losas:['roca','arbusto','roca'],
+ nieve:['pino','pino','rocaNieve'],tumbas:['lapida','arbolSeco','roca']};
+function adorno(g,k,x,y,t,rr){ // t: tamaño (px); (x,y): el pie
+  g.save();g.translate(x,y);
+  const sombra=()=>{g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,0,t*.45,t*.14,0,0,7);g.fill()};
+  switch(k){
+    case 'arbol':sombra();g.fillStyle='#4a2e1a';g.fillRect(-t*.08,-t*.5,t*.16,t*.5);for(const [dx,dy,r] of [[0,-.85,.42],[-.24,-.65,.3],[.24,-.62,.3],[0,-1.08,.3]]){g.fillStyle='#1e3a18';g.beginPath();g.arc(dx*t,dy*t,r*t+1.5,0,7);g.fill()}
+      for(const [dx,dy,r,c] of [[0,-.85,.42,'#3e7a2c'],[-.24,-.65,.3,'#4a8a34'],[.24,-.62,.3,'#36702a'],[0,-1.08,.3,'#5aa040']]){g.fillStyle=c;g.beginPath();g.arc(dx*t,dy*t,r*t,0,7);g.fill()}
+      g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.arc(-t*.1,-t*1.15,t*.12,0,7);g.fill();break;
+    case 'arbusto':sombra();for(const [dx,dy,r,c] of [[-.2,-.2,.26,'#24461c'],[.18,-.22,.28,'#2c5420'],[0,-.36,.27,'#2a4e1e']]){g.fillStyle=c;g.beginPath();g.arc(dx*t,dy*t,r*t+1.5,0,7);g.fill()}
+      for(const [dx,dy,r,c] of [[-.2,-.2,.26,'#4a8a34'],[.18,-.22,.28,'#5a9a3a'],[0,-.36,.27,'#6aae44']]){g.fillStyle=c;g.beginPath();g.arc(dx*t,dy*t,r*t,0,7);g.fill()}
+      g.fillStyle='rgba(255,255,255,.18)';g.beginPath();g.arc(-t*.06,-t*.46,t*.1,0,7);g.fill();break;
+    case 'flores':for(let i=0;i<5;i++){g.fillStyle=['#ffd24a','#ff7a8a','#ffffff','#c89aff'][i%4];g.beginPath();g.arc((rr()-.5)*t*.8,-(rr())*t*.2,t*.06,0,7);g.fill()}break;
+    case 'roca':case 'rocaNieve':sombra();g.fillStyle='#6a6660';g.beginPath();g.moveTo(-t*.32,0);g.lineTo(-t*.24,-t*.3);g.lineTo(t*.04,-t*.4);g.lineTo(t*.3,-t*.22);g.lineTo(t*.34,0);g.closePath();g.fill();
+      g.fillStyle='rgba(255,255,255,.18)';g.beginPath();g.moveTo(-t*.24,-t*.3);g.lineTo(t*.04,-t*.4);g.lineTo(t*.02,-t*.2);g.closePath();g.fill();
+      if(k==='rocaNieve'){g.fillStyle='#f0f6ff';g.beginPath();g.moveTo(-t*.24,-t*.3);g.lineTo(t*.04,-t*.4);g.lineTo(t*.3,-t*.22);g.lineTo(t*.1,-t*.26);g.closePath();g.fill()}break;
+    case 'pino':sombra();g.fillStyle='#4a3420';g.fillRect(-t*.06,-t*.25,t*.12,t*.25);for(let i=0;i<3;i++){const yy=-t*(.25+i*.28),w=t*(.42-i*.1);g.fillStyle='#2a5a46';g.beginPath();g.moveTo(-w,yy);g.lineTo(0,yy-t*.42);g.lineTo(w,yy);g.closePath();g.fill();
+      g.fillStyle='#f0f6ff';g.beginPath();g.moveTo(-w*.5,yy-t*.2);g.lineTo(0,yy-t*.42);g.lineTo(w*.5,yy-t*.2);g.closePath();g.fill()}break;
+    case 'brasa':sombra();g.fillStyle='#3a2a24';g.beginPath();g.ellipse(0,-t*.12,t*.3,t*.16,0,0,7);g.fill();g.fillStyle='#ff8a3a';g.beginPath();g.arc(-t*.06,-t*.18,t*.06,0,7);g.arc(t*.1,-t*.14,t*.04,0,7);g.fill();break;
+    case 'coral':sombra();g.strokeStyle='#ff8a8a';g.lineWidth=t*.08;g.lineCap='round';for(const a of [-.5,0,.5]){g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(a*t*.3,-t*.3,a*t*.5,-t*.6);g.stroke()}break;
+    case 'concha':g.fillStyle='#f0d8c0';g.beginPath();g.arc(0,-t*.08,t*.14,Math.PI,0);g.fill();break;
+    case 'runa':sombra();g.fillStyle='#4a4458';g.fillRect(-t*.16,-t*.6,t*.32,t*.6);g.strokeStyle='#b28cff';g.lineWidth=t*.04;g.beginPath();g.moveTo(-t*.06,-t*.45);g.lineTo(t*.06,-t*.32);g.lineTo(-t*.06,-t*.2);g.stroke();break;
+    case 'cristal':sombra();for(const [dx,h,c] of [[-.12,.55,'#9fd8ff'],[.1,.75,'#c8a8ff'],[.24,.4,'#9fd8ff']]){g.fillStyle=c;g.beginPath();g.moveTo(dx*t-t*.08,0);g.lineTo(dx*t,-h*t);g.lineTo(dx*t+t*.08,0);g.closePath();g.fill()}break;
+    case 'seta':sombra();g.fillStyle='#e8dcc8';g.fillRect(-t*.05,-t*.3,t*.1,t*.3);g.fillStyle='#c84a5a';g.beginPath();g.ellipse(0,-t*.3,t*.22,t*.14,0,Math.PI,0);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(-t*.07,-t*.36,t*.03,0,7);g.arc(t*.08,-t*.35,t*.025,0,7);g.fill();break;
+    case 'columna':sombra();g.fillStyle='#8a7a80';g.fillRect(-t*.14,-t*.7,t*.28,t*.7);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(t*.04,-t*.7,t*.1,t*.7);g.fillStyle='#9a8a90';g.fillRect(-t*.2,-t*.76,t*.4,t*.1);break;
+    case 'lapida':sombra();g.fillStyle='#6a6c70';g.beginPath();g.moveTo(-t*.18,0);g.lineTo(-t*.18,-t*.4);g.arc(0,-t*.4,t*.18,Math.PI,0);g.lineTo(t*.18,0);g.closePath();g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-t*.02,-t*.48,t*.04,t*.2);g.fillRect(-t*.09,-t*.42,t*.18,t*.04);break;
+    case 'arbolSeco':sombra();g.strokeStyle='#3a3230';g.lineCap='round';g.lineWidth=t*.1;g.beginPath();g.moveTo(0,0);g.lineTo(0,-t*.7);g.stroke();g.lineWidth=t*.05;for(const [a,l] of [[-.7,.35],[.6,.3],[-.3,.25]]){g.beginPath();g.moveTo(0,-t*.45);g.lineTo(Math.sin(a)*t*l,-t*.45-Math.cos(a)*t*l);g.stroke()}break;
+  }
+  g.restore();
+}
+function islaAdornos(g,th,s){
+  const lista=ADORNOS[th.deco]||['roca','arbusto'],rr=srand(themeIdx()*13+3),W=M.W;
+  g.save();g.translate(M.ox,M.oy+M.pad);
+  const pon=(x,y,esc)=>{const k=lista[Math.floor(rr()*lista.length)];adorno(g,k,x,y,s*(esc||1)*(.75+rr()*.4),rr)};
+  // las muescas del borde: a la izquierda en las filas impares y a la derecha en las pares (ahí no llega ninguna casilla)
+  for(let R=0;R<ROWS;R++){const y=world(0,R).y*s+s*.35;if(R&1){if(rr()<.8)pon(s*.25,y,1.15)}else if(rr()<.8)pon(W-s*.25,y,1.15)}
+  // fuera del borde, a los lados (en pantallas anchas se ven más), y arriba
+  for(let i=0;i<7;i++){const y=s*(1+rr()*11);pon(-s*(1+rr()*1.2),y,1.6);pon(W+s*(1+rr()*1.2),y,1.6)}
+  g.restore();
+}
+// cartel de madera con el nombre del nivel (o del escenario), en la esquina de arriba a la derecha
+function islaCartel(g,s,txt){
+  if(!txt)return;g.save();g.font=`700 ${Math.max(10,s*.42)}px system-ui,sans-serif`;const w=Math.min(M.W*.55,g.measureText(txt).width+s*.7),h=s*.72;
+  g.translate(M.ox+M.W-w-s*.15,M.oy+M.pad-s*.55);
+  g.fillStyle='#4a3020';g.fillRect(w*.15-s*.06,h*.6,s*.12,s*.75);g.fillRect(w*.85-s*.06,h*.6,s*.12,s*.75); // patas
+  g.fillStyle='rgba(0,0,0,.35)';rrG(g,2,3,w,h,s*.12);g.fill();
+  const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#9a6a3e');gr.addColorStop(1,'#6e4626');g.fillStyle=gr;rrG(g,0,0,w,h,s*.12);g.fill();
+  g.strokeStyle='#3e2614';g.lineWidth=Math.max(1.5,s*.05);g.stroke();g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=1;g.beginPath();g.moveTo(s*.1,h*.5);g.lineTo(w-s*.1,h*.5);g.stroke();
+  g.fillStyle='#fff2d8';g.textAlign='center';g.textBaseline='middle';g.shadowColor='rgba(0,0,0,.6)';g.shadowOffsetY=1;
+  let t=txt;while(g.measureText(t).width>w-s*.5&&t.length>3)t=t.slice(0,-2)+'…';g.fillText(t,w/2,h/2+1);g.restore();
+}
+const islaNombre=()=>S&&S.mode==='historia'&&!S.story.torre&&NIVELES[S.story.nivel-1]?NIVELES[S.story.nivel-1].nombre:curTheme().n;
+// ---- las casillas: en relieve, tu mitad y la del rival de distinto color ----
+function islaCasilla(b,th,x,y,s,mine,rr,C,fi){
+  const P=ISLA_CAS[th.deco],base=P?mixHex(P[mine?0:1],mine?th.pa:th.ea,.2):mine?mixHex(th.pa,'#ffffff',.2):mixHex(th.ea,'#d89050',.3),alt=(C+(rr()<.5?0:1))%2?mixHex(base,'#ffffff',.05):base;
+  hexPathG(b,x,y+s*.09,s*.9);b.fillStyle=shade(base,.5);b.fill(); // canto de la casilla
+  hexPathG(b,x,y,s*.9);const lg=b.createLinearGradient(0,y-s,0,y+s);lg.addColorStop(0,mixHex(alt,'#ffffff',.16));lg.addColorStop(1,shade(alt,.12));b.fillStyle=lg;b.globalAlpha=fi?.9:1;b.fill();b.globalAlpha=1;
+  b.save();b.clip();for(let q=0;q<10;q++){b.fillStyle=rr()<.5?'rgba(255,255,255,.04)':'rgba(0,0,0,.07)';b.beginPath();b.arc(x+(rr()-.5)*s*1.6,y+(rr()-.5)*s*1.6,s*(.04+rr()*.15),0,7);b.fill()}tileDeco(b,th,x,y,s,rr,C);b.restore();
+  hexPathG(b,x,y-.5,s*.84);b.strokeStyle='rgba(255,255,255,.14)';b.lineWidth=1.2;b.stroke();
+}
+// ---- combate: el tablero se oscurece y cada unidad ilumina su casilla con el color de su bando ----
+let ISLA_OSC=0,ISLA_T=0;
+function islaOscurece(s,now){const dt=Math.min(.1,now-ISLA_T);ISLA_T=now;const obj=S&&S.combat&&!S.combat.over?1:0;ISLA_OSC+=(obj-ISLA_OSC)*Math.min(1,dt*5);if(ISLA_OSC<.02)return;
+  ctx.fillStyle=`rgba(5,8,15,${.26*ISLA_OSC})`;for(const [x,y] of islaCeldas(s)){hexPath(x,y+M.pad,s*.9);ctx.fill()}}
+function casillaEquipo(x,y,s,mio,now,fuerte){
+  const col=mio?'110,230,120':'255,150,70',a=fuerte?1:.6;
+  hexPath(x,y,s*.86);ctx.fillStyle=`rgba(${col},${.13*a})`;ctx.fill();ctx.strokeStyle=`rgba(${col},${(.75+.15*Math.sin(now*4))*a})`;ctx.lineWidth=Math.max(1.5,s*.07);ctx.stroke();
+}
+
 // ================= TACTICIAN AVATARS =================
 const AVK=['zorro','buho','slime','gato','tortuga','hongo','espectro','draguito','cuernin'];
 const AVN={zorro:'Zorro',buho:'Búho',slime:'Limo',gato:'Gato',tortuga:'Tortuga',hongo:'Seta',espectro:'Espectro',draguito:'Dragoncito',cuernin:'Cuernín'};
@@ -3601,6 +3690,7 @@ function draw(){
   drawAvatars(now);
   ctx.save();ctx.translate(M.ox,M.oy);
   ctx.drawImage(BG.board,0,0,M.W,M.H);
+  islaOscurece(s,now); // en combate el tablero se oscurece un poco (09b-isla.js)
   drawZonaFria(s,now); // Mundo 6: casillas del tiempo congelado
   const dragUnit=drag&&drag.moved&&drag.kind==='unit';
   if(dragUnit&&hover){
@@ -3619,6 +3709,7 @@ function draw(){
   if(S.combat){
     const cb=S.combat;
     const list=cb.f.slice().sort((a,b)=>a.y-b.y);
+    for(const f of list)if(f.alive)casillaEquipo(f.x*s,f.y*s,s,giro?f.team===1:f.team===0,now,true); // la casilla de cada unidad, del color de su bando
     for(const f of list){
       if(!f.alive&&f.deadT>.8)continue;
       if(f.seed==null)f.seed=rnd()*6;
@@ -3635,6 +3726,8 @@ function draw(){
     drawParticles(cb,s);drawProjectiles(cb,s);drawFx(cb,s);
   }else if(S.phase==='carousel'&&S.carOpts){drawCarousel(now)
   }else{
+    if(S.preview)for(const f of S.preview)casillaEquipo(f.x*s,f.y*s,s,false,now,false);
+    hu.board.forEach((u,i)=>{if(!u||isHidden('board',i))return;const w=world(i%7,4+Math.floor(i/7));casillaEquipo(w.x*s,w.y*s,s,true,now,false)});
     if(S.preview)for(const f of S.preview){if(f.seed==null)f.seed=rnd()*6;drawAuraFondo(f,f.x*s,f.y*s,s,now);drawUnit(f.x*s,f.y*s,{scale:f.jefe?1.3:1,eco:f.eco,creep:f.id,col:f.col,col2:f.col2,t:now,seed:f.seed,face:f.c<3?1:-1,alpha:.85})}
     hu.board.forEach((u,i)=>{if(!u||isHidden('board',i))return;const r=Math.floor(i/7),c=i%7,w=world(c,4+r);drawAuraFondo(u,w.x*s,w.y*s,s,now);drawUnit(w.x*s,w.y*s,unitOpts(u,{face:c>3?-1:1,sel:S.sel&&S.sel.where==='board'&&S.sel.i===i}));drawAuraFrente(u,w.x*s,w.y*s,s,now)});
   }
