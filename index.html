@@ -47,13 +47,20 @@ h3{font-family:var(--display);font-weight:400;font-size:17px;margin:0 0 8px;lett
 .stage{display:flex;align-items:center;gap:10px}
 #stageLbl{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
 #pips{display:flex;gap:5px;align-items:center}
-.pip{width:10px;height:10px;border-radius:50%;background:#33444f;border:1px solid #445a66}
-.pip.pve{border-radius:2px;transform:rotate(45deg);width:9px;height:9px}
-.pip.carousel{background:transparent;border:2px solid #6b7f8a}
-.pip.done{background:#5a6f7b}
-.pip.carousel.done{border-color:#8fa3ad;background:transparent}
-.pip.cur{background:var(--gold);border-color:var(--gold-hi);box-shadow:0 0 8px var(--gold)}
-.pip.carousel.cur{background:transparent;border-color:var(--gold-hi)}
+/* barra de progreso del nivel (13-hud.js, pintaProgreso): rondas en iconos, fases y jefe */
+#pips{background:rgba(8,12,18,.55);border:1px solid #2c3c48;border-radius:14px;padding:3px 7px}
+.rd{position:relative;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;background:#1e2a33;border:1.5px solid #3a4e5c;color:#8ea4b2;transition:transform .2s}
+.rd svg,.fase svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.rd svg.f,.fase svg.f{fill:currentColor;stroke:none}
+.rd.done{background:#1f3a2c;border-color:#3e6a50;color:#8be29f}
+.rd.cur{background:var(--gold);border-color:var(--gold-hi);color:#2a1a08;box-shadow:0 0 10px var(--gold);transform:scale(1.18)}
+.rd.corona{border-color:#b04a42;color:#ff8a7a}.rd.corona.cur{background:linear-gradient(#ff8a5a,#c8402e);color:#fff;border-color:#ffb38a;box-shadow:0 0 12px #ff6a4a}
+.rd.estrella{color:#ffd27a}.rd.estrella.done{color:#8be29f}
+.rd .mk{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;border:1.5px solid #0c1218}
+.rd .mk.aum{background:#c49bff}.rd .mk.bot{background:#ffb13a}
+.rdl{width:7px;height:2px;background:#3a4e5c;flex:none;border-radius:1px}.rdl.done{background:#4f8a62}
+.fase{height:16px;min-width:16px;padding:0 3px;border-radius:8px;display:grid;place-items:center;flex:none;font:700 10px/1 system-ui,sans-serif;background:#1e2a33;border:1px solid #3a4e5c;color:#8ea4b2}
+.fase.done{background:#1f3a2c;border-color:#3e6a50;color:#8be29f}.fase.jefe{border-color:#b04a42;color:#ff8a7a}
 .stat{display:flex;align-items:center;gap:7px;font-variant-numeric:tabular-nums}
 .stat b{font-size:20px;font-weight:700}
 .stat.hp b{color:#8be29f}
@@ -263,7 +270,8 @@ aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;pa
   #top .lbl{font-size:10px}
   .stat b,#stageLbl{font-size:17px}
   .xpbar{width:44px}
-  #pips{display:none}
+  #pips{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH,60px) + 2px);z-index:5;gap:3px!important;padding:2px 6px;pointer-events:none}
+  #pips .rd{width:18px;height:18px}#pips .rd svg{width:11px;height:11px}#pips .rdl{width:4px}
   .snd button,.speed button{padding:3px 6px;font-size:12px}
   .drawerBtns{display:contents}
   .snd .lg{display:none}.snd .sm{display:inline}
@@ -3905,14 +3913,33 @@ document.querySelectorAll('#dmgTeam button').forEach(b=>b.onclick=()=>{dmgTeam=+
 document.querySelectorAll('#dmgMetric button').forEach(b=>b.onclick=()=>{dmgMetric=b.dataset.m;document.querySelectorAll('#dmgMetric button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderDmg()});
 
 // ================= HUD =================
+// ---- barra de progreso: las rondas de la fase en iconos; en la Historia, el nivel entero (fases hechas, la actual desplegada y el jefe al final) ----
+const ICO_R={espadas:'<svg viewBox="0 0 24 24"><path d="M5 5l10 10M19 5L9 15M7 13l4 4M17 13l-4 4M4 20l3-3M20 20l-3-3"/></svg>',
+ garras:'<svg viewBox="0 0 24 24"><path d="M7 4c2 5 2 10 0 16M12 3c2 6 2 12 0 18M17 4c2 5 2 10 0 16"/></svg>',
+ estrella:'<svg viewBox="0 0 24 24" class="f"><path d="M12 3l2.6 5.6 6 .7-4.5 4 1.2 6L12 16.4 6.7 19.3l1.2-6-4.5-4 6-.7z"/></svg>',
+ corona:'<svg viewBox="0 0 24 24" class="f"><path d="M3 18h18l-1.5-10-4.5 4-3-6-3 6-4.5-4z"/></svg>',
+ reloj:'<svg viewBox="0 0 24 24"><path d="M7 3h10M7 21h10M8 3c0 6 8 6 8 9s-8 3-8 9M16 3c0 6-8 6-8 9s8 3 8 9"/></svg>',
+ check:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>'};
+function esAumento(s,r){if(S.mode==='historia'){const L=nivelActual();return !L.turnos&&r===(L.nr===4?3:4)}return s>=2&&s<=4&&r===2}
+function rondaIcono(s,r){const t=roundType(s,r),hist=S.mode==='historia';if(t==='carousel')return ['estrella','Carrusel: elige un campeón'];
+  if(hist){const L=nivelActual(),R=L.fases[s-1]&&L.fases[s-1][r-1];if(R&&R.jefe)return ['corona','Jefe: '+R.n.replace(/ y su corte$/,'')];if(L.superv)return ['reloj',(R?R.n+': ':'')+'aguanta 60 s'];return ['espadas',R?R.n:'Combate']}
+  return t==='pvp'?['espadas','Combate contra otro jugador']:['garras','Monstruos']}
+function pintaProgreso(){const box=$('#pips');if(!box)return;const hist=S.mode==='historia',torre=hist&&S.story.torre,s0=S.stage,out=[];
+  const ronda=(s,r)=>{const [ic,t]=rondaIcono(s,r),hecho=s<s0||(s===s0&&r<S.round),cur=s===s0&&r===S.round,au=esAumento(s,r),bo=hist&&!torre&&(r===3||r===6)&&!nivelActual().superv;
+    return `<i class="rd ${ic}${hecho?' done':cur?' cur':''}" title="${t}${au?' · aumento':''}${bo?' · botín':''}">${hecho?ICO_R.check:ICO_R[ic]}${au?'<b class="mk aum"></b>':bo?'<b class="mk bot"></b>':''}</i>`};
+  if(hist&&!torre){const L=nivelActual(),nF=L.fases.length;
+    for(let f=1;f<=nF;f++){if(f>1)out.push('<b class="rdl'+(f<=s0?' done':'')+'"></b>');
+      if(f===s0){for(let r=1;r<=roundsIn(f);r++){if(r>1)out.push('<b class="rdl'+(r<=S.round?' done':'')+'"></b>');out.push(ronda(f,r))}}
+      else{const jefe=f===nF&&L.fases[f-1].some(R=>R&&R.jefe);out.push(`<i class="fase${f<s0?' done':''}${jefe?' jefe':''}" title="Fase ${f}${f<s0?' superada':jefe?': el jefe':''}">${f<s0?ICO_R.check:jefe?ICO_R.corona:f}</i>`)}}}
+  else for(let r=1;r<=roundsIn(s0);r++){if(r>1)out.push('<b class="rdl'+(r<=S.round?' done':'')+'"></b>');out.push(ronda(s0,r))}
+  const h=out.join('');if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h}}
 function updateHUD(){
   if(!S)return;const hu=H(),pl=S.phase==='planning';
   // en combate la tienda se esconde (queda una pestaña); al volver a preparar, reaparece
   const enc=S.phase==='combat'||S.phase==='result';document.body.classList.toggle('en-combate',enc);if(!enc)document.body.classList.remove('ver-tienda');
   const hist=S.mode==='historia';$('#stageTit').textContent=hist?(S.story.torre?`Torre · Piso ${pisoActual()}`:`Nivel ${S.story.nivel} · Fase ${S.stage}`):'Ronda';
   $('#stageLbl').textContent=hist?`${S.round}/${roundsIn(S.stage)}`:`${S.stage}-${S.round}`;
-  const pips=$('#pips');pips.innerHTML='';
-  for(let r=1;r<=roundsIn(S.stage);r++){const d=document.createElement('i');d.className='pip '+roundType(S.stage,r)+(r<S.round?' done':r===S.round?' cur':'');d.title=({pvp:'Combate contra jugador',pve:'Monstruos',carousel:'Carrusel'})[roundType(S.stage,r)];pips.appendChild(d)}
+  pintaProgreso(); // barra de progreso del nivel con las rondas en iconos
   $('#hpv').textContent=Math.max(0,hu.hp);
   $('#goldv').textContent=hu.gold;
   {const T=S.mode==='historia'?ODDS_HIST:ODDS,nv=Math.max(1,Math.min(hu.level,T.length)),od=T[nv-1]; // probabilidades de la tienda a tu nivel
